@@ -1,4 +1,6 @@
 import { classNameFromColor } from "./hl_mengshou";
+const md5 = require('md5');
+
 // eslint-disable-next-line no-unused-vars
 class BookToc {
   constructor() {
@@ -208,22 +210,23 @@ class Chapter {
     return title.concat(items).join("\n\n");
   }
 }
-String.prototype.hashCode = function () {
-  var hash = 0, i, chr;
-  if (this.length === 0) return hash;
-  for (i = 0; i < this.length; i++) {
-    chr = this.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};
+// String.prototype.hashCode = function () {
+//   let hash =  md5(this)
+//   // var hash = 0, i, chr;
+//   // if (this.length === 0) return hash;
+//   // for (i = 0; i < this.length; i++) {
+//   //   chr = this.charCodeAt(i);
+//   //   hash = ((hash << 5) - hash) + chr;
+//   //   hash |= 0; // Convert to 32bit integer
+//   // }
+//   return hash;
+// };
 export class book {
   constructor() {
     this.toc = new BookToc();
     this.name = this.toc.bookname;
     let aa = this.toc.name
-    this.bookid = aa.hashCode()
+    this.bookid = md5(aa)
   }
   Charpter() {
     let titlelist = this.toc.Charpters();

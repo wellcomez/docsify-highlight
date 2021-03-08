@@ -1,8 +1,8 @@
 {
   "name": "docsify-highlight",
-  "version": "0.3.1",
-  "jsdelivr":"docsify-highlight.umd.min.js",
-  "browser":"docsify-highlight.css",
+  "version": "0.3.2",
+  "jsdelivr": "docsify-highlight.umd.min.js",
+  "browser": "docsify-highlight.css",
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
@@ -22,6 +22,7 @@
     "element-ui": "^2.15.1",
     "file-saver": "^2.0.5",
     "leancloud-storage": "^4.10.0",
+    "md5": "^2.3.0",
     "vue": "^2.6.11",
     "vue-svgicon": "^3.2.9",
     "web-highlighter": "^0.7.1"

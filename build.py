@@ -68,7 +68,7 @@ def dobuild():
 if __name__ =="__main__":
     md5record = {}
     dobuild()
-    os.system("docsify  serve&")
+    # os.system("docsify  serve&")
     checkfilechecked(getallfiles(),md5record)    
     while  True:
         import time
