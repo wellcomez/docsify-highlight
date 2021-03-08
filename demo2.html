@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+<div id="app">
+  <yyl-npm-practice :propData="propData"></yyl-npm-practice>
+</div>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="./dist/main.umd.js"></script>
+<script>
+    // window['ys-expression'].default.install();
+  new Vue({
+    el: '#app',
+    data: function() {
+      return {
+        propData: '11111111111111111111'
+      }
+    },
+    methods: {
+    }
+  })
+</script>
+</body>
+</html>

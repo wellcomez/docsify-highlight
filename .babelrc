@@ -1,0 +1,12 @@
+{
+    "plugins": [
+        "transform-class-properties",
+        [
+            "component",
+            {
+                "libraryName": "element-ui",
+                "styleLibraryName": "theme-chalk"
+            }
+        ]
+    ]
+}

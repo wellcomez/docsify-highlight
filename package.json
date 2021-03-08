@@ -1,0 +1,59 @@
+{
+  "name": "docsify-highlight",
+  "version": "0.2.4",
+  "jsdelivr":"docsify-highlight.umd.min.js",
+  "browser":"docsify-highlight.css",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "lint": "vue-cli-service lint",
+    "svg": "vsvg -s ./src/svg/ -t ./src/icons",
+    "build": "vue build --target lib  --name docsify-highlight  src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wellcomez/docsify-highlight.git"
+  },
+  "keywords": [
+    "docsify",
+    "highlight"
+  ],
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "element-ui": "^2.15.1",
+    "file-saver": "^2.0.5",
+    "leancloud-storage": "^4.10.0",
+    "vue": "^2.6.11",
+    "vue-svgicon": "^3.2.9",
+    "web-highlighter": "^0.7.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-component": "^1.1.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
