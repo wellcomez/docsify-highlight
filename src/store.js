@@ -193,6 +193,7 @@ class Chapter {
 
   md() {
     let title = ["## 章节 " + this.label];
+    if (this.children.length==0)return "\n"
     let items = this.children.map((a, idx) => {
       let { label, color } = a;
       let hlyellow = classNameFromColor(color);
