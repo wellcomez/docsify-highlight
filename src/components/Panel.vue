@@ -1,7 +1,7 @@
 
 <template>
   <div class="op-panel">
-    <section class="panel-header">
+    <section class="panel-header ">
       <SvgButton  v-if="checked" v-bind:onClick="onOpenContentList" name="toc" tips="Table of Content"/>
       <Bubbling
         class="left"
@@ -9,21 +9,18 @@
         :onSelect="onSelect"
         content="Export"
       />
-      <PopSvgButton  v-if="canupload"  :click="onTest" name="Clouddownload" title="Download data" tips="Download"/>
-      <PopSvgButton  v-if="canupload"  :click="onSave2Cloud" title="Update data to cloud"  name="Cloudupload" tips="Upload"/>
+      <PopSvgButton   v-if="canupload"  :click="onTest" name="Clouddownload" title="Download data" tips="Download"/>
+      <PopSvgButton   v-if="canupload"  :click="onSave2Cloud" title="Update data to cloud"  name="Cloudupload" tips="Upload"/>
 
       <input
         name="auto"
         type="checkbox"
-        class="switch right"
+        class="switch left"
         v-bind:checked="checked"
         v-bind:on-change="onChange"
         v-on:click="onChange"
-      />
-      <sup>
-        <span class="headtile right" v-if="checked == false">Marker</span>
-      </sup>
-      <div class="d1 hlgreen right" v-if="checked" style="text-align: center">
+      >
+      <div class="d1 hlgreen left" v-if="checked" style="text-align: center">
         <span v-html="count2" style=""></span>
       </div>
     </section>

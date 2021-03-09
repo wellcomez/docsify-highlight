@@ -38,6 +38,7 @@ export default {
           name: "md",
         },
       ],
+      expanded:false
     };
   },
   computed: {
@@ -64,10 +65,10 @@ export default {
       type: Function,
       default: undefined,
     },
-     expanded: {
-      type: Boolean,
-      default: false,
-    },
+    //  expanded: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   methods: {
     closeButtons() {
