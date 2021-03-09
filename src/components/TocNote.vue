@@ -151,9 +151,6 @@ export default {
 .xxxx {
   border: 1px solid var(--theme-color, #42b983);
 }
-.xxxx .el-tree {
-  /* background: rgba(216, 206, 206, 0.897); */
-}
 </style>
 
 
