@@ -58,7 +58,8 @@ def dobuild():
     "mkdir docsify-highlight-dist",
     "cp -fr notejs/* docsify-highlight-dist",
     "cp -f dist/docsify-highlight.umd.min.js .",
-    "cp -f dist/docsify-highlight.css ."
+    "cp -f dist/docsify-highlight.css .",
+    "cp -f dist/docsify-highlight.umd.js.map ."
     ]:
         try:
             os.system(i)

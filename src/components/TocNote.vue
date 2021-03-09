@@ -1,6 +1,6 @@
 
 <template>
-  <section class="xxxx" >
+  <section class="xxxx">
     <Tree :data="data" @on-toggle-expand="selectChange"></Tree>
   </section>
 </template>
@@ -53,28 +53,24 @@ export default {
         children = this.mapchildren(children);
         if (this.toc[title]) expand = true;
       }
-      if (expand == false) {
-        let aa = this.spanclass(a);
-        // eslint-disable-next-line no-unused-vars
-        const render = (h, { root, node, data }) => {
-          return h(
-            "span",
-            {
-              class: aa,
-              style: { color: "black" },
-              on: {
-                click: () => {
-                  this.handleNodeClick(a);
-                },
+      let aa = this.spanclass(a);
+      // eslint-disable-next-line no-unused-vars
+      const render = (h, { root, node, data }) => {
+        return h(
+          "span",
+          {
+            class: aa,
+            style: { color: "black" },
+            on: {
+              click: () => {
+                this.handleNodeClick(a);
               },
             },
-            title
-          );
-        };
-        return { title, children, expand, render };
-      } else {
-        return { title, children, expand };
-      }
+          },
+          title
+        );
+      };
+      return { title, children, expand, render };
     },
     mapchildren(children) {
       if (children)
@@ -131,14 +127,15 @@ export default {
   },
 };
 </script>
-
-<style scoped>
+<style>
 .chartper {
   font-weight: bold;
 }
 .chartper-note {
   font-weight: normal;
 }
+</style>
+<style scoped>
 .xxxx {
   overflow: auto;
   height: 400px;

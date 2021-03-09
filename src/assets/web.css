@@ -20,7 +20,14 @@
   background-color: rgba(243, 49, 91, 0.219)
 }
 
-
+.d1 {
+  color: #606266;
+  text-align: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 4px;
+}
 
 /* .my-remove-tip::after {
   content     : '';

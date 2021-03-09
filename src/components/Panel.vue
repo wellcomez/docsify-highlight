@@ -163,14 +163,7 @@ export default {
 .panel-header {
   height: 30px;
 }
-.d1 {
-  color: #606266;
-  text-align: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  margin: 4px;
-}
+
 .headtile {
   font-size: xx-small;
   color: white;
