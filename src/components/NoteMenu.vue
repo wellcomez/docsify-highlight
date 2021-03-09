@@ -37,6 +37,9 @@ export default {
     };
   },
   computed: {
+    UnderlineEnable(){
+      return this.color == ul;
+    },
     isYellow() {
       return this.color == yellow;
     },
@@ -49,11 +52,9 @@ export default {
   },
   methods: {
     onUnderline(e) {
-      this.UnderlineEnable = this.UnderlineEnable == false;
-      if (this.UnderlineEnable) {
+      if (this.UnderlineEnable==false) {
         this.onClick(e, ul);
       } else {
-        this.color = red;
         this.onClick(e, red);
       }
     },
@@ -85,7 +86,6 @@ export default {
     },
     onClick(e, color) {
       this.color = color;
-      this.UnderlineEnable = color == ul;
       if (this.onClose) {
         this.onClose(color, this.noteid);
       } else {
@@ -140,10 +140,6 @@ export default {
     nochoose: {
       type: Boolean,
       default: true,
-    },
-    UnderlineEnable: {
-      type: Boolean,
-      default: false,
     },
   },
 };
