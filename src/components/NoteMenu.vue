@@ -75,6 +75,8 @@ export default {
   },
   mounted() {
     this.updateColor1WithCss();
+    let picker = document.getElementsByClassName("ivu-color-picker-color");
+    if (picker.length) picker[0].style.backgroundImage = "none";
   },
   methods: {
     updateColor1WithCss() {
