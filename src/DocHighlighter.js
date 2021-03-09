@@ -7,7 +7,7 @@ import { log } from "./log";
 import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
-import { colorFromClassName, classNameFromColor, hasHighlightColor, markColorList } from './hl_mengshou';
+import { colorFromClassName, classNameFromColor, hasHighlightColor, markColorList } from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {

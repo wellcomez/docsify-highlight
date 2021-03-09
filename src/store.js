@@ -1,4 +1,4 @@
-import { classNameFromColor } from "./hl_mengshou";
+import { classNameFromColor } from "./colorSelector";
 const md5 = require('md5');
 
 // eslint-disable-next-line no-unused-vars

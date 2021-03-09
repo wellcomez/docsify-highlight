@@ -20,7 +20,7 @@
         v-bind:on-change="onChange"
         v-on:click="onChange"
       >
-      <div class="d1 hlgreen left" v-if="checked" style="text-align: center">
+      <div class="d1 left" v-if="checked" style="text-align: center; background-color: rgb(202, 233, 202);">
         <span v-html="count2" style=""></span>
       </div>
     </section>

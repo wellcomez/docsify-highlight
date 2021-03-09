@@ -8,7 +8,7 @@
 <script>
 import { book } from "../store";
 import { parseurl, scollTopID } from "../mountCmp";
-import { classNameFromColor } from "../hl_mengshou";
+import { classNameFromColor } from "../colorSelector";
 import { preHighLightItems } from "../DocHighlighter";
 export default {
   name: "TocNote",
