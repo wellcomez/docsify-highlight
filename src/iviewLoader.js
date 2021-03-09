@@ -1,9 +1,6 @@
 import 'iview/dist/styles/iview.css';
+// import './assets/iview.css';
 import Vue from 'vue';
-// import { registComponet } from './mountCmp';
-// registComponet({Notice})
-
-
-import { Notice, Table } from 'iview';
+import { Notice, Tree} from 'iview';
 Vue.component('Notice', Notice);
-Vue.component('Table', Table);
+Vue.component('Tree', Tree);

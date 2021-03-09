@@ -1,7 +1,8 @@
 
 <template>
   <section class="xxxx">
-    <el-tree
+    <Tree :data="data"></Tree>
+    <!-- <el-tree
       node-key="id-cotent-index"
       :data="data"
       :props="defaultProps"
@@ -12,7 +13,7 @@
           <span v-bind:class="spanclass(data)">{{ node.label }}</span>
         </p>
       </span>
-    </el-tree>
+    </el-tree> -->
   </section>
 </template>
 
@@ -27,18 +28,55 @@ export default {
     data() {
       let b = new book();
       // eslint-disable-next-line no-unused-vars
+      const mapchildren = (children) => {
+        if (children)
+          return children.map((a) => {
+            let { label: title, children } = a;
+            let expand = false;
+            if (children) {
+              children = mapchildren(children);
+              expand = true;
+            }
+            if (expand == false) {
+              let aa = this.spanclass(a);
+              // eslint-disable-next-line no-unused-vars
+              const render = (h, { root, node, data }) => {
+                return h(
+                  "span",
+                  {
+                    class: aa,
+                    style: { color: "black" },
+                    on: {
+                      click: () => {
+                        this.handleNodeClick(a);
+                      },
+                    },
+                  },
+                  title
+                );
+              };
+              return { title, children, expand, render };
+            } else {
+              return { title, children, expand };
+            }
+          });
+      };
       let ddd = b.Charpter().map((c) => {
-        let { label, children } = c;
-        return { label, children };
+        let { label: title, children } = c;
+        children = mapchildren(children);
+        let expand = false;
+        if (children) expand = true;
+        return { title, children, expand };
       });
       let children = preHighLightItems();
-      if (children.length) ddd.push({ label: "page", children });
-      let ret = []
-      ddd.forEach((a)=>{
-        if(a.children.length){
-          ret.push(a)
+      children = mapchildren(children);
+      if (children.length) ddd.push({ title: "page", children });
+      let ret = [];
+      ddd.forEach((a) => {
+        if (a.children.length) {
+          ret.push(a);
         }
-      })
+      });
       return ret;
     },
   },
@@ -86,7 +124,7 @@ export default {
         return;
       }
       if (key && id) {
-        const { path} = JSON.parse(key);
+        const { path } = JSON.parse(key);
         let hash = path.substring(path.indexOf("#"));
         hash = hash + "?id=" + id;
         let current = parseurl();
@@ -117,11 +155,11 @@ export default {
 .xxxx {
   overflow: auto;
   height: 400px;
-  background-color:white;
+  background-color: white;
 }
 
 .xxxx::-webkit-scrollbar {
-	border-width:1px;
+  border-width: 1px;
 }
 .xxxx {
   border: 1px solid var(--theme-color, #42b983);

@@ -6,7 +6,7 @@ import SvgButton from './components/SvgButton.vue'
 
 import hlinit from './hl';
 import { registComponet } from './mountCmp'
-import { elementLoader } from './el-load'
+// import { elementLoader } from './el-load'
 import './iviewLoader' 
 import Vue from 'vue';
 let component = { Panel, NoteMenu,TocNote ,Bubbling,SvgButton}
@@ -21,7 +21,7 @@ Vue.use(SvgIcon, {
     tagName: 'svgicon'
 })
 
-elementLoader()
+// elementLoader()
 // eslint-disable-next-line no-unused-vars
 export function install(hook, vm) {
   hook.doneEach(function () {
