@@ -6,7 +6,7 @@ const hl_ul = 'hl_ul'
 const hlList = [hl_yellow,hl_green,hl_red,hl_ul]
 export const colorFromClassName = (classname) => {
     if(classname.indexOf(hl_mengshou)>=0)return undefined;
-    for(let i in hlList){
+    for(let i=0;i<hlList.length;i++){
         let a = hlList[i];
         if(classname.indexOf(a)>=0)return i;
     }

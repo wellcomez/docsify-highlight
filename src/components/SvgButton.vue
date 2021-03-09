@@ -6,16 +6,13 @@
     @mouseleave="invisible"
   >
     <span v-show="show" v-html="tips"></span>
-    <svgicon
-      :name="name"
-      width="16"
-      height="16"
-      color="#42b983 #35495e"
-    ></svgicon>
+    <svgicon :name="name" width="16" height="16" :color="svgcolor"></svgicon>
   </button>
 </template>
 <script>
 import "../icons";
+const svgcolor_on = "#42b983 #35495e";
+const svgcolor_off = "#35495e #35495e";
 export default {
   name: "SvgButton",
   computed: {
@@ -25,10 +22,16 @@ export default {
         return ret;
       }
       ret = ret + (this.on ? " enalbe_ul_btn" : " disable_ul_btn");
-      return ret
+      return ret;
     },
     show() {
       return this.seen && this.tips.length > 0;
+    },
+    svgcolor() {
+      if (this.onOff) {
+        return this.on ? svgcolor_on : svgcolor_off;
+      }
+      return svgcolor_on;
     },
   },
   data() {
@@ -39,7 +42,7 @@ export default {
 
   props: {
     onClick: {
-      type: Number,
+      type: Function,
       default: undefined,
     },
     name: { type: String, default: "" },
@@ -67,10 +70,10 @@ export default {
   border-radius: 3px;
 }
 button span {
-  width:fit-content; 
+  width: fit-content;
   position: absolute;
   margin: 4px;
-  padding:5px;
+  padding: 5px;
   /* left: 10px; */
   border-radius: 3px;
   top: 28px;

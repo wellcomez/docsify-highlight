@@ -1,7 +1,7 @@
 <template>
   <div class="mask note-menu" v-on:click="onClickMask">
     <div v-bind:style="style" class="my-remove-tip" id="markpannel">
-      <SvgButton onOff="true" v-bind:on="UnderlineEnable" name="ul" v-bind:onClick="onUnderline" tips="Underline"></SvgButton>
+      <SvgButton onOff v-bind:on="UnderlineEnable" name="ul" v-bind:onClick="onUnderline" tips="Underline"></SvgButton>
       <div class="d1 hlyellow left" v-on:click="onYellow">
         <span v-if="isYellow">&#10004;</span>
       </div>
