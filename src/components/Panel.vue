@@ -36,17 +36,14 @@
 <script>
 import { book } from "../store";
 import TocNote from "./TocNote.vue";
-import { Notification } from "element-ui";
+// import { Notification } from "element-ui";
 import { localidstore, testPost, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
-
+import {msg} from "./msgbox"
 function funDownload(content, filename) {
   const blob = new Blob([content]);
   FileSaver.saveAs(blob, filename);
-  Notification.success({
-    title: "导出",
-    message: "保存到 " + filename,
-  });
+  msg("导出","保存到 " + filename)
 }
 import { preHighLightItems } from "../DocHighlighter";
 import Bubbling from "./Bubbling.vue";
@@ -104,7 +101,7 @@ export default {
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
-          Notification.success("saved " + b.toc.bookname + " to cloud");
+          msg("saved ",  b.toc.bookname + " to cloud");
         })
         // eslint-disable-next-line no-unused-vars
         .catch((e) => {});

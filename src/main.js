@@ -7,6 +7,7 @@ import SvgButton from './components/SvgButton.vue'
 import hlinit from './hl';
 import { registComponet } from './mountCmp'
 import { elementLoader } from './el-load'
+import './iviewLoader' 
 import Vue from 'vue';
 let component = { Panel, NoteMenu,TocNote ,Bubbling,SvgButton}
 registComponet(component)
@@ -15,7 +16,6 @@ registComponet(component)
 
 
 import SvgIcon from 'vue-svgicon'
- 
 // Default tag name is 'svgicon'
 Vue.use(SvgIcon, {
     tagName: 'svgicon'

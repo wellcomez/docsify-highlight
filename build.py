@@ -46,7 +46,7 @@ def checkfilechecked(files,md5record):
 def dobuild():
     cmd = "npm run svg"
     os.system(cmd)
-    cmd = "npm run build"
+    cmd = "npm run lib"
     os.system(cmd)
     for i in ["mkdir notejs",
      "mkdir -p notejs/img",
