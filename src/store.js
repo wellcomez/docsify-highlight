@@ -1,4 +1,4 @@
-import { classNameFromColor } from "./colorSelector";
+import { classNameFromColor, colorString } from "./colorSelector";
 const md5 = require('md5');
 
 // eslint-disable-next-line no-unused-vars
@@ -193,7 +193,7 @@ class Chapter {
 
   md() {
     let title = ["## 章节 " + this.label];
-    if (this.children.length==0)return "\n"
+    if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
       let { label, color } = a;
       let hlyellow = classNameFromColor(color);
@@ -269,19 +269,8 @@ export class book {
   }
   md() {
     let styles =
-      "<style>" +
-      ".hl_ul {" +
-      "  border-bottom:2px solid red" +
-      "}" +
-      ".hlgreen {" +
-      "  background-color: rgb(202, 233, 202);" +
-      "}" +
-      ".hlyellow {" +
-      "  background-color: #ff9" +
-      "}" +
-      ".hlred {" +
-      "  background-color: rgba(243, 49, 91, 0.219)" +
-      "}" +
+      "<style>" + colorString()
+      +
       "</style>";
     let tilte = "# " + window.$docsify.name;
 

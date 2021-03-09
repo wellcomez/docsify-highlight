@@ -29,17 +29,6 @@
   margin: 4px;
 }
 
-/* .my-remove-tip::after {
-  content     : '';
-  position    : absolute;
-  left        : 16px;
-  bottom      : -4px;
-  border-color: #444 transparent transparent;
-  border-width: 4px 4px 0;
-  border-style: solid;
-  height      : 0;
-  width       : 0;
-} */
 
 /* Switch开关样式 */
 input[type='checkbox'].switch {

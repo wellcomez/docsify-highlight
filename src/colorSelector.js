@@ -8,14 +8,14 @@ let a = localStorage.getItem("colormap");
 let colorMap = {}
 if (a) {
     colorMap = JSON.parse(a)
-    for(let c in colorMap) {
+    for (let c in colorMap) {
         let css = getCssRule('.' + c)
-        if(colorMap[c]==undefined){
+        if (colorMap[c] == undefined) {
             colorMap[c] = getcsscolor(c)
         }
-        if(c==hl_ul){
+        if (c == hl_ul) {
             css.style.borderBottomColor = colorMap[c]
-        }else{
+        } else {
             css.style.backgroundColor = colorMap[c]
         }
     }
@@ -23,7 +23,7 @@ if (a) {
     for (let i in hlList) {
         let c = hlList[i];
         colorMap[c] = getcsscolor(c);
-        updateColorMap(i,colorMap[c])
+        updateColorMap(i, colorMap[c])
     }
 }
 function getcsscolor(colorclassname) {
@@ -36,10 +36,10 @@ function getcsscolor(colorclassname) {
     }
 }
 
-export function updateColorMap(colornum,value){
+export function updateColorMap(colornum, value) {
     let colorclass = hlList[colornum]
     colorMap[colorclass] = value
-    localStorage.setItem("colormap",JSON.stringify(colorMap))
+    localStorage.setItem("colormap", JSON.stringify(colorMap))
 }
 // a.style.borderBottom="2px solid red"
 // a.style.backgroundColor="yellow"
@@ -92,3 +92,23 @@ export const yellow = hlList.indexOf(hl_yellow)
 export const red = hlList.indexOf(hl_red)
 export const green = hlList.indexOf(hl_green)
 export const ul = hlList.indexOf(hl_ul)
+
+
+
+const backgroundTemplate = (hlgreen, color) => {
+    return `.${hlgreen} { background-color: ${color} ;}`
+}
+
+
+const ulTemplate = (hlgreen, color) => {
+    return `.${hlgreen} { border-bottom:2px solid ${color} ;}`
+}
+export const colorString = () => {
+    let a = hlList.map((a) => {
+        if (a == hl_ul) {
+            return ulTemplate(a, colorMap[a])
+        }
+        return backgroundTemplate(a, colorMap[a])
+    })
+    return a.join("\n\n")
+}
