@@ -5,11 +5,22 @@ const hl_red = "hlred";
 const hl_ul = 'hl_ul'
 const hlList = [hl_yellow, hl_green, hl_red, hl_ul]
 let a = localStorage.getItem("colormap");
+let str = ".hl_ul {border-bottom:2px solid red}.hlgreen {background-color:#33FF33}.hlyellow {background-color:#FFFF3355}.hlred {background-color:#ff336659}"
+
+var nod = document.createElement("style");
+nod.type="text/css";  
+if(nod.styleSheet){         //ie下  
+    nod.styleSheet.cssText = str;  
+} else {  
+    nod.innerHTML = str;       //或者写成 nod.appendChild(document.createTextNode(str))  
+}  
+document.getElementsByTagName("head")[0].appendChild(nod); 
 let colorMap = {}
 if (a) {
     colorMap = JSON.parse(a)
     for (let c in colorMap) {
         let css = getCssRule('.' + c)
+        if(css==undefined)continue
         let color = colorMap[c]
         if (color == undefined||color.length==0) {
             colorMap[c] = getcsscolor(c)
