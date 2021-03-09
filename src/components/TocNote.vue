@@ -1,19 +1,7 @@
 
 <template>
-  <section class="xxxx">
-    <Tree :data="data"></Tree>
-    <!-- <el-tree
-      node-key="id-cotent-index"
-      :data="data"
-      :props="defaultProps"
-      @node-click="handleNodeClick"
-    >
-      <span slot-scope="{ node, data }">
-        <p style="font-size: xx-small">
-          <span v-bind:class="spanclass(data)">{{ node.label }}</span>
-        </p>
-      </span>
-    </el-tree> -->
+  <section class="xxxx" >
+    <Tree :data="data" @on-toggle-expand="selectChange"></Tree>
   </section>
 </template>
 
@@ -27,49 +15,11 @@ export default {
   computed: {
     data() {
       let b = new book();
-      // eslint-disable-next-line no-unused-vars
-      const mapchildren = (children) => {
-        if (children)
-          return children.map((a) => {
-            let { label: title, children } = a;
-            let expand = false;
-            if (children) {
-              children = mapchildren(children);
-              expand = true;
-            }
-            if (expand == false) {
-              let aa = this.spanclass(a);
-              // eslint-disable-next-line no-unused-vars
-              const render = (h, { root, node, data }) => {
-                return h(
-                  "span",
-                  {
-                    class: aa,
-                    style: { color: "black" },
-                    on: {
-                      click: () => {
-                        this.handleNodeClick(a);
-                      },
-                    },
-                  },
-                  title
-                );
-              };
-              return { title, children, expand, render };
-            } else {
-              return { title, children, expand };
-            }
-          });
-      };
       let ddd = b.Charpter().map((c) => {
-        let { label: title, children } = c;
-        children = mapchildren(children);
-        let expand = false;
-        if (children) expand = true;
-        return { title, children, expand };
+        return this.createOutLine(c);
       });
       let children = preHighLightItems();
-      children = mapchildren(children);
+      children = this.mapchildren(children);
       if (children.length) ddd.push({ title: "page", children });
       let ret = [];
       ddd.forEach((a) => {
@@ -88,13 +38,50 @@ export default {
   },
   data() {
     return {
-      defaultProps: {
-        children: "children",
-        label: "label",
-      },
+      toc: {},
     };
   },
   methods: {
+    selectChange(a) {
+      console.log("xxxx");
+      this.toc[a.title] = a.expand;
+    },
+    createOutLine(a) {
+      let { label: title, children } = a;
+      let expand = false;
+      if (children) {
+        children = this.mapchildren(children);
+        if (this.toc[title]) expand = true;
+      }
+      if (expand == false) {
+        let aa = this.spanclass(a);
+        // eslint-disable-next-line no-unused-vars
+        const render = (h, { root, node, data }) => {
+          return h(
+            "span",
+            {
+              class: aa,
+              style: { color: "black" },
+              on: {
+                click: () => {
+                  this.handleNodeClick(a);
+                },
+              },
+            },
+            title
+          );
+        };
+        return { title, children, expand, render };
+      } else {
+        return { title, children, expand };
+      }
+    },
+    mapchildren(children) {
+      if (children)
+        return children.map((a) => {
+          return this.createOutLine(a);
+        });
+    },
     // eslint-disable-next-line no-unused-vars
     spanclass(data) {
       let { id, color, className } = data;
