@@ -9,8 +9,8 @@
         :onSelect="onSelect"
         content="Export"
       />
-      <SvgButton  v-if="canupload" v-bind:onClick="onTest" name="Clouddownload" tips="Download"/>
-      <SvgButton  v-if="canupload" v-bind:onClick="onSave2Cloud" name="Cloudupload" tips="Upload"/>
+      <PopSvgButton  v-if="canupload"  :click="onTest" name="Clouddownload" title="Download data" tips="Download"/>
+      <PopSvgButton  v-if="canupload"  :click="onSave2Cloud" title="Update data to cloud"  name="Cloudupload" tips="Upload"/>
 
       <input
         name="auto"
@@ -39,15 +39,15 @@ import TocNote from "./TocNote.vue";
 // import { Notification } from "element-ui";
 import { localidstore, testPost, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
-import {msg} from "./msgbox"
+import { msg } from "./msgbox";
 function funDownload(content, filename) {
   const blob = new Blob([content]);
   FileSaver.saveAs(blob, filename);
-  msg("导出","保存到 " + filename)
+  msg("导出", "保存到 " + filename);
 }
 import { preHighLightItems } from "../DocHighlighter";
 import Bubbling from "./Bubbling.vue";
-import { checkClickOut } from "../mountCmp";
+// import { checkClickOut } from "../mountCmp";
 export default {
   components: { TocNote, Bubbling },
   name: "Panel",
@@ -66,8 +66,8 @@ export default {
     };
   },
   mounted: function () {
-    let d = document.getElementsByClassName("op-panel")[0];
-    checkClickOut(d, this.hideDetails);
+    // let d = document.getElementsByClassName("op-panel")[0];
+    // checkClickOut(d, this.hideDetails);
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
@@ -75,7 +75,7 @@ export default {
     };
   },
   beforeDestroy: function () {
-    checkClickOut(undefined, this.hideDetails);
+    // checkClickOut(undefined, this.hideDetails);
   },
   props: {
     showdetail: {
@@ -101,7 +101,7 @@ export default {
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
-          msg("saved ",  b.toc.bookname + " to cloud");
+          msg("saved ", b.toc.bookname + " to cloud");
         })
         // eslint-disable-next-line no-unused-vars
         .catch((e) => {});
@@ -109,9 +109,9 @@ export default {
     onTest() {
       testPost();
     },
-    hideDetails() {
-      this.showdetail = false;
-    },
+    // hideDetails() {
+    //   this.showdetail = false;
+    // },
     onOpenContentList() {
       this.showdetail = this.showdetail == false;
     },
@@ -136,8 +136,7 @@ export default {
   },
 };
 </script>
-
-<style>
+<style scoped>
 .op-panel {
   position: fixed;
   right: 20px;
@@ -146,13 +145,7 @@ export default {
   /* background: rgba(216, 206, 206, 0.897); */
   background: var(--theme-color, #42b983);
   border-radius: 3px;
-  /* left         : auto; right: 0px; visibility: visible; */
-  /* box-sizing   : border-box;
-  padding         : 1px 1px 1px 1px;
-  position        : absolute;
-  top             : 50px;
-  left            : 15px;
-  border          : 1px #aaa; */
+  color: black;
 }
 
 @media screen and (max-width: 1150px) {
@@ -166,7 +159,7 @@ export default {
     left: auto;
     top: 50px;
     background: rgba(216, 206, 206, 0.897);
-    color: #fff;
+    color: black;
     border-radius: 3px;
   }
 }
@@ -191,6 +184,9 @@ export default {
   /* height: 600px; */
   /* border: 1px solid black; */
   /* background: blue; */
+}
+button {
+  margin: 4px;
 }
 </style>
 
