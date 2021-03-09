@@ -1,4 +1,4 @@
-import 'iview/dist/styles/iview.css';
+// import 'iview/dist/styles/iview.css';
 // import './assets/iview.css';
 import Vue from 'vue';
 import { Notice, Tree, Poptip, Button} from 'iview';
