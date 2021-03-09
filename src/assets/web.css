@@ -9,15 +9,15 @@
   border-bottom:2px solid red
 }
 .hlgreen {
-  background-color: rgb(202, 233, 202);
+  background-color: rgb(54, 230, 54,0.67);
 }
 
 .hlyellow {
-  background-color: #ff9
+  background-color: rgba(242,235,27,0.67)
 }
 
 .hlred {
-  background-color: rgba(243, 49, 91, 0.219)
+  background-color: rgba(243, 49, 91, 0.67)
 }
 
 .d1 {
