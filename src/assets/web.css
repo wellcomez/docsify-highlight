@@ -9,15 +9,15 @@
   border-bottom:2px solid red
 }
 .hlgreen {
-  background-color: rgb(54, 230, 54,0.67);
+  background-color:#33FF3355
 }
 
 .hlyellow {
-  background-color: rgba(242,235,27,0.67)
+  background-color:#FFFF3355
 }
 
 .hlred {
-  background-color: rgba(243, 49, 91, 0.67)
+  background-color:#ff336659
 }
 
 .d1 {
@@ -121,7 +121,9 @@ input[type='checkbox'].switch:checked::after {
   text-decoration: underline;
   text-decoration-color: red;
 }
-
+.docsify-highlighter{
+  font-style: nomr;
+}
 
 
 .svg-icon {

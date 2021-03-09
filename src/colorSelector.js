@@ -10,7 +10,8 @@ if (a) {
     colorMap = JSON.parse(a)
     for (let c in colorMap) {
         let css = getCssRule('.' + c)
-        if (colorMap[c] == undefined) {
+        let color = colorMap[c]
+        if (color == undefined||color.length==0) {
             colorMap[c] = getcsscolor(c)
         }
         if (c == hl_ul) {
@@ -30,7 +31,7 @@ function getcsscolor(colorclassname) {
     let css = getCssRule('.' + colorclassname);
     if (css) {
         let a = css.style.borderBottomColor;
-        if (a == undefined)
+        if (a == undefined||a.length==0)
             a = css.style.backgroundColor;
         return a
     }
