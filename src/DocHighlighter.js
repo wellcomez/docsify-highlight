@@ -33,10 +33,17 @@ export class DocHighlighter {
         const position = this.getPosition(node);
         let { top, left } = position;
         removeTips();
+        let note = undefined
+        try {
+            let b = this.store.geths(noteid)
+            note = b.note;
+        // eslint-disable-next-line no-empty
+        } catch (error) {
+        }
         let color = colorFromClassName(node.className);
         // if (color != undefined) {
         log("createNoteMenu", top, left, color)
-        mountCmp(NoteMenu, { top, left, noteid, color, onClose }, document.body)
+        mountCmp(NoteMenu, { top, left, noteid, color, onClose,note}, document.body)
         // }
     };
 
@@ -86,7 +93,9 @@ export class DocHighlighter {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
-
+    setNote(note, noteid) {
+        this.store.update({ id: noteid, note})
+    }
     setHighlightColor(color, noteid) {
         this.updateHignLightColor(noteid, color);
         getConfig().save({ color });
@@ -229,12 +238,19 @@ export class DocHighlighter {
                 hs.title = title;
             })
 
-            let onclose = (color, noteid) => {
-                if (color != undefined && noteid != undefined) {
+            let onclose = (data, noteid) => {
+                let {color,note} = data?data:{}
+                let change = color||note
+                if (change && noteid != undefined) {
                     let sources2 = sources.map(hs => {
-                        hs.color = color;
+                        if(color){
+                            hs.color = color;
+                            this.setHighlightColor(color, noteid);
+                        }
+                        if(note){
+                            hs.note = note
+                        }
                         hs.top = this.getElementPosition(noteid)
-                        this.setHighlightColor(color, noteid);
                         return hs
                     })
                     sources2 = sources2.map(hs => ({ hs }));

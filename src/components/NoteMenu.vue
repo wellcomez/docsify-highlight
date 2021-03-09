@@ -26,6 +26,14 @@
         class="left note-color-picker"
         size="small"
       />
+      <Badge dot :count="notecouter">
+        <Button
+          @click="handleRender"
+          class="note-color-picker"
+          size="small"
+          icon="md-brush"
+        />
+      </Badge>
     </div>
   </div>
 </template>
@@ -47,16 +55,22 @@ import {
   updateColorMap,
 } from "../colorSelector";
 
+import { Modal } from "iview";
+const leftPos = () => {
+  return document.getElementsByClassName("content")[0].offsetWidth - 300;
+};
 export default {
   name: "NoteMenu",
   data() {
     return {
       style: {
-        left: this.left - 20 + "px",
+        left: Math.min(leftPos(), this.left - 20) + "px",
         top: this.top - 25 - window.pageYOffset + "px",
-        width: 6 * 30,
+        // width: 6 * 30,
       },
+      notetext: this.note ? this.note : "",
       color1: "green",
+      notecouter: this.note?this.note.length:0,
     };
   },
   computed: {
@@ -79,6 +93,36 @@ export default {
     if (picker.length) picker[0].style.backgroundImage = "none";
   },
   methods: {
+    // <Input v-model="value6" type="textarea" :rows="4" placeholder="Enter something..." />
+
+    handleRender() {
+      Modal.confirm({
+        onOk: () => {
+          let { hl } = window;
+          if(this.onClose){
+            this.onClose({note:this.notetext},this.noteid)
+          }
+          hl.setNote(this.notetext, this.noteid);
+        },
+        render: (h) => {
+          return h("Input", {
+            props: {
+              value: this.notetext,
+              autofocus: true,
+              rows: 4,
+              placeholder: "Please enter your name...",
+              type: "textarea",
+            },
+            on: {
+              input: (val) => {
+                this.notetext = val;
+                this.notecouter = val.length;
+              },
+            },
+          });
+        },
+      });
+    },
     updateColor1WithCss() {
       let cssrule = getCssRule("." + classNameFromColor(this.color));
       try {
@@ -114,7 +158,8 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     removeSelectionHighLight() {
-      if (this.color == undefined) {
+      let note = this.notetext? this.notetext.length : 0;
+      if (this.color == undefined && note == 0) {
         if (this.onClose) {
           this.onClose(undefined, this.noteid);
         }
@@ -140,9 +185,10 @@ export default {
     },
     onClick(e, color) {
       this.color = color;
+      let note = this.notetext;
       this.updateColor1WithCss();
       if (this.onClose) {
-        this.onClose(color, this.noteid);
+        this.onClose({color,note}, this.noteid);
       } else {
         let { hl } = window;
         hl.setHighlightColor(color, this.noteid);
@@ -172,6 +218,10 @@ export default {
     },
   },
   props: {
+    note: {
+      type: String,
+      default: undefined,
+    },
     color: {
       type: Number,
       default: undefined,
@@ -238,6 +288,7 @@ export default {
   position: absolute;
   border: 1px solid #fff;
   border-radius: 3px;
+  width: fit-content;
   height: 30px;
   /* width        : 90px; */
   color: #fff;
