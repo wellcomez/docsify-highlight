@@ -28,7 +28,7 @@
    `<link rel="stylesheet" href="//unpkg.com/iview/dist/styles/iview.css">`
 
    `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-highlight@latest/docsify-highlight.min.css">`
-   
+
    `<script src="https://cdn.jsdelivr.net/npm/docsify-highlight@latest/docsify-highlight.umd.min.js"></script>`
 
 ## Optional usage
@@ -51,8 +51,8 @@
 
 1. **Highlight**
 
-![](1.png)
+  <img src="1.png" style="zoom: 33%;" />
 
 2. **Table of Content**
 
-![](snapshot2.png)
+  <img src="snapshot2.png" style="zoom: 33%;" />
