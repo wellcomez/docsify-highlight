@@ -11,11 +11,11 @@
       placement="right"
     >
       <sup>
-        <Icon type="md-create" />
+        <Icon type="md-create" style="color: var(--theme-color, #42b983)" />
       </sup>
     </Tooltip>
     <sup v-if="hidden">
-      <Icon type="md-create" />
+      <Icon type="md-create" style="color: var(--theme-color, #42b983)" />
     </sup>
   </span>
 </template>
@@ -31,18 +31,28 @@ export default {
   },
   mounted() {
     if (this.showall == true) {
-        this.on = true;
-    }else{
-        this.on = false;
+      this.on = true;
+    } else {
+      this.on = false;
     }
-    this.updateWithOnStatus()
+    this.updateWithOnStatus();
   },
   props: {
     noteid: { type: String, default: undefined },
     content: { type: String, default: "" },
-    showall: { type: Boolean, default: undefined},
+    showall: { type: Boolean, default: undefined },
+    hl: { type: Object, default: undefined },
   },
   methods: {
+    dblclick() {
+      let { hl } = this;
+      if (hl) {
+        this.on = false;
+        this.updateWithOnStatus();
+        let el = hl.getElement(this.noteid);
+        hl.createNoteMenu(el);
+      }
+    },
     updateWithOnStatus() {
       if (this.on == false) {
         this.hidden = true;
@@ -55,8 +65,9 @@ export default {
         this.hidden = false;
       }
     },
+    // eslint-disable-next-line no-unused-vars
     onClick(e) {
-      e.stopPropagation();
+      //   e.stopPropagation();
       this.on = this.on ? false : true;
       this.updateWithOnStatus();
     },

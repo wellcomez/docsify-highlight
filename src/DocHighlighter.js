@@ -233,7 +233,7 @@ export class DocHighlighter {
                     this.store.update({ id, color })
                 }
                 if (note && note.length) {
-                    this.createMarkNode(id,note);
+                    this.createMarkNode(id, note);
                 }
                 this.updateHignLightColor(id, color, colorhex);
                 if (this.parseurlResult.id == hs.id) {
@@ -257,7 +257,7 @@ export class DocHighlighter {
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
-            this.createMarkNode(noteid,note)
+            this.createMarkNode(noteid, note)
         } else {
             this.highlighter.removeClass(hl_note, noteid)
             this.removeMarkNode(noteid);
@@ -320,11 +320,12 @@ export class DocHighlighter {
         }
 
     };
-    createMarkNode(id,note) {
+    createMarkNode(id, note) {
         let el = this.getElement(id);
         if (el) {
             let content = note;
-            mountCmp(NoteMarker, { noteid:id, content }, el);
+            let hl = this;
+            mountCmp(NoteMarker, { noteid: id, content, hl }, el);
         }
     }
 

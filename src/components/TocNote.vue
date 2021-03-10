@@ -8,8 +8,8 @@
 <script>
 import { book } from "../store";
 import { parseurl, scollTopID } from "../mountCmp";
-import { classNameFromColor, ul } from "../colorSelector";
 import { preHighLightItems } from "../DocHighlighter";
+
 export default {
   name: "TocNote",
   computed: {
@@ -46,35 +46,20 @@ export default {
       console.log("xxxx");
       this.toc[a.title] = a.expand;
     },
-    createOutLine(a) {
-      // eslint-disable-next-line no-unused-vars
-      let { label: title, children, colorhex, note, color } = a;
+    createOutLine(item) {
+      let { label: title, children } = item;
       let expand = false;
       if (children) {
         children = this.mapchildren(children);
         if (this.toc[title]) expand = true;
       }
-      let aa = this.spanclass(a);
-      let style = {};
-      if (color == ul) {
-        style.borderBottom = "1px solid " + colorhex;
-      } else {
-        style.backgroundColor = colorhex;
-      }
       // eslint-disable-next-line no-unused-vars
-      const render = (h, { root, node, data }) => {
+      const render = (h) => {
         return h(
-          "span",
+          "TocOutLine",
           {
-            class: aa,
-            style: style,
-            on: {
-              click: () => {
-                this.handleNodeClick(a);
-              },
-            },
-          },
-          title
+            props: {item,onSelected:()=>{this.handleNodeClick(item)}},
+          }
         );
       };
       return { title, children, expand, render };
@@ -85,23 +70,8 @@ export default {
           return this.createOutLine(a);
         });
     },
-    // eslint-disable-next-line no-unused-vars
-    spanclass(data) {
-      let { id, color, className } = data;
-      if (className != undefined) {
-        return className;
-      }
-      if (id == undefined) {
-        return "chartper";
-      } else {
-        let ret = "chartper-note " + classNameFromColor(color);
-        return ret;
-      }
-    },
-    updateKeyChildren(key, data) {
-      console.log(key, data);
-    },
-    handleNodeClick(data) {
+    handleNodeClick(item) {
+      let data = item
       let { id, key, node } = data;
       if (node) {
         try {
@@ -134,14 +104,6 @@ export default {
   },
 };
 </script>
-<style>
-.chartper {
-  font-weight: bold;
-}
-.chartper-note {
-  font-weight: normal;
-}
-</style>
 <style scoped>
 .xxxx {
   overflow: auto;
