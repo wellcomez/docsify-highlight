@@ -2,12 +2,12 @@
 /* eslint-disable no-prototype-builtins */
 import Highlighter from 'web-highlighter';
 import { LocalStore } from './store';
-import { findtipid, getIntersection } from './hl';
+import { getIntersection } from './hl';
 import { log } from "./log";
 import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
-import { colorFromClassName, classNameFromColor, hasHighlightColor, markColorList } from './colorSelector';
+import { colorFromClassName, classNameFromColor, markColorList, hl_note, getcsscolorbyid ,getColorClass} from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -99,10 +99,15 @@ export class DocHighlighter {
         getConfig().save({ color });
         this.store.update({ id: noteid, color })
     }
-    updateHignLightColor(noteid, color) {
+    updateHignLightColor(noteid, color,colorhex) {
         this.removeHighLight(noteid);
         let cls = classNameFromColor(color)
-        this.highlighter.addClass(cls, noteid);
+        let hex = getcsscolorbyid(color)
+        if(hex==colorhex||colorhex==undefined){
+            this.highlighter.addClass(cls, noteid);
+        }else{
+            getColorClass(colorhex,color)
+        }
     }
 
     removeHighLight(noteid) {
@@ -183,6 +188,8 @@ export class DocHighlighter {
     }
     deleteId(id) {
         let { highlighter } = this;
+        this.removeHighLight(id)
+        highlighter.removeClass(hl_note,id)
         highlighter.removeClass("highlight-wrap-hover", id);
         highlighter.remove(id);
         this.store.remove(id);
@@ -222,8 +229,8 @@ export class DocHighlighter {
         if (type == "from-store") {
             this.store.getAll()
             sources.forEach(hs => {
-                let { id, color } = this.store.geths(hs.id)
-                this.updateHignLightColor(id, color);
+                let { id, color,colorhex } = this.store.geths(hs.id)
+                this.updateHignLightColor(id, color,colorhex);
                 if (this.parseurlResult.id == hs.id) {
                     this.scollTopID(hs.id);
                 }
@@ -243,11 +250,17 @@ export class DocHighlighter {
     saveNoteData = (noteid, data) => {
         let { color, note, sources } = data ? data : {}
         let change = color!=undefined || note
+        if(note){
+            this.highlighter.addClass(hl_note, noteid);
+        }else{
+            this.highlighter.removeClass(hl_note, noteid)
+        }
         if (change && noteid != undefined) {
             if (sources) {
                 let sources2 = sources.map(hs => {
                     if (color) {
                         hs.color = color;
+                        hs.colorhex = getcsscolorbyid(color)
                         this.setHighlightColor(color, noteid);
                     }
                     if (note) {
