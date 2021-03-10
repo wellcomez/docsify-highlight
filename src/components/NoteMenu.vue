@@ -30,7 +30,7 @@
           offset="[-1,1]"
           v-model="color1"
           alpha
-          recommend
+          :colors = "recommendedColor"
           @on-change="onChangeColor"
           :class="classColorPicker"
           size="small"

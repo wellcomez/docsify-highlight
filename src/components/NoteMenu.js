@@ -14,7 +14,32 @@ import { Modal } from "iview";
 const leftPos = () => {
     return document.getElementsByClassName("content")[0].offsetWidth - 300;
 };
-
+const recommendedColor = [
+    "rgba(45, 140, 240, 0.5)",
+    "rgba(139, 195, 74, 0.5)",
+    "rgba(241, 107, 98, 0.5)",
+    "rgba(25, 190, 107, 0.5)",
+    "rgba(255, 153, 0, 0.5)",
+    "rgba(234, 76, 163, 0.5)",
+    "rgba(13, 148, 170, 0.5)",
+    "rgba(237, 64, 20, 0.5)",
+    "rgba(0, 181, 255, 0.5)",
+    "rgba(254, 189, 121, 0.5)",
+    "rgba(93, 64, 55, 0.5)",
+    "rgba(25, 201, 25, 0.5)",
+    "rgba(249, 227, 28, 0.5)",
+    "rgba(0, 188, 212, 0.5)",
+    "rgba(240, 98, 146, 0.5)",
+    "rgba(234, 26, 26, 0.5)",
+    "rgba(155, 29, 234, 0.5)",
+    "rgba(205, 220, 57, 0.5)",
+    "rgba(96, 125, 139, 0.5)",
+    "rgba(0, 194, 177, 0.5)",
+    "rgba(172, 122, 51, 0.5)",
+    "rgba(0, 0, 0, 0.5)",
+    "rgba(255, 255, 255, 0.5)",
+    "rgba(29, 53, 234, 0.5)",
+]
 export const NoteMenu = {
     name: "NoteMenu",
     data() {
@@ -28,15 +53,16 @@ export const NoteMenu = {
             color1: "green",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
+            recommendedColor
         };
     },
     computed: {
-        EditTextTips(){
-            if(this.notetext.length)return this.notetext;
+        EditTextTips() {
+            if (this.notetext.length) return this.notetext;
             return "Note"
         },
-        classColorPicker(){
-            if(this.color==customColor){
+        classColorPicker() {
+            if (this.color == customColor) {
                 return "let note-color-picker-selected"
             }
             return 'left note-color-picker'
@@ -80,6 +106,7 @@ export const NoteMenu = {
                             value: this.notetext,
                             autofocus: true,
                             rows: 4,
+                            clearable: true,
                             placeholder: "Please enter your name...",
                             type: "textarea",
                         },
@@ -101,12 +128,12 @@ export const NoteMenu = {
             }
         },
         onSearch() {
-            console.log("xx");
+            // console.log("xx");
             this.removeSelectionHighLight();
             this.removeMenu();
         },
         onCopy() {
-            console.log("onCopy");
+            // console.log("onCopy");
             let { hl } = window;
             hl.onCopy(this.noteid);
             this.removeSelectionHighLight();
@@ -137,11 +164,15 @@ export const NoteMenu = {
             this.removeMenu();
         },
         // eslint-disable-next-line no-unused-vars
-        onChangeColor(a, b, c) {
+        // onActiveChange(a, b) {
+        //     console.log("cccc", a, b)
+        // },
+        onChangeColor() {
             let x = classNameFromColor(this.color)
             if (x == undefined) {
                 this.color = customColor;
             }
+            // console.log("cccc", this.color1)
             updateCssRule(this.color, this.color1)
             this.saveNoteData()
         },
@@ -173,7 +204,7 @@ export const NoteMenu = {
         onDelete() {
             const id = this.noteid;
             let { hl } = window;
-            console.log("*click remove-tip*", id);
+            // console.log("*click remove-tip*", id);
             hl.deleteId(id);
             this.removeMenu();
         },
