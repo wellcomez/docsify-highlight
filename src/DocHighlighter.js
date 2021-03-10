@@ -49,7 +49,32 @@ export class DocHighlighter {
         mountCmp(NoteMenu, { top, left, noteid, color, hl, note, colorhex, sources }, document.body)
         // }
     };
-
+    procssAllElements(nodeid, cb) {
+        const classname = 'docsify-highlighter'
+        let node;
+        try {
+            node = this.highlighter.getDoms(nodeid)
+            if (node) {
+                for (let i = 0; i < node.length; i++) {
+                    let el = node[i]
+                    cb(el)
+                }
+                return
+            }
+            // eslint-disable-next-line no-empty
+        } catch (error) {
+        }
+        let elements = document.getElementsByClassName(classname)
+        for (let i = 0; i < elements.length; i++) {
+            let element = elements[i]
+            try {
+                if (element.dataset.highlightId == nodeid) {
+                    cb(element)
+                }
+                // eslint-disable-next-line no-empty
+            } catch (error) { }
+        }
+    }
     getElement(nodeid) {
         const classname = 'docsify-highlighter'
         let node;
@@ -101,12 +126,13 @@ export class DocHighlighter {
     }
     updateHignLightColor(noteid, color, colorhex) {
         this.removeHighLight(noteid);
-        let a = this.getElement(noteid)
-        if (color == ul) {
-            a.style.borderBottom = "2px solid " + colorhex
-        } else {
-            a.style.backgroundColor = colorhex
-        }
+        this.procssAllElements(noteid, (a) => {
+            if (color == ul) {
+                a.style.borderBottom = "2px solid " + colorhex
+            } else {
+                a.style.backgroundColor = colorhex
+            }
+        })
     }
 
     removeHighLight(noteid) {
@@ -330,14 +356,15 @@ export class DocHighlighter {
     }
 
     removeMarkNode(noteid) {
-        let el = this.getElement(noteid);
-        if (el) {
-            let a = el.getElementsByClassName('notemarker');
-            for (let i = 0; i < a.length; i++) {
-                let b = a[i];
-                b.parentNode.removeChild(b);
+        this.procssAllElements(noteid, (el) => {
+            if (el) {
+                let a = el.getElementsByClassName('notemarker');
+                for (let i = 0; i < a.length; i++) {
+                    let b = a[i];
+                    b.parentNode.removeChild(b);
+                }
             }
-        }
+        });
     }
 
     getElementPosition(id) {
