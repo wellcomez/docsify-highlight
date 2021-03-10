@@ -17,8 +17,6 @@
       <div class="d1 hlgreen left" v-on:click="onGreen">
         <span v-if="isGreen">&#10004;</span>
       </div>
-      <SvgButton v-bind:onClick="onDelete" name="del" tips="Remove" />
-      <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
       <ColorPicker
           offset="[-1,1]"
           v-model="color1"
@@ -28,6 +26,8 @@
           :class="classColorPicker"
           size="small"
       />
+      <SvgButton v-bind:onClick="onDelete" name="del" tips="Remove" />
+      <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
       <Badge dot :count="notecouter">
         <Button
           @click="handleRender"
@@ -51,10 +51,13 @@ export default NoteMenu;
 </script>
 <style>
 @import "../assets/web.css";
-.note-color-picker {
+.note-color-picker, .note-color-picker-selected {
   margin: 2px;
 }
 </style>
+.note-color-picker-selected{
+  border: 1px solid var(--theme-color, #42b983)
+}
 <style scoped>
 .button {
   height: 22px;

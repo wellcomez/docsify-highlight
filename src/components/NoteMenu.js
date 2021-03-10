@@ -32,6 +32,9 @@ export const NoteMenu = {
     },
     computed: {
         classColorPicker(){
+            if(this.color==customColor){
+                return "let note-color-picker-selected"
+            }
             return 'left note-color-picker'
         },
         UnderlineEnable() {

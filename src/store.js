@@ -206,8 +206,8 @@ class Chapter {
       let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
       let span =`    <span class="${hlyellow}">    ${label}    </span>`;
       return (
-`${idx + 1}. ${tile}\n\n 
-  ${span}\n\n
+`${idx + 1}. ${tile}\n
+  ${span}\n
   ${note}
   `);
     });
