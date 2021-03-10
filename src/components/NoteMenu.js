@@ -31,6 +31,10 @@ export const NoteMenu = {
         };
     },
     computed: {
+        EditTextTips(){
+            if(this.notetext.length)return this.notetext;
+            return "Note"
+        },
         classColorPicker(){
             if(this.color==customColor){
                 return "let note-color-picker-selected"

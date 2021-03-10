@@ -43,14 +43,11 @@
         <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
       </Col>
       <Col>
-        <Badge dot :count="notecouter " :offset=[20,10]>
-          <Tooltip :content="notetext">
-            <Button
-              @click="openEditor"
-              class="note-color-picker"
-              size="small"
-              icon = "ios-create-outline"
-            />
+        <Badge dot :count="notecouter" :offset="[20, 10]">
+          <Tooltip :content="EditTextTips">
+            <Button @click="openEditor" class="note-color-picker" size="small">
+              <Icon type="md-create" />
+            </Button>
           </Tooltip>
         </Badge>
       </Col>
