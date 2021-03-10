@@ -50,9 +50,8 @@ import {
   green,
   red,
   ul,
-  getCssRule,
-  classNameFromColor,
-  updateColorMap,
+  getcsscolorbyid,
+  updateCssRule,
 } from "../colorSelector";
 
 import { Modal } from "iview";
@@ -123,18 +122,7 @@ export default {
       });
     },
     updateColor1WithCss() {
-      let cssrule = getCssRule("." + classNameFromColor(this.color));
-      try {
-        if (cssrule.style.borderBottomColor) {
-          this.color1 = cssrule.style.borderBottomColor;
-        } else {
-          this.color1 = cssrule.style.backgroundColor;
-        }
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
-    },
-    getColorCssRule() {
-      return getCssRule("." + classNameFromColor(this.color));
+      this.color1 = getcsscolorbyid(this.color)
     },
     onUnderline(e) {
       if (this.UnderlineEnable == false) {
@@ -180,15 +168,7 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     onChangeColor(a, b, c) {
-      let css = this.getColorCssRule();
-      if (css) {
-        if (css.style.borderBottomColor) {
-          css.style.borderBottomColor = this.color1;
-        } else if (css.style.backgroundColor) {
-          css.style.backgroundColor = this.color1;
-        }
-        updateColorMap(this.color, this.color1);
-      }
+      updateCssRule(this.color,this.color1)
     },
     onClick(e, color) {
       this.color = color;

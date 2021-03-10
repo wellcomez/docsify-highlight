@@ -242,7 +242,7 @@ export class DocHighlighter {
     };
     saveNoteData = (noteid, data) => {
         let { color, note, sources } = data ? data : {}
-        let change = color || note
+        let change = color!=undefined || note
         if (change && noteid != undefined) {
             if (sources) {
                 let sources2 = sources.map(hs => {
@@ -260,7 +260,7 @@ export class DocHighlighter {
                 this.store.save(sources2);
                 this.updatePanel();
             } else {
-                if (color) {
+                if (color!=undefined) {
                     this.setHighlightColor(color, noteid);
                 }
                 if (note) {

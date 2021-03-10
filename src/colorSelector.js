@@ -46,9 +46,23 @@ function getcsscolor(colorclassname) {
             a = css.style.backgroundColor;
         return a
     }
+    return ''
 }
-
-export function updateColorMap(colornum, value) {
+export function getcsscolorbyid(i) {
+    return getcsscolor(hlList[i])
+}
+export function updateCssRule(color, color1){
+    let css = getCssRule(classNameFromColor(color))
+    if (css) {
+      if (css.style.borderBottomColor) {
+        css.style.borderBottomColor = color1;
+      } else if (css.style.backgroundColor) {
+        css.style.backgroundColor = color1;
+      }
+      updateColorMap(color, color1);
+    }
+}
+function updateColorMap(colornum, value) {
     let colorclass = hlList[colornum]
     colorMap[colorclass] = value
     localStorage.setItem("colormap", JSON.stringify(colorMap))
