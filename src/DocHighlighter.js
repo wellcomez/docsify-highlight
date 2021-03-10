@@ -28,7 +28,7 @@ export class DocHighlighter {
         let aa = this.store.getAll();
         return aa.length;
     }
-    createNoteMenu = (node, onClose = undefined) => {
+    createNoteMenu = (node, sources) => {
         let noteid = node.dataset.highlightId;
         const position = this.getPosition(node);
         let { top, left } = position;
@@ -37,13 +37,14 @@ export class DocHighlighter {
         try {
             let b = this.store.geths(noteid)
             note = b.note;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (error) {
         }
         let color = colorFromClassName(node.className);
         // if (color != undefined) {
         log("createNoteMenu", top, left, color)
-        mountCmp(NoteMenu, { top, left, noteid, color, onClose,note}, document.body)
+        let hl = this;
+        mountCmp(NoteMenu, { top, left, noteid, color, hl, note, sources }, document.body)
         // }
     };
 
@@ -92,9 +93,6 @@ export class DocHighlighter {
     onHoverOut(a) {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
-    }
-    setNote(note, noteid) {
-        this.store.update({ id: noteid, note})
     }
     setHighlightColor(color, noteid) {
         this.updateHignLightColor(noteid, color);
@@ -237,35 +235,41 @@ export class DocHighlighter {
                 let title = document.title
                 hs.title = title;
             })
+            let hs = sources[0]
+            this.createNoteMenu(this.getElement(hs.id), sources)
 
-            let onclose = (data, noteid) => {
-                let {color,note} = data?data:{}
-                let change = color||note
-                if (change && noteid != undefined) {
-                    let sources2 = sources.map(hs => {
-                        if(color){
-                            hs.color = color;
-                            this.setHighlightColor(color, noteid);
-                        }
-                        if(note){
-                            hs.note = note
-                        }
-                        hs.top = this.getElementPosition(noteid)
-                        return hs
-                    })
-                    sources2 = sources2.map(hs => ({ hs }));
-                    this.store.save(sources2);
-                    this.updatePanel();
-                } else {
-                    this.removeHighLight(noteid);
-                    this.deleteId(noteid);
+        }
+    };
+    saveNoteData = (noteid, data) => {
+        let { color, note, sources } = data ? data : {}
+        let change = color || note
+        if (change && noteid != undefined) {
+            if (sources) {
+                let sources2 = sources.map(hs => {
+                    if (color) {
+                        hs.color = color;
+                        this.setHighlightColor(color, noteid);
+                    }
+                    if (note) {
+                        hs.note = note
+                    }
+                    hs.top = this.getElementPosition(noteid)
+                    return hs
+                })
+                sources2 = sources2.map(hs => ({ hs }));
+                this.store.save(sources2);
+                this.updatePanel();
+            } else {
+                if (color) {
+                    this.setHighlightColor(color, noteid);
+                }
+                if (note) {
+                    this.store.update({ id: noteid, note })
                 }
             }
-            onclose = onclose.bind(this)
-
-            let hs = sources[0]
-            this.createNoteMenu(this.getElement(hs.id), onclose)
-
+        } else {
+            this.removeHighLight(noteid);
+            this.deleteId(noteid);
         }
     };
     load = (loaded) => {

@@ -70,7 +70,8 @@ export default {
       },
       notetext: this.note ? this.note : "",
       color1: "green",
-      notecouter: this.note?this.note.length:0,
+      notecouter: this.note ? this.note.length : 0,
+      newnote: this.sources != undefined,
     };
   },
   computed: {
@@ -96,13 +97,12 @@ export default {
     // <Input v-model="value6" type="textarea" :rows="4" placeholder="Enter something..." />
 
     handleRender() {
+      var tmpdata = this.notetext;
       Modal.confirm({
         onOk: () => {
-          let { hl } = window;
-          if(this.onClose){
-            this.onClose({note:this.notetext},this.noteid)
-          }
-          hl.setNote(this.notetext, this.noteid);
+          this.notetext = tmpdata;
+          this.notecouter = tmpdata.length;
+          this.saveNoteData();
         },
         render: (h) => {
           return h("Input", {
@@ -115,8 +115,7 @@ export default {
             },
             on: {
               input: (val) => {
-                this.notetext = val;
-                this.notecouter = val.length;
+                tmpdata = val;
               },
             },
           });
@@ -156,14 +155,22 @@ export default {
       this.removeSelectionHighLight();
       this.removeMenu();
     },
+    notedata() {
+      let { sources, color } = this;
+      if (this.newnote == false) {
+        sources = undefined;
+      }
+      let note =
+        this.notetext && this.notetext.length ? this.notetext : undefined;
+      return { note, color, sources };
+    },
+    saveNoteData() {
+      this.hl.saveNoteData(this.noteid, this.notedata());
+      this.newnote = false;
+    },
     // eslint-disable-next-line no-unused-vars
     removeSelectionHighLight() {
-      let note = this.notetext? this.notetext.length : 0;
-      if (this.color == undefined && note == 0) {
-        if (this.onClose) {
-          this.onClose(undefined, this.noteid);
-        }
-      }
+      this.saveNoteData();
     },
     onClickMask(e) {
       let mask = document.getElementsByClassName("note-menu")[0];
@@ -185,14 +192,8 @@ export default {
     },
     onClick(e, color) {
       this.color = color;
-      let note = this.notetext;
       this.updateColor1WithCss();
-      if (this.onClose) {
-        this.onClose({color,note}, this.noteid);
-      } else {
-        let { hl } = window;
-        hl.setHighlightColor(color, this.noteid);
-      }
+      this.saveNoteData();
     },
     onRed(e) {
       this.onClick(e, red);
@@ -230,8 +231,12 @@ export default {
       type: Number,
       default: undefined,
     },
-    onClose: {
-      type: Function,
+    sources: {
+      type: Array,
+      default: undefined,
+    },
+    hl: {
+      type: Object,
       default: undefined,
     },
     top: {
