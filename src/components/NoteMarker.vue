@@ -1,9 +1,24 @@
 <template>
-  <Tooltip :content="content" :max-width=200 :delay=500 class="notemarker" theme="light" :always="on" placement="top">
-    <sup v-on:click="onClick">
+  <span v-on:click="onClick">
+    <Tooltip
+      v-if="on"
+      :content="content"
+      :max-width="200"
+      :delay="500"
+      class="notemarker"
+      theme="light"
+      :always="on"
+      placement="right"
+    >
+      <sup>
+        <Icon type="md-create" />
+      </sup>
+    </Tooltip>
+
+    <sup v-if="on == false">
       <Icon type="md-create" />
     </sup>
-  </Tooltip>
+  </span>
 </template>
 <script>
 export default {
@@ -21,7 +36,7 @@ export default {
   methods: {
     onClick(e) {
       e.stopPropagation();
-      this.on = this.on?false:true;
+      this.on = this.on ? false : true;
     },
   },
 };
