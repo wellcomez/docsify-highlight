@@ -3,7 +3,7 @@
     <Tooltip
       v-if="hidden == false"
       :content="content"
-      :max-width="200"
+      :max-width="maxWidth"
       :delay="500"
       class="notemarker"
       theme="light"
@@ -28,6 +28,14 @@ export default {
       always: true,
       hidden: false,
     };
+  },
+  computed: {
+      maxWidth(){
+          if(window.screen<320){
+              return 200;
+          }
+          return 400
+      }
   },
   mounted() {
     if (this.showall == true) {

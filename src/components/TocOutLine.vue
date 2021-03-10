@@ -1,12 +1,24 @@
 <template>
-  <Tooltip :content="tips" :delay="300" :max-width="400" theme="light" :disabled="disabled" placement="left">
+  <Tooltip
+    :delay="300"
+    :max-width="maxWidth"
+    theme="light"
+    :disabled="disabled"
+    placement="bottom-start"
+  >
     <Icon v-if="icon" :type="icon"></Icon>
     <span
       :style="style"
-      v-html="title"
+      v-html="title2"
       :class="classOfSpan"
       @click="onSelected"
     />
+    <div slot="content">
+      <p v-html="title" class="outline-title"></p>
+      <div v-if="note" class="outline-note">
+        <p v-html="note"></p>
+      </div>
+    </div>
   </Tooltip>
 </template>
 <script>
@@ -16,9 +28,12 @@ export default {
   created() {
     let { label: title, children, colorhex, note, color } = this.item;
     this.classOfSpan = this.spanclass(this.item);
+    this.title2 = title;
     if (note && note.length) {
-      title = `"${note}"-${title}`;
+      this.title2 = `"${note}"-${title}`;
     }
+    this.title = title;
+    this.note = note && note.length ? `"${note}"` : undefined;
     let style = {};
     if (color == ul) {
       style.borderBottom = "1px solid " + colorhex;
@@ -36,8 +51,8 @@ export default {
     this.style = style;
     this.title = title;
     this.tips = title;
-    this.disabled = false
-    if(children&&children.length){
+    this.disabled = false;
+    if (children && children.length) {
       this.disabled = true;
     }
   },
@@ -51,6 +66,14 @@ export default {
   props: {
     item: { type: Object, default: undefined },
     onSelected: { type: Function, default: undefined },
+  },
+  computed: {
+    maxWidth() {
+      if (window.screen < 320) {
+        return 200;
+      }
+      return 400;
+    },
   },
   methods: {
     spanclass(data) {
@@ -75,5 +98,10 @@ export default {
 }
 .chartper-note {
   font-weight: normal;
+}
+.outline-note {
+  background: #80808026 !important;
+  border: "1px solid red";
+  border-radius: 3px;
 }
 </style>
