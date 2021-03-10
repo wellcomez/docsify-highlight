@@ -7,13 +7,7 @@
       class="round_button show"
       @click="Bubblings($event)"
     /> -->
-    <input
-      type="button"
-      class="show round_button"
-      @click="onClickBtn($event)"
-      size="mini"
-      v-bind:value="content"
-    />
+    <SvgButton v-bind:onClick="onClickBtn" name="Export" tips="Export" />
     <div class="wrapper" v-if="expanded">
       <ul>
         <!-- 一级列表 -->
@@ -38,7 +32,7 @@ export default {
           name: "md",
         },
       ],
-      expanded:false
+      expanded: false,
     };
   },
   computed: {
@@ -78,13 +72,28 @@ export default {
       this.expanded = false;
     },
     onClickBtn(e) {
-      let self = e.target;
+      if (e == undefined) return;
+      let self;
+      let el = e.target;
+      // eslint-disable-next-line no-constant-condition
+      while(true){
+        if(el&&el.parentElement){
+          if(el.parentElement.classList.contains("bubbing")){
+            self =el;
+            break;
+          }
+        }else{
+          break;
+        }
+        el = el.parentElement;
+      }
+      if (self == undefined) return;
       if (self.classList.contains("selected")) {
         self.classList.remove("selected");
       } else {
         self.classList.add("selected");
       }
-      this.expanded = self.classList.contains("selected")
+      this.expanded = self.classList.contains("selected");
     },
     onOption(e, name) {
       console.log(e);
