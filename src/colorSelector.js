@@ -9,30 +9,33 @@ let a = localStorage.getItem("colormap");
 
 
 export let markColorList = [hl_mengshou].concat(hlList)
-export let customcolorClassList = []
-function get_customcolor_class(colorvlaue) {
-    let idx = customcolorClassList.indexOf(colorvlaue);
-    if (idx == -1) {
-        customcolorClassList.push(colorvlaue);
-        idx = customcolorClassList.indexOf(colorvlaue);
-        markColorList = [hl_mengshou].concat(hlList).concat(customcolorClassList.map((a, idx) => {
-            let classname = 'hl_custom_' + idx;
+export class ColorClassCreate {
+    constructor() {
+        this.customcolorClassList = {}
+        this.css = []
+    }
+    getClass(color, hex) {
+        let colorvlaue = hex
+        let { customcolorClassList } = this
+        let idx = customcolorClassList[colorvlaue];
+        if (idx ==undefined) {
+            let classname = 'hl_custom_' + Object.keys(this.customcolorClassList).length;
+            let css = `.${classname}{background-color:${hex}}`
+            if (ul == color) {
+                css = `.${classname}{border-bottom:2px solid ${hex}}`
+            }
+            customcolorClassList[colorvlaue] = classname
+            this.css.push(css);
             return classname
-        }))
+        }
+        return idx
     }
-    let classname = 'hl_custom_' + idx;
-    return classname;
-}
-export function getColorClass(hex, ul) {
-    let classname = get_customcolor_class(hex);
-    if (getCssRule(classname)) return classname;
-    let str = `.${classname}{background-color:${hex}}`
-    if (ul) {
-        str = `.${classname}{border-bottom:2px solid ${hex}}`
+    str()
+    {
+        return this.css.join("\n")
     }
-    createStyleNode(str);
-    return classname;
 }
+export const colorClassList = new ColorClassCreate()
 
 
 const backgroundTemplate = (hlgreen, color) => {
@@ -44,13 +47,7 @@ const ulTemplate = (hlgreen, color) => {
     return `.${hlgreen} { border-bottom:2px solid ${color} ;}`
 }
 export function colorString() {
-    let a = hlList.map((a) => {
-        if (a == hl_ul) {
-            return ulTemplate(a, colorMap[a])
-        }
-        return backgroundTemplate(a, colorMap[a])
-    })
-    return a.join("\n\n")
+
 }
 
 let default_green = "#33FF33"
@@ -71,7 +68,12 @@ if (a) {
     colorMap = JSON.parse(JSON.stringify(hl_default_color))
     localStorage.setItem("colormap", JSON.stringify(colorMap))
 }
-let str = colorString()
+let str = hlList.map((a) => {
+    if (a == hl_ul) {
+        return ulTemplate(a, colorMap[a])
+    }
+    return backgroundTemplate(a, colorMap[a])
+}).join("\n\n")
 createStyleNode(str)
 
 function createStyleNode(str) {
@@ -114,17 +116,9 @@ function updateColorMap(colornum, value) {
     colorMap[colorclass] = value
     localStorage.setItem("colormap", JSON.stringify(colorMap))
 }
-// a.style.borderBottom="2px solid red"
-// a.style.backgroundColor="yellow"
-export const colorFromClassName = (classname) => {
-    if (classname.indexOf(hl_mengshou) >= 0) return undefined;
-    for (let i = 0; i < hlList.length; i++) {
-        let a = hlList[i];
-        if (classname.indexOf(a) >= 0) return i;
-    }
-    return;
-}
-function getCssRule(className = ".hlred") {
+
+function getCssRule(className) {
+    if (className == undefined) return
     if (className[0] != '.') {
         className = '.' + className
     }
@@ -167,4 +161,5 @@ export const yellow = hlList.indexOf(hlyellow)
 export const red = hlList.indexOf(hlred)
 export const green = hlList.indexOf(hlgreen)
 export const ul = hlList.indexOf(hl_ul)
+export const customColor = ul + 1
 

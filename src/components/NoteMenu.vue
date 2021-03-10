@@ -20,11 +20,13 @@
       <SvgButton v-bind:onClick="onDelete" name="del" tips="Remove" />
       <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
       <ColorPicker
-        v-model="color1"
-        alpha
-        @on-change="onChangeColor"
-        class="left note-color-picker"
-        size="small"
+          offset="[-1,1]"
+          v-model="color1"
+          alpha
+          recommend
+          @on-change="onChangeColor"
+          :class="classColorPicker"
+          size="small"
       />
       <Badge dot :count="notecouter">
         <Button
@@ -44,195 +46,8 @@
 
 
 <script>
-import "../icons";
-import {
-  yellow,
-  green,
-  red,
-  ul,
-  getcsscolorbyid,
-  updateCssRule,
-} from "../colorSelector";
-
-import { Modal } from "iview";
-const leftPos = () => {
-  return document.getElementsByClassName("content")[0].offsetWidth - 300;
-};
-export default {
-  name: "NoteMenu",
-  data() {
-    return {
-      style: {
-        left: Math.min(leftPos(), this.left - 20) + "px",
-        top: this.top - 25 - window.pageYOffset + "px",
-        // width: 6 * 30,
-      },
-      notetext: this.note ? this.note : "",
-      color1: "green",
-      notecouter: this.note ? this.note.length : 0,
-      newnote: this.sources != undefined,
-    };
-  },
-  computed: {
-    UnderlineEnable() {
-      return this.color == ul;
-    },
-    isYellow() {
-      return this.color == yellow;
-    },
-    isRed() {
-      return this.color == red;
-    },
-    isGreen() {
-      return this.color == green;
-    },
-  },
-  mounted() {
-    this.updateColor1WithCss();
-    let picker = document.getElementsByClassName("ivu-color-picker-color");
-    if (picker.length) picker[0].style.backgroundImage = "none";
-  },
-  methods: {
-    // <Input v-model="value6" type="textarea" :rows="4" placeholder="Enter something..." />
-
-    handleRender() {
-      var tmpdata = this.notetext;
-      Modal.confirm({
-        onOk: () => {
-          this.notetext = tmpdata;
-          this.notecouter = tmpdata.length;
-          this.saveNoteData();
-        },
-        render: (h) => {
-          return h("Input", {
-            props: {
-              value: this.notetext,
-              autofocus: true,
-              rows: 4,
-              placeholder: "Please enter your name...",
-              type: "textarea",
-            },
-            on: {
-              input: (val) => {
-                tmpdata = val;
-              },
-            },
-          });
-        },
-      });
-    },
-    updateColor1WithCss() {
-      this.color1 = getcsscolorbyid(this.color)
-    },
-    onUnderline(e) {
-      if (this.UnderlineEnable == false) {
-        this.onClick(e, ul);
-      } else {
-        this.onClick(e, red);
-      }
-    },
-    onSearch() {
-      console.log("xx");
-      this.removeSelectionHighLight();
-      this.removeMenu();
-    },
-    onCopy() {
-      console.log("onCopy");
-      let { hl } = window;
-      hl.onCopy(this.noteid);
-      this.removeSelectionHighLight();
-      this.removeMenu();
-    },
-    notedata() {
-      let { sources, color } = this;
-      if (this.newnote == false) {
-        sources = undefined;
-      }
-      let note =
-        this.notetext && this.notetext.length ? this.notetext : undefined;
-      return { note, color, sources };
-    },
-    saveNoteData() {
-      this.hl.saveNoteData(this.noteid, this.notedata());
-      this.newnote = false;
-    },
-    // eslint-disable-next-line no-unused-vars
-    removeSelectionHighLight() {
-      this.saveNoteData();
-    },
-    onClickMask(e) {
-      let mask = document.getElementsByClassName("note-menu")[0];
-      if (mask != e.target) return;
-      this.removeSelectionHighLight();
-      this.removeMenu();
-    },
-    // eslint-disable-next-line no-unused-vars
-    onChangeColor(a, b, c) {
-      updateCssRule(this.color,this.color1)
-    },
-    onClick(e, color) {
-      this.color = color;
-      this.updateColor1WithCss();
-      this.saveNoteData();
-    },
-    onRed(e) {
-      this.onClick(e, red);
-    },
-    onGreen(e) {
-      this.onClick(e, green);
-    },
-    onYellow(e) {
-      this.onClick(e, yellow);
-    },
-    removeMenu() {
-      var tips = document.getElementsByClassName("note-menu");
-      tips.forEach((tip) => {
-        tip.parentNode.removeChild(tip);
-      });
-    },
-    onDelete() {
-      const id = this.noteid;
-      let { hl } = window;
-      console.log("*click remove-tip*", id);
-      hl.deleteId(id);
-      this.removeMenu();
-    },
-  },
-  props: {
-    note: {
-      type: String,
-      default: undefined,
-    },
-    color: {
-      type: Number,
-      default: undefined,
-    },
-    left: {
-      type: Number,
-      default: undefined,
-    },
-    sources: {
-      type: Array,
-      default: undefined,
-    },
-    hl: {
-      type: Object,
-      default: undefined,
-    },
-    top: {
-      type: Number,
-      default: undefined,
-    },
-    noteid: {
-      type: String,
-      default: undefined,
-    },
-    nochoose: {
-      type: Boolean,
-      default: true,
-    },
-  },
-};
+import { NoteMenu } from "./NoteMenu";
+export default NoteMenu;
 </script>
 <style>
 @import "../assets/web.css";

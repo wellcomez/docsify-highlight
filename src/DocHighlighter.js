@@ -7,7 +7,7 @@ import { log } from "./log";
 import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
-import { colorFromClassName, classNameFromColor, markColorList, hl_note, getcsscolorbyid ,getColorClass} from './colorSelector';
+import { markColorList, hl_note, ul, getcsscolorbyid, customColor} from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -34,17 +34,18 @@ export class DocHighlighter {
         let { top, left } = position;
         removeTips();
         let note = undefined
+        let color,colorhex
         try {
-            let b = this.store.geths(noteid)
-            note = b.note;
+            let hs = this.store.geths(noteid)
+            note = hs.note;
+            colorhex = hs.colorhex
+            color = hs.color
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        let color = colorFromClassName(node.className);
-        // if (color != undefined) {
         log("createNoteMenu", top, left, color)
         let hl = this;
-        mountCmp(NoteMenu, { top, left, noteid, color, hl, note, sources }, document.body)
+        mountCmp(NoteMenu, { top, left, noteid, color, hl, note, colorhex, sources }, document.body)
         // }
     };
 
@@ -70,10 +71,8 @@ export class DocHighlighter {
     }
     getNoteColor(noteid) {
         try {
-            let node = this.getElement(noteid);
-            if (node == undefined) return undefined;
-            let classname = node.className;
-            return colorFromClassName(classname)
+            let hs = this.store.geths(noteid)
+            return  hs.color
         } catch (error) {
             return undefined;
         }
@@ -94,19 +93,18 @@ export class DocHighlighter {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
-    setHighlightColor(color, noteid) {
-        this.updateHignLightColor(noteid, color);
-        getConfig().save({ color });
-        this.store.update({ id: noteid, color })
+    setHighlightColor(color, noteid,colorhex) {
+        this.updateHignLightColor(noteid, color,colorhex);
+        getConfig().save({ color,colorhex });
+        this.store.update({ id: noteid, color,colorhex })
     }
     updateHignLightColor(noteid, color,colorhex) {
         this.removeHighLight(noteid);
-        let cls = classNameFromColor(color)
-        let hex = getcsscolorbyid(color)
-        if(hex==colorhex||colorhex==undefined){
-            this.highlighter.addClass(cls, noteid);
+        let a = this.getElement(noteid)
+        if(color==ul){
+            a.style.borderBottom="2px solid "+colorhex
         }else{
-            getColorClass(colorhex,color)
+            a.style.backgroundColor= colorhex
         }
     }
 
@@ -230,6 +228,11 @@ export class DocHighlighter {
             this.store.getAll()
             sources.forEach(hs => {
                 let { id, color,colorhex } = this.store.geths(hs.id)
+                if(colorhex&&getcsscolorbyid(color)!=colorhex)
+                {
+                    color = customColor
+                    this.store.update({ id, color})
+                }
                 this.updateHignLightColor(id, color,colorhex);
                 if (this.parseurlResult.id == hs.id) {
                     this.scollTopID(hs.id);
@@ -248,7 +251,7 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
-        let { color, note, sources } = data ? data : {}
+        let { color, note, sources ,colorhex} = data ? data : {}
         let change = color!=undefined || note
         if(note){
             this.highlighter.addClass(hl_note, noteid);
@@ -260,8 +263,8 @@ export class DocHighlighter {
                 let sources2 = sources.map(hs => {
                     if (color) {
                         hs.color = color;
-                        hs.colorhex = getcsscolorbyid(color)
-                        this.setHighlightColor(color, noteid);
+                        hs.colorhex = colorhex
+                        this.setHighlightColor(color, noteid,colorhex);
                     }
                     if (note) {
                         hs.note = note
@@ -274,7 +277,7 @@ export class DocHighlighter {
                 this.updatePanel();
             } else {
                 if (color!=undefined) {
-                    this.setHighlightColor(color, noteid);
+                    this.setHighlightColor(color, noteid,colorhex);
                 }
                 if (note) {
                     this.store.update({ id: noteid, note })
@@ -294,7 +297,7 @@ export class DocHighlighter {
                     try {
                         let node = this.getElement(hs.id);
                         if (node != undefined) {
-                            this.updateHignLightColor(hs.id, hs.color);
+                            this.updateHignLightColor(hs.id, hs.color,hs.colorhex);
                             return;
                         }
                         // eslint-disable-next-line no-empty

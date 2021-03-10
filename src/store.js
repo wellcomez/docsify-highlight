@@ -1,4 +1,4 @@
-import { classNameFromColor, colorString } from "./colorSelector";
+import { colorClassList } from "./colorSelector";
 const md5 = require('md5');
 
 // eslint-disable-next-line no-unused-vars
@@ -164,10 +164,10 @@ class Chapter {
       this.label = store.title;
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
-        let { id, text: label, top, color } = hs;
+        let { id, text: label, top, color, colorhex, note } = hs;
         top = top.top;
         let textOffset = hs.startMeta.textOffset;
-        return { idx, id, label, key, textOffset, top, color };
+        return { idx, id, label, key, textOffset, top, color, colorhex, note };
       });
       let aa = this.children.sort((a, b) => {
         if (a.top == b.top) return 0;
@@ -195,18 +195,24 @@ class Chapter {
     let title = ["## 章节 " + this.label];
     if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
-      let { label, color } = a;
-      let hlyellow = classNameFromColor(color);
-      let span =
-        '    <span class="' + hlyellow + '">' + "    " + label + "    </span>";
+      let { label, color, colorhex, note } = a;
+      let classname = colorClassList.getClass(color, colorhex);
+      let hlyellow = classname
+      if (note) {
+        note = "\n\n\t>" + note
+      } else {
+        note = ""
+      }
+      let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
+      let span =`    <span class="${hlyellow}">    ${label}    </span>`;
       return (
-        idx +
-        1 +
-        ". " +
-        label.substring(0, Math.min(20, label.length)) +
-        "\n\n" +
-        span
-      );
+`${idx + 1}. ${tile} 
+
+  ${span}
+
+  ${note}
+  
+  `);
     });
     return title.concat(items).join("\n\n");
   }
@@ -268,15 +274,12 @@ export class book {
     return JSON.stringify(this.json());
   }
   md() {
-    let styles =
-      "<style>" + colorString()
-      +
-      "</style>";
     let tilte = "# " + window.$docsify.name;
 
     let content = this.Charpter().map((a) => {
       return a.md();
     });
+    let styles = "<style>" + colorClassList.str() + "</style>";
     return [tilte]
       .concat([styles])
       .concat(content)

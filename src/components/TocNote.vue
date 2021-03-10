@@ -8,7 +8,7 @@
 <script>
 import { book } from "../store";
 import { parseurl, scollTopID } from "../mountCmp";
-import { classNameFromColor } from "../colorSelector";
+import { classNameFromColor, ul } from "../colorSelector";
 import { preHighLightItems } from "../DocHighlighter";
 export default {
   name: "TocNote",
@@ -47,20 +47,27 @@ export default {
       this.toc[a.title] = a.expand;
     },
     createOutLine(a) {
-      let { label: title, children } = a;
+      // eslint-disable-next-line no-unused-vars
+      let { label: title, children, colorhex, note, color } = a;
       let expand = false;
       if (children) {
         children = this.mapchildren(children);
         if (this.toc[title]) expand = true;
       }
       let aa = this.spanclass(a);
+      let style = {};
+      if (color == ul) {
+        style.borderBottom = "1px solid " + colorhex;
+      } else {
+        style.backgroundColor = colorhex;
+      }
       // eslint-disable-next-line no-unused-vars
       const render = (h, { root, node, data }) => {
         return h(
           "span",
           {
             class: aa,
-            style: { color: "black" },
+            style: style,
             on: {
               click: () => {
                 this.handleNodeClick(a);
