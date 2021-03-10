@@ -44,12 +44,12 @@
       </Col>
       <Col>
         <Badge dot :count="notecouter " :offset=[20,10]>
-          <Tooltip content="Note">
+          <Tooltip :content="notetext">
             <Button
-              @click="handleRender"
+              @click="openEditor"
               class="note-color-picker"
               size="small"
-              icon="md-brush"
+              icon = "ios-create-outline"
             />
           </Tooltip>
         </Badge>

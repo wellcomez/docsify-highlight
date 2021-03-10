@@ -4,12 +4,13 @@ import TocNote from './components/TocNote.vue'
 import Bubbling from './components/Bubbling.vue'
 import SvgButton from './components/SvgButton.vue'
 import PopSvgButton from './components/PopSvgButton.vue'
+import NoteMarker from './components/NoteMarker.vue'
 import hlinit from './hl';
 import { registComponet } from './mountCmp'
 // import { elementLoader } from './el-load'
-import './iviewLoader' 
+import './iviewLoader'
 import Vue from 'vue';
-let component = { Panel, NoteMenu,TocNote ,Bubbling,SvgButton,PopSvgButton}
+let component = { NoteMarker, Panel, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton }
 registComponet(component)
 // import Icon from 'vue-svg-icon/Icon.vue';
 // Vue.component('icon', Icon);  
@@ -18,7 +19,7 @@ registComponet(component)
 import SvgIcon from 'vue-svgicon'
 // Default tag name is 'svgicon'
 Vue.use(SvgIcon, {
-    tagName: 'svgicon'
+  tagName: 'svgicon'
 })
 
 // elementLoader()

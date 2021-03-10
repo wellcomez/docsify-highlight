@@ -62,9 +62,7 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
-        // <Input v-model="value6" type="textarea" :rows="4" placeholder="Enter something..." />
-
-        handleRender() {
+        openEditor() {
             var tmpdata = this.notetext;
             Modal.confirm({
                 onOk: () => {

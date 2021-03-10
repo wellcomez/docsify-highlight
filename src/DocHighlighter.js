@@ -7,7 +7,8 @@ import { log } from "./log";
 import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
-import { markColorList, hl_note, ul, getcsscolorbyid, customColor} from './colorSelector';
+import NoteMarker from './components/NoteMarker.vue'
+import { markColorList, hl_note, ul, getcsscolorbyid, customColor } from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -34,7 +35,7 @@ export class DocHighlighter {
         let { top, left } = position;
         removeTips();
         let note = undefined
-        let color,colorhex
+        let color, colorhex
         try {
             let hs = this.store.geths(noteid)
             note = hs.note;
@@ -72,7 +73,7 @@ export class DocHighlighter {
     getNoteColor(noteid) {
         try {
             let hs = this.store.geths(noteid)
-            return  hs.color
+            return hs.color
         } catch (error) {
             return undefined;
         }
@@ -93,18 +94,18 @@ export class DocHighlighter {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
-    setHighlightColor(color, noteid,colorhex) {
-        this.updateHignLightColor(noteid, color,colorhex);
-        getConfig().save({ color,colorhex });
-        this.store.update({ id: noteid, color,colorhex })
+    setHighlightColor(color, noteid, colorhex) {
+        this.updateHignLightColor(noteid, color, colorhex);
+        getConfig().save({ color, colorhex });
+        this.store.update({ id: noteid, color, colorhex })
     }
-    updateHignLightColor(noteid, color,colorhex) {
+    updateHignLightColor(noteid, color, colorhex) {
         this.removeHighLight(noteid);
         let a = this.getElement(noteid)
-        if(color==ul){
-            a.style.borderBottom="2px solid "+colorhex
-        }else{
-            a.style.backgroundColor= colorhex
+        if (color == ul) {
+            a.style.borderBottom = "2px solid " + colorhex
+        } else {
+            a.style.backgroundColor = colorhex
         }
     }
 
@@ -135,7 +136,7 @@ export class DocHighlighter {
             wrapTag: 'i',
             exceptSelectors: ['.my-remove-tip', '.op-panel']
         });
-        document.addEventListener("hashchange", (a) => {
+        document.addEventListener("hashchange", () => {
             console.log(window.location)
         });
         this.parseurlResult = parseurl();
@@ -187,7 +188,7 @@ export class DocHighlighter {
     deleteId(id) {
         let { highlighter } = this;
         this.removeHighLight(id)
-        highlighter.removeClass(hl_note,id)
+        highlighter.removeClass(hl_note, id)
         highlighter.removeClass("highlight-wrap-hover", id);
         highlighter.remove(id);
         this.store.remove(id);
@@ -207,7 +208,6 @@ export class DocHighlighter {
         //添加新的内容到剪切板
         window.getSelection().addRange(range);
         //复制
-        var successful = document.execCommand('copy');
         // try{
         //     var msg = successful ? "successful" : "failed";
         //     alert('Copy command was : ' + msg);
@@ -227,13 +227,15 @@ export class DocHighlighter {
         if (type == "from-store") {
             this.store.getAll()
             sources.forEach(hs => {
-                let { id, color,colorhex } = this.store.geths(hs.id)
-                if(colorhex&&getcsscolorbyid(color)!=colorhex)
-                {
+                let { id, color, colorhex, note } = this.store.geths(hs.id)
+                if (colorhex && getcsscolorbyid(color) != colorhex) {
                     color = customColor
-                    this.store.update({ id, color})
+                    this.store.update({ id, color })
                 }
-                this.updateHignLightColor(id, color,colorhex);
+                if (note && note.length) {
+                    this.createMarkNode(id,note);
+                }
+                this.updateHignLightColor(id, color, colorhex);
                 if (this.parseurlResult.id == hs.id) {
                     this.scollTopID(hs.id);
                 }
@@ -247,16 +249,18 @@ export class DocHighlighter {
             })
             let hs = sources[0]
             this.createNoteMenu(this.getElement(hs.id), sources)
-
         }
     };
     saveNoteData = (noteid, data) => {
-        let { color, note, sources ,colorhex} = data ? data : {}
-        let change = color!=undefined || note
-        if(note){
+        let { color, note, sources, colorhex } = data ? data : {}
+        let change = color != undefined || note
+        if (note) {
             this.highlighter.addClass(hl_note, noteid);
-        }else{
+            this.removeMarkNode(noteid)
+            this.createMarkNode(noteid,note)
+        } else {
             this.highlighter.removeClass(hl_note, noteid)
+            this.removeMarkNode(noteid);
         }
         if (change && noteid != undefined) {
             if (sources) {
@@ -264,7 +268,7 @@ export class DocHighlighter {
                     if (color) {
                         hs.color = color;
                         hs.colorhex = colorhex
-                        this.setHighlightColor(color, noteid,colorhex);
+                        this.setHighlightColor(color, noteid, colorhex);
                     }
                     if (note) {
                         hs.note = note
@@ -276,12 +280,10 @@ export class DocHighlighter {
                 this.store.save(sources2);
                 this.updatePanel();
             } else {
-                if (color!=undefined) {
-                    this.setHighlightColor(color, noteid,colorhex);
+                if (color != undefined) {
+                    this.setHighlightColor(color, noteid, colorhex);
                 }
-                if (note) {
-                    this.store.update({ id: noteid, note })
-                }
+                this.store.update({ id: noteid, note })
             }
         } else {
             this.removeHighLight(noteid);
@@ -297,7 +299,7 @@ export class DocHighlighter {
                     try {
                         let node = this.getElement(hs.id);
                         if (node != undefined) {
-                            this.updateHignLightColor(hs.id, hs.color,hs.colorhex);
+                            this.updateHignLightColor(hs.id, hs.color, hs.colorhex);
                             return;
                         }
                         // eslint-disable-next-line no-empty
@@ -318,6 +320,25 @@ export class DocHighlighter {
         }
 
     };
+    createMarkNode(id,note) {
+        let el = this.getElement(id);
+        if (el) {
+            let content = note;
+            mountCmp(NoteMarker, { noteid:id, content }, el);
+        }
+    }
+
+    removeMarkNode(noteid) {
+        let el = this.getElement(noteid);
+        if (el) {
+            let a = el.getElementsByClassName('notemarker');
+            for (let i = 0; i < a.length; i++) {
+                let b = a[i];
+                b.parentNode.removeChild(b);
+            }
+        }
+    }
+
     getElementPosition(id) {
         let a = this.getElement(id)
         if (a) {
