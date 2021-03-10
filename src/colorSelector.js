@@ -49,7 +49,16 @@ const ulTemplate = (hlgreen, color) => {
 export function colorString() {
 
 }
-
+function createStyleNode(str) {
+    var nod = document.createElement("style");
+    nod.type = "text/css";
+    if (nod.styleSheet) { //ie下  
+        nod.styleSheet.cssText = str;
+    } else {
+        nod.innerHTML = str; //或者写成 nod.appendChild(document.createTextNode(str))  
+    }
+    document.getElementsByTagName("head")[0].appendChild(nod);
+}
 let default_green = "#33FF33"
 let default_red = "#ff336659"
 let default_yellow = "#FFFF3355"
@@ -76,16 +85,7 @@ let str = hlList.map((a) => {
 }).join("\n\n")
 createStyleNode(str)
 
-function createStyleNode(str) {
-    var nod = document.createElement("style");
-    nod.type = "text/css";
-    if (nod.styleSheet) { //ie下  
-        nod.styleSheet.cssText = str;
-    } else {
-        nod.innerHTML = str; //或者写成 nod.appendChild(document.createTextNode(str))  
-    }
-    document.getElementsByTagName("head")[0].appendChild(nod);
-}
+
 
 function getcsscolor(colorclassname) {
     let css = getCssRule('.' + colorclassname);

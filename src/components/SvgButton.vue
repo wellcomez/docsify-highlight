@@ -1,13 +1,9 @@
 <template>
-  <button
-    :class="btnClass"
-    v-on:click="onClick"
-    v-on:mouseenter="visible"
-    @mouseleave="invisible"
-  >
-    <span v-show="show" v-html="tips"></span>
-    <svgicon :name="name" width="16" height="16" :color="svgcolor"></svgicon>
-  </button>
+  <Tooltip :content="tips">
+    <button :class="btnClass" v-on:click="onClick">
+      <svgicon :name="name" width="16" height="16" :color="svgcolor"></svgicon>
+    </button>
+  </Tooltip>
 </template>
 <script>
 import "../icons";
@@ -17,15 +13,12 @@ export default {
   name: "SvgButton",
   computed: {
     btnClass() {
-      let ret = "icon-button left";
+      let ret = "icon-button";
       if (this.onOff == undefined) {
         return ret;
       }
       ret = ret + (this.on ? " enalbe_ul_btn" : " disable_ul_btn");
       return ret;
-    },
-    show() {
-      return this.seen && this.tips.length > 0;
     },
     svgcolor() {
       if (this.onOff) {
@@ -35,9 +28,7 @@ export default {
     },
   },
   data() {
-    return {
-      seen: false,
-    };
+    return {};
   },
 
   props: {
@@ -50,14 +41,7 @@ export default {
     onOff: { type: Boolean, default: undefined },
     on: { type: Boolean, default: undefined },
   },
-  methods: {
-    visible: function () {
-      this.seen = true;
-    },
-    invisible: function () {
-      this.seen = false;
-    },
-  },
+  methods: {},
 };
 </script>
 <style scoped>

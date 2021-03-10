@@ -1,23 +1,32 @@
 <template>
   <div class="mask note-menu" v-on:click="onClickMask">
-    <div v-bind:style="style" class="my-remove-tip" id="markpannel">
-      <SvgButton
-        onOff
-        v-bind:on="UnderlineEnable"
-        name="ul"
-        v-bind:onClick="onUnderline"
-        tips="Underline"
-      ></SvgButton>
-      <div class="d1 hlyellow left" v-on:click="onYellow">
-        <span v-if="isYellow">&#10004;</span>
-      </div>
-      <div class="d1 hlred left" v-on:click="onRed">
-        <span v-if="isRed">&#10004;</span>
-      </div>
-      <div class="d1 hlgreen left" v-on:click="onGreen">
-        <span v-if="isGreen">&#10004;</span>
-      </div>
-      <ColorPicker
+    <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex">
+      <Col>
+        <SvgButton
+          onOff
+          v-bind:on="UnderlineEnable"
+          name="ul"
+          v-bind:onClick="onUnderline"
+          tips="Underline"
+        ></SvgButton>
+      </Col>
+      <Col>
+        <div class="d1 hlyellow" v-on:click="onYellow">
+          <span v-if="isYellow">&#10004;</span>
+        </div>
+      </Col>
+      <Col>
+        <div class="d1 hlred" v-on:click="onRed">
+          <span v-if="isRed">&#10004;</span>
+        </div>
+      </Col>
+      <Col>
+        <div class="d1 hlgreen" v-on:click="onGreen">
+          <span v-if="isGreen">&#10004;</span>
+        </div>
+      </Col>
+      <Col>
+        <ColorPicker
           offset="[-1,1]"
           v-model="color1"
           alpha
@@ -25,18 +34,27 @@
           @on-change="onChangeColor"
           :class="classColorPicker"
           size="small"
-      />
-      <SvgButton v-bind:onClick="onDelete" name="del" tips="Remove" />
-      <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
-      <Badge dot :count="notecouter">
-        <Button
-          @click="handleRender"
-          class="note-color-picker"
-          size="small"
-          icon="md-brush"
         />
-      </Badge>
-    </div>
+      </Col>
+      <Col>
+        <SvgButton v-bind:onClick="onDelete" name="del" tips="Remove" />
+      </Col>
+      <Col>
+        <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
+      </Col>
+      <Col>
+        <Badge dot :count="notecouter " :offset=[20,10]>
+          <Tooltip content="Note">
+            <Button
+              @click="handleRender"
+              class="note-color-picker"
+              size="small"
+              icon="md-brush"
+            />
+          </Tooltip>
+        </Badge>
+      </Col>
+    </Row>
   </div>
 </template>
 
@@ -51,7 +69,8 @@ export default NoteMenu;
 </script>
 <style>
 @import "../assets/web.css";
-.note-color-picker, .note-color-picker-selected {
+.note-color-picker,
+.note-color-picker-selected {
   margin: 2px;
 }
 </style>
