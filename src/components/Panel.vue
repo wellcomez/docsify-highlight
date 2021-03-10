@@ -1,29 +1,57 @@
 
 <template>
   <div class="op-panel">
-    <section class="panel-header ">
-      <SvgButton  v-if="checked" v-bind:onClick="onOpenContentList" name="toc" tips="Table of Content"/>
-      <Bubbling
-        class="left"
-        v-if="checked"
-        :onSelect="onSelect"
-        content="Export"
-      />
-      <PopSvgButton   v-if="canupload"  :click="onTest" name="Clouddownload" title="Download data" tips="Download"/>
-      <PopSvgButton   v-if="canupload"  :click="onSave2Cloud" title="Update data to cloud"  name="Cloudupload" tips="Upload"/>
+    <Row class="panel-header" type="flex">
+      <Col>
+        <SvgButton
+          v-if="checked"
+          v-bind:onClick="onOpenContentList"
+          name="toc"
+          tips="Table of Content"
+        />
+      </Col>
+      <Col>
+        <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
+      </Col>
+      <Col>
+        <PopSvgButton
+          v-if="canupload"
+          :click="onTest"
+          name="Clouddownload"
+          title="Download data"
+          tips="Download"
+        />
+      </Col>
+      <Col>
+        <PopSvgButton
+          v-if="canupload"
+          :click="onSave2Cloud"
+          title="Update data to cloud"
+          name="Cloudupload"
+          tips="Upload"
+        />
+      </Col>
 
-      <input
-        name="auto"
-        type="checkbox"
-        class="switch left"
-        v-bind:checked="checked"
-        v-bind:on-change="onChange"
-        v-on:click="onChange"
-      >
-      <div class="d1 left" v-if="checked" style="text-align: center; background-color: rgb(202, 233, 202);">
-        <span v-html="count2" style=""></span>
-      </div>
-    </section>
+      <Col>
+        <input
+          name="auto"
+          type="checkbox"
+          class="switch"
+          v-bind:checked="checked"
+          v-bind:on-change="onChange"
+          v-on:click="onChange"
+        />
+      </Col>
+      <Col>
+        <div
+          class="d1"
+          v-if="checked"
+          style="text-align: center; background-color: rgb(202, 233, 202)"
+        >
+          <span v-html="count2" style=""></span>
+        </div>
+      </Col>
+    </Row>
     <div class="contenttable" v-if="showdetail">
       <TocNote v-bind:close="closedetail" v-bind:key="count2"></TocNote>
     </div>
