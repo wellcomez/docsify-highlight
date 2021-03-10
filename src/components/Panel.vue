@@ -172,7 +172,19 @@ export default {
   border-radius: 3px;
   color: black;
 }
-
+.contenttable {
+  width: 400px;
+}
+@media screen and (max-width: 640px) {
+  .contenttable {
+    width: 240px;
+  }
+}
+@media screen and (max-width: 640px) {
+  .contenttable {
+    height: 240px;
+  }
+}
 @media screen and (max-width: 1150px) {
   main {
     padding: 0 15px;
@@ -197,12 +209,7 @@ export default {
   color: white;
   margin: 2px;
 }
-.contenttable {
-  width: 400px;
-  /* height: 600px; */
-  /* border: 1px solid black; */
-  /* background: blue; */
-}
+
 button {
   margin: 4px;
 }
