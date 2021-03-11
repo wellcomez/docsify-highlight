@@ -170,14 +170,6 @@ export default {
   },
 };
 </script>
-<style>
-.contenttable .ivu-tabs-nav .ivu-tabs-tab-active {
-  color: var(--theme-color, #42b983);
-}
-.contenttable .ivu-tabs-nav .ivu-tabs-tab-active::before {
-  color: var(--theme-color, #42b983);
-}
-</style>
 <style scoped>
 .op-panel {
   position: fixed;

@@ -48,18 +48,19 @@ def dobuild():
     os.system(cmd)
     cmd = "npm run lib"
     os.system(cmd)
-    for i in ["mkdir notejs",
-     "mkdir -p notejs/img",
-    "cp -f dist/docsify-highlight.umd.js    notejs",
-    "cp -f  dist/docsify-highlight.css      notejs",
-    "cp -f  dist/docsify-highlight.css      notejs",
+    for i in [
+        # "mkdir notejs",
+    #  "mkdir -p notejs/img",
+    # "cp -f dist/docsify-highlight.umd.js    notejs",
+    # "cp -f  dist/docsify-highlight.css      notejs",
+    # "cp -f  dist/docsify-highlight.css      notejs",
     # "cp -f  dist/img/* notejs/img/",
-    "rm -fr docsify-highlight-dist",
-    "mkdir docsify-highlight-dist",
-    "cp -fr notejs/* docsify-highlight-dist",
-    "cp -f dist/docsify-highlight.umd.min.js .",
-    "cp -f dist/docsify-highlight.css .",
-    "cp -f dist/docsify-highlight.umd.js.map ."
+    # "rm -fr docsify-highlight-dist",
+    # "mkdir docsify-highlight-dist",
+    # "cp -fr notejs/* docsify-highlight-dist",
+    # "cp -f dist/docsify-highlight.umd.min.js .",
+    # "cp -f dist/docsify-highlight.css .",
+    # "cp -f dist/docsify-highlight.umd.js.map ."
     ]:
         try:
             os.system(i)
