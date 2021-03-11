@@ -16,16 +16,12 @@
 
 2. Include js and css
 
-    `<link rel="stylesheet" href="//unpkg.com/iview/dist/styles/iview.css">`
-
     `<link rel="stylesheet" href="dist/docsify-highlight.css">`
 
     `<script src="dist/docsify-highlight.umd.min.js"></script>`
     
 
 ## Use CDN directly
-
-   `<link rel="stylesheet" href="//unpkg.com/iview/dist/styles/iview.css">`
 
    `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-highlight@latest/docsify-highlight.min.css">`
 
