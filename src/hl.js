@@ -32,7 +32,14 @@ function hlinit() {
     window.hl = hl;
     var main = document.getElementsByClassName('content')[0]
     // eslint-disable-next-line no-unused-vars
-    let vm = mountCmp(Panel, { checked: hl.on(),count:hl.count()}, main,hl)
+    let {vm} = window;
+    if(vm){
+        Vue.set(vm, "count",hl.count());
+        Vue.set(vm, "checked",hl.on());
+        Vue.set(vm, "hl",hl);
+    }else{
+        vm = window.vm = mountCmp(Panel, { checked: hl.on(),count:hl.count(),hl}, main)
+    }
     hl.updatePanelCb=()=>{
         console.log("aaa",vm);
         Vue.set(vm, "count",hl.count());

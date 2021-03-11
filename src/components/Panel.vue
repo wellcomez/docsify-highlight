@@ -67,7 +67,7 @@
           ></TocNote>
         </TabPane>
         <TabPane label="书签" style="margin-left: 10px">
-          <BookMarks />
+          <BookMarks :hl="hl" />
         </TabPane>
       </Tabs>
     </Row>
