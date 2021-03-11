@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "0.7.31",
+  "version": "0.8.2",
   "jsdelivr": "docsify-highlight.umd.min.js",
   "browser": "docsify-highlight.css",
   "scripts": {
