@@ -299,6 +299,10 @@ export class DocHighlighter {
                     if (note) {
                         hs.note = note
                     }
+                    let {date} = hs;
+                    if(date==undefined){
+                        hs.date = new Date()*1;
+                    }
                     hs.top = this.getElementPosition(noteid)
                     return hs
                 })
