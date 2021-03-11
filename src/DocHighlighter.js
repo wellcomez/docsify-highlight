@@ -421,13 +421,9 @@ export function preHighLightItems() {
     });
     children = children.map((a) => {
         console.log(a);
-        // document.getElementsByClassName("hl")[0].innerText
-        // "否则，就算 c 包含 B 的第三类买卖点，也可以对围绕 B 的次级别震荡用盘整背驰的方式进行判断"
-        // document.getElementsByClassName("hl")[0].offsetTop
         let label = a.innerText;
         let className = a.className;
         return { label, className, node: a };
-        // return { idx, id, label, key, textOffset, top, color }
     });
     return children;
 }
