@@ -162,9 +162,9 @@ export class DocHighlighter {
             wrapTag: 'i',
             exceptSelectors: ['.my-remove-tip', '.op-panel']
         });
-        document.addEventListener("hashchange", () => {
-            console.log(window.location)
-        });
+        // document.addEventListener("hashchange", () => {
+        //     console.log(window.location)
+        // });
         this.parseurlResult = parseurl();
 
         this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
@@ -420,7 +420,6 @@ export function preHighLightItems() {
         children.push(a);
     });
     children = children.map((a) => {
-        console.log(a);
         let label = a.innerText;
         let className = a.className;
         return { label, className, node: a };

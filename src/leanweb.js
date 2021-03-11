@@ -76,9 +76,9 @@ async function newFunction() {
 export async function testAsync() {
     var b = new book()
     var ret = await loadeBookLeanCloud(new book())
-    console.log('test', ret)
+    // console.log('test', ret)
     var content = await loadeBook(b)
-    console.log('test', content)
+    // console.log('test', content)
     window.location.reload()
     return content
     // try {

@@ -45,10 +45,5 @@
 ```
 ## ScreenShot
 
-1. **Highlight**
 
   <img src="1.png" style="zoom: 33%;" />
-
-2. **Table of Content**
-
-  <img src="snapshot2.png" style="zoom: 33%;" />

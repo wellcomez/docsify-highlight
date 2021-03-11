@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     selectChange(a) {
-      console.log("xxxx");
+      // console.log("xxxx");
       this.toc[a.title] = a.expand;
     },
     createOutLine(item) {
@@ -86,7 +86,7 @@ export default {
       if (key && id) {
         const { path } = JSON.parse(key);
         let hash = path.substring(path.indexOf("#"));
-        hash = hash + "?id=" + id;
+        hash = `${hash}?noteid=${id}`;
         let current = parseurl();
         if (current.path == path) {
           document.location.hash = hash;
@@ -98,7 +98,7 @@ export default {
         if (this.close) {
           this.close();
         }
-        console.log(data);
+        // console.log(data);
       }
     },
   },

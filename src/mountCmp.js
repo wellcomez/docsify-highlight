@@ -52,8 +52,8 @@ export function parseurl(url) {
   if (index >= 0) {
     path = path.substring(0, index)
   }
-  let { id } = obj;
-  return { path, id }
+  let { noteid } = obj;
+  return { path, noteid}
 }
 export function checkClickOut(d, cb) {
   if(d==undefined){

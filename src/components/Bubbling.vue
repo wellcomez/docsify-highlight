@@ -96,7 +96,7 @@ export default {
       this.expanded = self.classList.contains("selected");
     },
     onOption(e, name) {
-      console.log(e);
+      // console.log(e);
       if (this.onSelect) {
         this.onSelect(name);
       }

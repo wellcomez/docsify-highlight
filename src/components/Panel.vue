@@ -179,7 +179,7 @@ export default {
       if (name == "md") {
         let b = new book();
         let md = b.md();
-        console.log(md);
+        // console.log(md);
         funDownload(md, window.$docsify.name + ".md");
       } else if (name == "json") {
         let b = new book();

@@ -41,7 +41,7 @@ function hlinit() {
         vm = window.vm = mountCmp(Panel, { checked: hl.on(),count:hl.count(),hl}, main)
     }
     hl.updatePanelCb=()=>{
-        console.log("aaa",vm);
+        // console.log("aaa",vm);
         Vue.set(vm, "count",hl.count());
     } 
 }
