@@ -44,8 +44,8 @@ def checkfilechecked(files,md5record):
     return change
 
 def dobuild():
-    cmd = "npm run svg"
-    os.system(cmd)
+    # cmd = "npm run svg"
+    # os.system(cmd)
     cmd = "npm run lib"
     os.system(cmd)
     for i in [

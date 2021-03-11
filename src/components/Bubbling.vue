@@ -7,7 +7,7 @@
       class="round_button show"
       @click="Bubblings($event)"
     /> -->
-    <SvgButton v-bind:onClick="onClickBtn" name="Export" tips="Export" />
+    <SvgButton v-bind:onClick="onClickBtn" name="ios-download" tips="Export" />
     <div class="wrapper" v-if="expanded">
       <ul>
         <!-- 一级列表 -->

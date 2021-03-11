@@ -5,7 +5,8 @@
         <SvgButton
           onOff
           v-bind:on="UnderlineEnable"
-          name="ul"
+          name="icon-xiahuaxian"
+          custom
           v-bind:onClick="onUnderline"
           tips="Underline"
         ></SvgButton>
@@ -37,18 +38,14 @@
         />
       </Col>
       <Col>
-        <SvgButton v-bind:onClick="onDelete" name="del" tips="Remove" />
+        <SvgButton v-bind:onClick="onDelete" name="md-trash" tips="Remove" />
       </Col>
       <Col>
-        <SvgButton v-bind:onClick="onCopy" name="copy" tips="Copy" />
+        <SvgButton v-bind:onClick="onCopy" name="ios-copy" tips="Copy" />
       </Col>
       <Col>
         <Badge dot :count="notecouter" :offset="[20, 10]">
-          <Tooltip :content="EditTextTips">
-            <Button @click="openEditor" class="note-color-picker" size="small">
-              <Icon type="md-create" />
-            </Button>
-          </Tooltip>
+          <SvgButton v-bind:onClick="openEditor" name="md-create" tips="EditTextTips" />
         </Badge>
       </Col>
     </Row>

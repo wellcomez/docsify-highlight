@@ -1,24 +1,30 @@
 <template>
   <Tooltip :content="tips">
-    <button :class="btnClass" v-on:click="onClick">
-      <svgicon :name="name" width="16" height="16" :color="svgcolor"></svgicon>
-    </button>
+    <button :class="btnClass" v-if="custom" v-on:click="onClick" :style="customStyle"/>
+    <Button v-if="custom==false" v-on:click="onClick" size="small" style="height:22px;margin:4px;">
+      <Icon :type="name" size="20" :color="svgcolor" style="margin-top:0px" />
+    </Button>
   </Tooltip>
 </template>
 <script>
 import "../icons";
-const svgcolor_on = "#42b983 #35495e";
-const svgcolor_off = "#35495e #35495e";
+const svgcolor_on = "#42b983";
+const svgcolor_off = ""
 export default {
   name: "SvgButton",
   computed: {
     btnClass() {
-      let ret = "icon-button";
+      let ret = "icon-button iconfont "+this.name;
       if (this.onOff == undefined) {
         return ret;
       }
       ret = ret + (this.on ? " enalbe_ul_btn" : " disable_ul_btn");
       return ret;
+    },
+    customStyle(){
+      return { 
+        color:this.svgcolor
+      }
     },
     svgcolor() {
       if (this.onOff) {
@@ -32,6 +38,7 @@ export default {
   },
 
   props: {
+    custom:{type:Boolean,default:false},
     onClick: {
       type: Function,
       default: undefined,

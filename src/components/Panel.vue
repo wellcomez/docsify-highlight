@@ -6,7 +6,7 @@
         <SvgButton
           v-if="checked"
           v-bind:onClick="onOpenContentList"
-          name="toc"
+          name="ios-book"
           tips="Table of Content"
         />
       </Col>
@@ -14,10 +14,16 @@
         <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
       </Col>
       <Col>
+      <Icon custom = "md-underline-outline">
+      </Col>
+      <Col>
+      <Icon type= "md-underline-outline">
+      </Col>
+      <Col>
         <PopSvgButton
           v-if="canupload"
           :click="onTest"
-          name="Clouddownload"
+          name="md-cloud-download"
           title="Download data"
           tips="Download"
         />
@@ -27,7 +33,7 @@
           v-if="canupload"
           :click="onSave2Cloud"
           title="Update data to cloud"
-          name="Cloudupload"
+          name="md-cloud-upload"
           tips="Upload"
         />
       </Col>
@@ -100,11 +106,11 @@ export default {
     canupload() {
       return this.checked && localidstore.on;
     },
-    bookmarkiconcolor(){
-      if(this.bookmark){
-        return "var(--theme-color, #42b983)"
+    bookmarkiconcolor() {
+      if (this.bookmark) {
+        return "var(--theme-color, #42b983)";
       }
-      return undefined
+      return undefined;
     },
     bookmarkicon() {
       return this.bookmark ? "ios-bookmark" : "ios-bookmark-outline";
@@ -114,13 +120,13 @@ export default {
     return {
       closedetail: this.fnclosedetail,
       bookmark: false,
-      bookmarkey:new Date()*1
+      bookmarkey: new Date() * 1,
     };
   },
   mounted: function () {
     // let d = document.getElementsByClassName("op-panel")[0];
     // checkClickOut(d, this.hideDetails);
-      this.bookmark = this.hl.store.isBookMarked();
+    this.bookmark = this.hl.store.isBookMarked();
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
@@ -152,7 +158,7 @@ export default {
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);
       this.bookmark = this.bookmark != true;
-      this.bookmarkey = new Date()*1
+      this.bookmarkey = new Date() * 1;
     },
     onSave2Cloud() {
       let b = new book();
@@ -240,4 +246,5 @@ button {
 <style>
 @import "../styles/iview.css";
 @import "../assets/web.css";
+@import "../assets/iconfont.css";
 </style>
