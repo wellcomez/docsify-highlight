@@ -14,12 +14,6 @@
         <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
       </Col>
       <Col>
-      <Icon custom = "md-underline-outline">
-      </Col>
-      <Col>
-      <Icon type= "md-underline-outline">
-      </Col>
-      <Col>
         <PopSvgButton
           v-if="canupload"
           :click="onTest"
@@ -73,7 +67,7 @@
           ></TocNote>
         </TabPane>
         <TabPane label="书签" style="margin-left: 10px">
-          <BookMarks :hl="hl" :key="bookmarkey"/>
+          <BookMarks :hl="hl" :key="bookmarkey" />
         </TabPane>
       </Tabs>
     </Row>
