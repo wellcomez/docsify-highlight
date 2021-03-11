@@ -26,10 +26,33 @@ class BookToc {
       if (path == c.path) return c;
     }
   }
+  bookMarkList() {
+    let aa = this.Charpters();
+    let ret = []
+    for (let i in aa) {
+      let c = aa[i];
+      let { bookmark } = c;
+      if (bookmark) {
+        ret.push(c)
+      }
+    }
+    return ret;
+  }
+  _setbookmark({ path }, bookmark) {
+    let ret = this.findChapter(path);
+    ret.bookmark = bookmark
+    this.save()
+  }
+  _isbookMarked({ path }) {
+    let ret = this.findChapter(path)
+    return ret.bookmark
+  }
   addChapter(a) {
     let aa = this.Charpters();
     let { path } = a;
     if (this.findChapter(path) == undefined) {
+      let bookmark = false;
+      a = { ...a, ...{ bookmark } }
       aa.push(a);
       this.save();
     }
@@ -64,10 +87,20 @@ class BookToc {
     localStorage.setItem(this.name, JSON.stringify(j));
   }
 }
+
 export class LocalStore {
   constructor(path, title) {
     let bbb = new BookToc();
     this.key = bbb.addChapter({ path, title });
+    this.toc = bbb
+    this.isBookMarked = () => {
+      let bbb = new BookToc();
+      return bbb._isbookMarked({ path })
+    }
+    this.setBookMark = (yes) => {
+      let bbb = new BookToc();
+      return bbb._setbookmark({ path }, yes)
+    }
     this.path = path;
     this.title = title;
   }
@@ -204,9 +237,9 @@ class Chapter {
         note = ""
       }
       let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
-      let span =`    <span class="${hlyellow}">    ${label}    </span>`;
+      let span = `    <span class="${hlyellow}">    ${label}    </span>`;
       return (
-`${idx + 1}. ${tile}\n
+        `${idx + 1}. ${tile}\n
   ${span}\n
   ${note}
   `);

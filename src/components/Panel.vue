@@ -51,17 +51,24 @@
           <span v-html="count2" style=""></span>
         </div>
       </Col>
+      <Col>
+        <Button v-on:click="onBookmark" size="small" style="height: 22px">
+          <Icon :type="bookmarkicon" size="16" :color="bookmarkiconcolor"/>
+        </Button>
+      </Col>
     </Row>
     <Row class="contenttable" v-if="showdetail">
       <Tabs type="line" size="small">
-        <TabPane label="标签一">
+        <TabPane label="批注">
           <TocNote
             v-bind:close="closedetail"
             v-bind:key="count2"
             style="margin-left: 10px"
           ></TocNote>
         </TabPane>
-        <TabPane label="标签三">标签三的内容</TabPane>
+        <TabPane label="书签" style="margin-left: 10px">
+          <BookMarks />
+        </TabPane>
       </Tabs>
     </Row>
   </div>
@@ -86,22 +93,36 @@ export default {
   components: { TocNote, Bubbling },
   name: "Panel",
   computed: {
-    count2: function () {
+    count2() {
       let a = new book().count() + this.count;
       return a + preHighLightItems().length - this.count;
     },
-    canupload: function () {
+    canupload() {
       return this.checked && localidstore.on;
+    },
+    bookmarkiconcolor(){
+      if(this.bookmark){
+        return "var(--theme-color, #42b983)"
+      }
+      return undefined
+    },
+    bookmarkicon() {
+      return this.bookmark ? "ios-bookmark" : "ios-bookmark-outline";
     },
   },
   data() {
     return {
       closedetail: this.fnclosedetail,
+      bookmark: false,
     };
   },
   mounted: function () {
     // let d = document.getElementsByClassName("op-panel")[0];
     // checkClickOut(d, this.hideDetails);
+    let { hl } = window;
+    if (hl) {
+      this.bookmark = hl.store.isBookMarked();
+    }
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
@@ -130,6 +151,11 @@ export default {
     },
   },
   methods: {
+    onBookmark() {
+      let { hl } = window;
+      hl.store.setBookMark(this.bookmark != true);
+      this.bookmark = this.bookmark != true;
+    },
     onSave2Cloud() {
       let b = new book();
       updateBookOnLean(b)
@@ -185,7 +211,6 @@ export default {
   border: 1px solid var(--theme-color, #42b983);
 }
 
-
 .panel-header {
   height: 30px;
   background: var(--theme-color, #42b983);
@@ -216,6 +241,6 @@ button {
 </style>
 
 <style>
-@import '../styles/iview.css';
+@import "../styles/iview.css";
 @import "../assets/web.css";
 </style>

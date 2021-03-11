@@ -6,11 +6,12 @@ import SvgButton from './components/SvgButton.vue'
 import PopSvgButton from './components/PopSvgButton.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import TocOutLine from './components/TocOutLine.vue'
+import BookMarks from './components/BookMarks.vue'
 import hlinit from './hl';
 import { registComponet } from './mountCmp'
 import './iviewLoader'
 import Vue from 'vue';
-let component = { NoteMarker, Panel, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton,TocOutLine }
+let component = { NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)
 // import Icon from 'vue-svg-icon/Icon.vue';
 // Vue.component('icon', Icon);  
