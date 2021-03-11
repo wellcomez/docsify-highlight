@@ -67,7 +67,7 @@
           ></TocNote>
         </TabPane>
         <TabPane label="书签" style="margin-left: 10px">
-          <BookMarks :hl="hl" />
+          <BookMarks :hl="hl" :key="bookmarkey"/>
         </TabPane>
       </Tabs>
     </Row>
@@ -114,15 +114,13 @@ export default {
     return {
       closedetail: this.fnclosedetail,
       bookmark: false,
+      bookmarkey:new Date()*1
     };
   },
   mounted: function () {
     // let d = document.getElementsByClassName("op-panel")[0];
     // checkClickOut(d, this.hideDetails);
-    let { hl } = window;
-    if (hl) {
-      this.bookmark = hl.store.isBookMarked();
-    }
+      this.bookmark = this.hl.store.isBookMarked();
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
@@ -152,9 +150,9 @@ export default {
   },
   methods: {
     onBookmark() {
-      let { hl } = window;
-      hl.store.setBookMark(this.bookmark != true);
+      this.hl.store.setBookMark(this.bookmark != true);
       this.bookmark = this.bookmark != true;
+      this.bookmarkey = new Date()*1
     },
     onSave2Cloud() {
       let b = new book();
@@ -188,9 +186,8 @@ export default {
       }
     },
     onChange() {
-      let { hl: highlighter } = window;
       this.checked = this.checked == false;
-      highlighter.enable(this.checked);
+      this.hl.enable(this.checked);
       if (this.checked == false) this.showdetail = false;
     },
   },
