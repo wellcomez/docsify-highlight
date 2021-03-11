@@ -1,76 +1,78 @@
 
 <template>
   <div class="op-panel">
-    <Row class="panel-header" type="flex">
-      <Col>
-        <SvgButton
-          v-if="checked"
-          v-bind:onClick="onOpenContentList"
-          name="ios-book"
-          tips="Table of Content"
-        />
-      </Col>
-      <Col>
-        <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
-      </Col>
-      <Col>
-        <PopSvgButton
-          v-if="canupload"
-          :click="onTest"
-          name="md-cloud-download"
-          title="Download data"
-          tips="Download"
-        />
-      </Col>
-      <Col>
-        <PopSvgButton
-          v-if="canupload"
-          :click="onSave2Cloud"
-          title="Update data to cloud"
-          name="md-cloud-upload"
-          tips="Upload"
-        />
-      </Col>
+    <Badge :count="count2">
+      <Row class="panel-header" type="flex">
+        <Col>
+          <SvgButton
+            v-if="checked"
+            v-bind:onClick="onOpenContentList"
+            name="ios-book"
+            tips="Table of Content"
+          />
+        </Col>
+        <Col>
+          <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
+        </Col>
+        <Col>
+          <PopSvgButton
+            v-if="canupload"
+            :click="onTest"
+            name="md-cloud-download"
+            title="Download data"
+            tips="Download"
+          />
+        </Col>
+        <Col>
+          <PopSvgButton
+            v-if="canupload"
+            :click="onSave2Cloud"
+            title="Update data to cloud"
+            name="md-cloud-upload"
+            tips="Upload"
+          />
+        </Col>
 
-      <Col>
-        <input
-          name="auto"
-          type="checkbox"
-          class="switch"
-          v-bind:checked="checked"
-          v-bind:on-change="onChange"
-          v-on:click="onChange"
-        />
-      </Col>
-      <Col>
-        <div
-          class="d1"
-          v-if="checked"
-          style="text-align: center; background-color: rgb(202, 233, 202)"
-        >
-          <span v-html="count2" style=""></span>
-        </div>
-      </Col>
-      <Col>
-        <Button v-on:click="onBookmark" size="small" style="height: 22px">
-          <Icon :type="bookmarkicon" size="16" :color="bookmarkiconcolor"/>
-        </Button>
-      </Col>
-    </Row>
-    <Row class="contenttable" v-if="showdetail">
-      <Tabs type="line" size="small">
-        <TabPane label="批注">
-          <TocNote
-            v-bind:close="closedetail"
-            v-bind:key="count2"
-            style="margin-left: 10px"
-          ></TocNote>
-        </TabPane>
-        <TabPane label="书签" style="margin-left: 10px">
-          <BookMarks :hl="hl" :key="bookmarkey" />
-        </TabPane>
-      </Tabs>
-    </Row>
+        <Col>
+          <input
+            name="auto"
+            type="checkbox"
+            class="switch"
+            v-bind:checked="checked"
+            v-bind:on-change="onChange"
+            v-on:click="onChange"
+          />
+        </Col>
+        <!-- <Col>
+          <div
+            class="d1"
+            v-if="checked"
+            style="background-color: rgb(202, 233, 202)"
+          >
+            <span class="d1" style="">{{ count2 }}</span>
+          </div>
+        </Col> -->
+        <Col>
+          <Button v-on:click="onBookmark" size="small" style="height: 22px">
+            <Icon :type="bookmarkicon" size="16" :color="bookmarkiconcolor" />
+          </Button>
+        </Col>
+      </Row>
+      <Row class="contenttable" v-if="showdetail">
+        <Tabs type="line" size="small">
+          <TabPane label="批注">
+            <TocNote
+              v-bind:close="closedetail"
+              v-bind:key="count2"
+              style="margin-left: 10px"
+            ></TocNote>
+          </TabPane>
+          <TabPane label="书签" style="margin-left: 10px">
+            <BookMarks :hl="hl" :key="bookmarkey" />
+          </TabPane>
+        </Tabs>
+      </Row>
+    </Badge>
   </div>
 </template>
 

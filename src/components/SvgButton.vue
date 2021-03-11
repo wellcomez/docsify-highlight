@@ -1,7 +1,7 @@
 <template>
   <Tooltip :content="tips">
     <Button v-on:click="onClick" size="small" style="height:22px;margin:4px;">
-      <i v-if="custom" :class="btnClass" :style="customStyle"/>
+      <Icon  v-if="custom"  :custom="btnClass" :type="name" size="20" :color="svgcolor" style="margin-top:0px" />
       <Icon  v-if="custom==false"  :type="name" size="20" :color="svgcolor" style="margin-top:0px" />
     </Button>
   </Tooltip>
@@ -15,10 +15,6 @@ export default {
   computed: {
     btnClass() {
       let ret = "iconfont "+this.name;
-      if (this.onOff == undefined) {
-        return ret;
-      }
-      // ret = ret + (this.on ? " enalbe_ul_btn" : " disable_ul_btn");
       return ret;
     },
     customStyle(){
