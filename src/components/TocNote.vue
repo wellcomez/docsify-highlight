@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     selectChange(a) {
-      console.log("xxxx");
+      // console.log("xxxx");
       this.toc[a.title] = a.expand;
     },
     createOutLine(item) {
@@ -98,7 +98,7 @@ export default {
         if (this.close) {
           this.close();
         }
-        console.log(data);
+        // console.log(data);
       }
     },
   },

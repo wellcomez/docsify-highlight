@@ -162,9 +162,9 @@ export class DocHighlighter {
             wrapTag: 'i',
             exceptSelectors: ['.my-remove-tip', '.op-panel']
         });
-        document.addEventListener("hashchange", () => {
-            console.log(window.location)
-        });
+        // document.addEventListener("hashchange", () => {
+        //     console.log(window.location)
+        // });
         this.parseurlResult = parseurl();
 
         this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
@@ -416,7 +416,7 @@ export function preHighLightItems() {
         children.push(a);
     });
     children = children.map((a) => {
-        console.log(a);
+        // console.log(a);
         // document.getElementsByClassName("hl")[0].innerText
         // "否则，就算 c 包含 B 的第三类买卖点，也可以对围绕 B 的次级别震荡用盘整背驰的方式进行判断"
         // document.getElementsByClassName("hl")[0].offsetTop
