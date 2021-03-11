@@ -86,7 +86,7 @@ export default {
       if (key && id) {
         const { path } = JSON.parse(key);
         let hash = path.substring(path.indexOf("#"));
-        hash = hash + "?id=" + id;
+        hash = `${hash}?noteid=${id}`;
         let current = parseurl();
         if (current.path == path) {
           document.location.hash = hash;
