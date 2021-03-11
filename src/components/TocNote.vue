@@ -115,7 +115,6 @@ export default {
   border-width: 1px;
 }
 .xxxx {
-  border: 1px solid var(--theme-color, #42b983);
 }
 </style>
 

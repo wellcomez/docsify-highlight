@@ -52,9 +52,18 @@
         </div>
       </Col>
     </Row>
-    <div class="contenttable" v-if="showdetail">
-      <TocNote v-bind:close="closedetail" v-bind:key="count2"></TocNote>
-    </div>
+    <Row class="contenttable" v-if="showdetail">
+      <Tabs type="line" size="small">
+        <TabPane label="标签一">
+          <TocNote
+            v-bind:close="closedetail"
+            v-bind:key="count2"
+            style="margin-left: 10px"
+          ></TocNote>
+        </TabPane>
+        <TabPane label="标签三">标签三的内容</TabPane>
+      </Tabs>
+    </Row>
   </div>
 </template>
 
@@ -161,20 +170,45 @@ export default {
   },
 };
 </script>
+<style>
+.contenttable .ivu-tabs-nav .ivu-tabs-tab-active {
+  color: var(--theme-color, #42b983);
+}
+.contenttable .ivu-tabs-nav .ivu-tabs-tab-active::before {
+  color: var(--theme-color, #42b983);
+}
+</style>
 <style scoped>
 .op-panel {
   position: fixed;
   right: 20px;
   left: auto;
   top: 50px;
-  /* background: rgba(216, 206, 206, 0.897); */
-  background: var(--theme-color, #42b983);
   border-radius: 3px;
   color: black;
 }
 .contenttable {
   width: 400px;
+  background: white;
+  border: 1px solid var(--theme-color, #42b983);
 }
+
+
+.panel-header {
+  height: 30px;
+  background: var(--theme-color, #42b983);
+}
+
+.headtile {
+  font-size: xx-small;
+  color: white;
+  margin: 2px;
+}
+
+button {
+  margin: 4px;
+}
+
 @media screen and (max-width: 640px) {
   .contenttable {
     width: 240px;
@@ -186,32 +220,6 @@ export default {
   }
 }
 @media screen and (max-width: 1150px) {
-  main {
-    padding: 0 15px;
-    overflow-x: hidden;
-  }
-
-  .op-panel {
-    right: 20px;
-    left: auto;
-    top: 50px;
-    background: rgba(216, 206, 206, 0.897);
-    color: black;
-    border-radius: 3px;
-  }
-}
-.panel-header {
-  height: 30px;
-}
-
-.headtile {
-  font-size: xx-small;
-  color: white;
-  margin: 2px;
-}
-
-button {
-  margin: 4px;
 }
 </style>
 
