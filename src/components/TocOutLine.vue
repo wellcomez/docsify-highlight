@@ -9,15 +9,17 @@
     <Icon v-if="icon" :type="icon"></Icon>
     <span
       :style="style"
-      v-html="title2"
       :class="classOfSpan"
       @click="onSelected"
-    />
+    >{{title2}}</span>
     <div slot="content">
-      <p v-html="title" class="outline-title"></p>
-      <div v-if="note" class="outline-note">
-        <p v-html="note"></p>
+      <div v-if="note" class="outline-title">
+        <p>{{note}}</p>
       </div>
+      <div v-if="note" class="outline-note">
+        <p style="margin-top:10px;margin-bottom:10px;margin-left:5px;margin-right:5px">{{title}}</p>
+      </div>
+      <p  v-else class="outline-title">{{title}}</p>
     </div>
   </Tooltip>
 </template>
@@ -101,7 +103,8 @@ export default {
 }
 .outline-note {
   background: #80808026 !important;
-  border: "1px solid red";
-  border-radius: 3px;
+  border-left-color: red  !important;
+  border-left-width: 2px!important;
+  border-left-style: solid!important;
 }
 </style>
