@@ -199,7 +199,7 @@ export default {
 </script>
 <style scoped>
 .op-panel {
-  position: absolute;
+  position: fixed;
   right: 20px;
   left: auto;
   top: 50px;
@@ -242,4 +242,8 @@ button {
 </style>
 
 <style>
+
+@import "../styles/iview.css";
+@import "../assets/web.css";
+@import "../assets/iconfont.css";
 </style>
