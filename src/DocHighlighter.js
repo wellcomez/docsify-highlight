@@ -129,7 +129,7 @@ export class DocHighlighter {
         this.procssAllElements(noteid, (a) => {
             if (color == ul) {
                 a.style.borderBottom = "2px solid " + colorhex
-                a.style.backgroundColor ="" 
+                a.style.backgroundColor = ""
             } else {
                 a.style.borderBottom = ""
                 a.style.backgroundColor = colorhex
@@ -168,11 +168,17 @@ export class DocHighlighter {
         //     console.log(window.location)
         // });
         this.parseurlResult = parseurl();
-
+        const onClick = (noteid) => {
+            // const classname = 'docsify-highlighter'
+            let {id} = noteid;
+            let node = this.getElement(id)
+            this.createNoteMenu(node)
+        };
         this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
         this.highlighter.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
         this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
         this.highlighter.on(Highlighter.event.CREATE, this.onCreate.bind(this));
+        this.highlighter.on(Highlighter.event.CLICK, onClick);
 
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
             selectedNodes = selectedNodes.filter(n => n.$node.textContent);
@@ -192,13 +198,7 @@ export class DocHighlighter {
 
             return selectedNodes;
         });
-        document.addEventListener("click", (e) => {
-            const classname = 'docsify-highlighter'
-            if (e.target.classList.contains(classname)) {
-                e.stopPropagation()
-                this.createNoteMenu(e.target)
-            }
-        });
+
         this.highlighter.hooks.Serialize.Restore.tap(
             source => log('Serialize.Restore hook -', source)
         );
@@ -301,9 +301,9 @@ export class DocHighlighter {
                     if (note) {
                         hs.note = note
                     }
-                    let {date} = hs;
-                    if(date==undefined){
-                        hs.date = new Date()*1;
+                    let { date } = hs;
+                    if (date == undefined) {
+                        hs.date = new Date() * 1;
                     }
                     hs.top = this.getElementPosition(noteid)
                     return hs

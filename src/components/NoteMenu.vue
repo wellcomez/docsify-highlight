@@ -1,5 +1,5 @@
 <template>
-  <div class="mask note-menu" v-on:click="onClickMask">
+  <div class="mask note-menu" v-on:click="onClickMask" @touchstart="onClickMask">
     <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex">
       <Col>
         <SvgButton

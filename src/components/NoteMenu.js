@@ -166,6 +166,7 @@ export const NoteMenu = {
             this.saveNoteData();
         },
         onClickMask(e) {
+            e.stopPropagation();
             let mask = document.getElementsByClassName("note-menu")[0];
             if (mask != e.target) return;
             this.removeSelectionHighLight();
