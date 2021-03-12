@@ -17,7 +17,7 @@
         <p>{{note}}</p>
       </div>
       <div v-if="note" class="outline-note">
-        <p style="margin-top:10px;margin-bottom:10px;margin-left:5px;margin-right:5px">{{title}}</p>
+        <p style="padding:10px;margin:10px">{{title}}</p>
       </div>
       <p  v-else class="outline-title">{{title}}</p>
     </div>
