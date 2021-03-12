@@ -10,18 +10,8 @@ import BookMarks from './components/BookMarks.vue'
 import hlinit from './hl';
 import { registComponet } from './mountCmp'
 import './iviewLoader'
-import Vue from 'vue';
 let component = { NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)
-// import Icon from 'vue-svg-icon/Icon.vue';
-// Vue.component('icon', Icon);  
-
-
-import SvgIcon from 'vue-svgicon'
-// Default tag name is 'svgicon'
-Vue.use(SvgIcon, {
-  tagName: 'svgicon'
-})
 
 // elementLoader()
 // eslint-disable-next-line no-unused-vars
