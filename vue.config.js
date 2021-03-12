@@ -1,5 +1,5 @@
 module.exports = {
-    productionSourceMap: false,
+    // productionSourceMap: false,
     css: {
         extract: true, // 是否使用css分离插件 ExtractTextPlugin
         sourceMap: false, // 开启 CSS source maps?

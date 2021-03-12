@@ -54,11 +54,12 @@ export default {
         if (this.toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
+      let notedata = item
       const render = (h) => {
         return h(
           "TocOutLine",
           {
-            props: {item,onSelected:()=>{this.handleNodeClick(item)}},
+            props: {notedata,onSelected:()=>{this.handleNodeClick(item)}},
           }
         );
       };
@@ -107,14 +108,12 @@ export default {
 <style scoped>
 .xxxx {
   overflow: auto;
-  height: 400px;
-  background-color: white;
+  /* height: 400px; */
+  /* background-color: white; */
 }
 
 .xxxx::-webkit-scrollbar {
   border-width: 1px;
-}
-.xxxx {
 }
 </style>
 

@@ -28,8 +28,8 @@ import { classNameFromColor, ul } from "../colorSelector";
 export default {
   name: "TocOutLine",
   created() {
-    let { label: title, children, colorhex, note, color } = this.item;
-    this.classOfSpan = this.spanclass(this.item);
+    let { label: title, children, colorhex, note, color } = this.notedata;
+    this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {
       this.title2 = `"${note}"-${title}`;
@@ -66,7 +66,7 @@ export default {
     };
   },
   props: {
-    item: { type: Object, default: undefined },
+    notedata: { type: Object, default: undefined },
     onSelected: { type: Function, default: undefined },
   },
   computed: {

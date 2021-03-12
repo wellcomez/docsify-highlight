@@ -61,7 +61,7 @@
         </Col>
       </Row>
       <Row class="contenttable" v-if="showdetail">
-        <Tabs type="line" size="small">
+        <Tabs type="line" size="small" class="tabs">
           <TabPane label="批注">
             <TocNote
               v-bind:close="closedetail"
@@ -208,8 +208,12 @@ export default {
 }
 .contenttable {
   width: 400px;
+  height: 640px;
   background: white;
   border: 1px solid var(--theme-color, #42b983);
+}
+.contenttable .tabs{
+  height:inherit
 }
 
 .panel-header {
