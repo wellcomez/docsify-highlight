@@ -41,7 +41,7 @@ export default {
     },
     svgcolor() {
       let { color } = this;
-      if (color) {
+      if (color== undefined) {
         color = svgcolor_on;
       }
       if (this.onOff) {

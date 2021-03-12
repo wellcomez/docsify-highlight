@@ -8,6 +8,7 @@
           name="icon-xiahuaxian"
           custom
           v-bind:onClick="onUnderline"
+          :color="underlineColor"
           tips="Underline"
         ></SvgButton>
       </Col>

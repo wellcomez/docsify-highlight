@@ -52,7 +52,8 @@ export const NoteMenu = {
             color1: "green",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
-            recommendedColor
+            recommendedColor,
+            underlineColor:undefined
         };
     },
     computed: {
@@ -87,10 +88,18 @@ export const NoteMenu = {
                 this.color1 = this.colorhex
             }
         }
+        this.updateUnderLineColor();
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        updateUnderLineColor() {
+            if (this.color == ul) {
+                this.underlineColor = this.color1;
+            } else {
+                this.underlineColor = undefined;
+            }
+        },
         openEditor() {
             var tmpdata = this.notetext;
             Modal.confirm({
@@ -171,6 +180,7 @@ export const NoteMenu = {
             if (x == undefined) {
                 this.color = customColor;
             }
+            this.updateUnderLineColor();
             // console.log("cccc", this.color1)
             updateCssRule(this.color, this.color1)
             this.saveNoteData()
@@ -183,6 +193,7 @@ export const NoteMenu = {
             } else {
                 this.colorhex = this.color1;
             }
+            this.updateUnderLineColor();
             this.saveNoteData();
         },
         onRed(e) {
