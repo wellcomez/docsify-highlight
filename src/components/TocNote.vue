@@ -105,7 +105,10 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style >
+.xxxx .ivu-tree li ul{
+  margin-left:6px !important;
+}
 .xxxx {
   overflow: auto;
   /* height: 400px; */

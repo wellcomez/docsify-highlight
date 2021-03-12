@@ -4,7 +4,8 @@
     :max-width="maxWidth"
     theme="light"
     :disabled="disabled"
-    placement="bottom-center"
+    transfer
+    placement="bottom-start"
   >
     <Icon v-if="icon" :type="icon"></Icon>
     <span

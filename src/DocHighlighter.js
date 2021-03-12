@@ -129,7 +129,9 @@ export class DocHighlighter {
         this.procssAllElements(noteid, (a) => {
             if (color == ul) {
                 a.style.borderBottom = "2px solid " + colorhex
+                a.style.backgroundColor ="" 
             } else {
+                a.style.borderBottom = ""
                 a.style.backgroundColor = colorhex
             }
         })
