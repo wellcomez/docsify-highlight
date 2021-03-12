@@ -1,7 +1,10 @@
 {
   "name": "docsify-highlight",
   "version": "0.8.4",
-  "jsdelivr": "docsify-highlight.umd.min.js",
+  "jsdelivr": [
+    "dist/docsify-highlight.css",
+    "dist/docsify-highlight.umd.min.js"
+  ],
   "browser": "docsify-highlight.css",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -17,7 +20,11 @@
     "docsify",
     "highlight"
   ],
-  "files": ["src",".babelrc","babel.config.js","vue.config.js",
+  "files": [
+    "src",
+    ".babelrc",
+    "babel.config.js",
+    "vue.config.js",
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
     "dist/fonts",
@@ -42,8 +49,6 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "less": "^2.7.3",
-    "less-loader": "^4.0.6",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

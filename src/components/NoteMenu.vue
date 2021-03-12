@@ -62,7 +62,6 @@ import { NoteMenu } from "./NoteMenu";
 export default NoteMenu;
 </script>
 <style>
-@import "../assets/web.css";
 .note-color-picker,
 .note-color-picker-selected {
   margin: 2px;

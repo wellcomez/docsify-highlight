@@ -1,4 +1,3 @@
-import "../icons";
 import {
     yellow,
     green,

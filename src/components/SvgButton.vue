@@ -7,7 +7,6 @@
   </Tooltip>
 </template>
 <script>
-import "../icons";
 const svgcolor_on = "#42b983";
 const svgcolor_off = ""
 export default {
