@@ -53,9 +53,11 @@
           </div>
         </Col> -->
         <Col>
-          <Button v-on:click="onBookmark" size="small" style="height: 22px">
-            <Icon :type="bookmarkicon" size="16" :color="bookmarkiconcolor" />
-          </Button>
+          <SvgButton
+            v-if="checked"
+            v-bind:onClick="onBookmark"
+            :name="bookmarkicon"
+          />
         </Col>
       </Row>
       <Row class="contenttable" v-if="showdetail">
