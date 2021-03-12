@@ -9,6 +9,10 @@ import TocOutLine from './components/TocOutLine.vue'
 import BookMarks from './components/BookMarks.vue'
 import hlinit from './hl';
 import { registComponet } from './mountCmp'
+
+// import "./styles/iview.css";
+// import "./assets/web.css";
+// import "./assets/iconfont.css";
 import './iviewLoader'
 let component = { NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)

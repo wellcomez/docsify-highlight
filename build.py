@@ -49,6 +49,7 @@ def dobuild():
     cmd = "npm run lib"
     os.system(cmd)
     for i in [
+        '''cp -fr dist "/Users/jialaizhu/Documents/缠论资料/《缠中说禅》学习笔记20.01 Word版压缩包/111/yshbj"'''
         # "mkdir notejs",
     #  "mkdir -p notejs/img",
     # "cp -f dist/docsify-highlight.umd.js    notejs",
