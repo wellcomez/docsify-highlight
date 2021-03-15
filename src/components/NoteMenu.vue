@@ -65,7 +65,7 @@ export default NoteMenu;
 <style>
 .note-color-picker,
 .note-color-picker-selected {
-  margin: 2px;
+  margin: 8px;
 }
 </style>
 .note-color-picker-selected{
@@ -105,7 +105,7 @@ export default NoteMenu;
   border: 1px solid #fff;
   border-radius: 3px;
   width: fit-content;
-  height: 30px;
+  height: fit-content;
   /* width        : 90px; */
   color: #fff;
   background: rgb(226, 223, 223);

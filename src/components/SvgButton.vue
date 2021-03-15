@@ -1,6 +1,6 @@
 <template>
   <Tooltip :content="tips" :disabled="tipsDisabled">
-    <Button v-on:click="onClick" size="small" style="height: 22px; margin: 4px">
+    <Button v-on:click="onClick" size="small" style="height: 30px; margin: 4px">
       <Icon
         v-if="custom"
         :custom="btnClass"

@@ -60,7 +60,7 @@
           />
         </Col>
       </Row>
-      <Row class="contenttable" v-if="showdetail">
+      <Row class="contenttable" v-if="showdetail"  style="overflow:hidden;height: 100%;">
         <Tabs type="line" size="small" class="tabs">
           <TabPane label="批注">
             <TocNote
@@ -155,6 +155,14 @@ export default {
     },
   },
   methods: {
+    show(){
+      // let a = document.getElementsByClassName('markdown-section')[0]
+      // a.classList.add('alpha')
+    },
+    hide(){
+      // let a = document.getElementsByClassName('markdown-section')[0]
+      // a.classList.remove('alpha')
+    },
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);
       this.bookmark = this.bookmark != true;
@@ -199,6 +207,12 @@ export default {
   },
 };
 </script>
+<style >
+   .alpha {
+     height: 100%;
+     overflow: hidden;
+    }
+</style>
 <style scoped>
 .op-panel {
   position: fixed;
@@ -219,7 +233,7 @@ export default {
 }
 
 .panel-header {
-  height: 30px;
+  height: fit-content;
   background: var(--theme-color, #42b983);
 }
 

@@ -1,6 +1,6 @@
 
 <template>
-  <section class="xxxx">
+  <section class="xxxx" >
     <Tree :data="data" @on-toggle-expand="selectChange"></Tree>
   </section>
 </template>
@@ -60,10 +60,11 @@ export default {
       let notedata = item
       const render = (h) => {
         return h(
-          "TocOutLine",
+          "span",
           {
             props: {notedata,onSelected:()=>{this.handleNodeClick(item)}},
-          }
+          },
+          title
         );
       };
       return { title, children, expand, render };
@@ -114,7 +115,7 @@ export default {
 }
 .xxxx {
   overflow: auto;
-  /* height: 400px; */
+  height: 200px;
   /* background-color: white; */
 }
 

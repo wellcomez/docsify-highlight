@@ -49,7 +49,7 @@ export const NoteMenu = {
         return {
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
-                top: this.top - 25 - window.pageYOffset + "px",
+                top: this.top - 80 - window.pageYOffset + "px",
                 // width: 6 * 30,
             },
             notetext: this.note ? this.note : "",
@@ -67,9 +67,9 @@ export const NoteMenu = {
         },
         classColorPicker() {
             if (this.color == customColor) {
-                return "let note-color-picker-selected"
+                return "note-color-picker-selected"
             }
-            return 'left note-color-picker'
+            return 'note-color-picker'
         },
         UnderlineEnable() {
             return this.color == ul;
@@ -144,7 +144,8 @@ export const NoteMenu = {
             this.removeSelectionHighLight();
             this.removeMenu();
         },
-        onCopy() {
+        onCopy(e) {
+            e.stopPropagation()
             // console.log("onCopy");
             let { hl } = window;
             hl.onCopy(this.noteid);
@@ -191,6 +192,7 @@ export const NoteMenu = {
             this.saveNoteData()
         },
         onClick(e, color) {
+            e.stopPropagation()
             this.color = color;
             let color1 = getcsscolorbyid(this.color)
             if (color1.length) {
