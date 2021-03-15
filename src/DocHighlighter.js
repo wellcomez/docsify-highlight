@@ -276,6 +276,11 @@ export class DocHighlighter {
                 hs.title = title;
             })
             let hs = sources[0]
+            let menu = document.getElementsByClassName("note-menu")
+            if(menu&&menu.length){
+                this.highlighter.remove(hs.id);
+                return;
+            }
             this.createNoteMenu(this.getElement(hs.id), sources)
         }
     };
