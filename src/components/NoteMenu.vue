@@ -1,6 +1,21 @@
 <template>
-  <div class="mask note-menu" v-on:click="onClickMask" @touchstart="onClickMask">
+  <div
+    class="mask note-menu"
+    v-on:click="onClickMask"
+    @touchstart="onClickMask"
+  >
     <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex">
+      <Col>
+        <SvgButton
+          onOff
+          v-bind:on="UnderlineEnable"
+          name="icon-ai247"
+          custom
+          v-bind:onClick="onFontColor"
+          :color="fontColor"
+          tips="Font Color"
+        ></SvgButton>
+      </Col>
       <Col>
         <SvgButton
           onOff
@@ -32,7 +47,7 @@
           offset="[-1,1]"
           v-model="color1"
           alpha
-          :colors = "recommendedColor"
+          :colors="recommendedColor"
           @on-change="onChangeColor"
           :class="classColorPicker"
           size="small"
@@ -46,7 +61,11 @@
       </Col>
       <Col>
         <Badge dot :count="notecouter" :offset="[20, 10]">
-          <SvgButton v-bind:onClick="openEditor" name="md-create" tips="EditTextTips" />
+          <SvgButton
+            v-bind:onClick="openEditor"
+            name="md-create"
+            tips="EditTextTips"
+          />
         </Badge>
       </Col>
     </Row>

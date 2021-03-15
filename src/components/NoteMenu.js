@@ -57,7 +57,8 @@ export const NoteMenu = {
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
             recommendedColor,
-            underlineColor:undefined
+            underlineColor:undefined,
+            fontColor:"black"
         };
     },
     computed: {
@@ -131,7 +132,9 @@ export const NoteMenu = {
                 },
             });
         },
-
+        onFontColor(){
+            
+        },
         onUnderline(e) {
             if (this.UnderlineEnable == false) {
                 this.onClick(e, ul);
