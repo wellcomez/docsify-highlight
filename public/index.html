@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
@@ -12,6 +13,43 @@
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
+    <script>
+      // Set html "lang" attribute based on URL
+      var lang = location.hash.match(/#\/(de-de|es|ru-ru|zh-cn)\//);
+  
+      if (lang) {
+        document.documentElement.setAttribute('lang', lang[1]);
+      }
+  
+      // Docsify configuration
+      window.$docsify = {
+        notFoundPage: '_sidebar.md',
+        // themeColor: '##dd1a3a',
+        topMargin: 200, // default: 0
+        name: 'docsify-highlight-demo',
+        relativePath: true,
+        noEmoji: true,
+        auto2top: true,
+        // coverpage: true,
+        executeScript: true,
+        loadSidebar: true,
+        loadNavbar: true,
+        alias: {
+        },
+        // mergeNavbar: true,
+        maxLevel: 4,
+        subMaxLevel: 2,
+        search: {
+          noData: '没有结果!',
+          paths: 'auto',
+          placeholder: '搜索',
+        },
+        plugins: [
+        ]
+      };
+    </script>
+    <!-- Docsify v4 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
     <!-- built files will be auto injected -->
   </body>
 </html>

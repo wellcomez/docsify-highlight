@@ -39,8 +39,12 @@ const recommendedColor = [
     "rgba(255, 255, 255, 0.5)",
     "rgba(29, 53, 234, 0.5)",
 ]
+import SvgButton from './SvgButton'
 export const NoteMenu = {
     name: "NoteMenu",
+    components:{
+        SvgButton
+    },
     data() {
         return {
             style: {

@@ -80,7 +80,6 @@
 
 <script>
 import { book } from "../store";
-import TocNote from "./TocNote.vue";
 // import { Notification } from "element-ui";
 import { localidstore, testPost, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
@@ -91,10 +90,13 @@ function funDownload(content, filename) {
   msg("导出", "保存到 " + filename);
 }
 import { preHighLightItems } from "../DocHighlighter";
-import Bubbling from "./Bubbling.vue";
+import TocNote from "./TocNote";
+import Bubbling from "./Bubbling";
+import SvgButton from "./SvgButton";
+import BookMarks from "./BookMarks";
 // import { checkClickOut } from "../mountCmp";
 export default {
-  components: { TocNote, Bubbling },
+  components: { TocNote, Bubbling,SvgButton,BookMarks },
   name: "Panel",
   computed: {
     count2() {
@@ -200,7 +202,7 @@ export default {
 <style scoped>
 .op-panel {
   position: fixed;
-  right: 20px;
+  right: 150px;
   left: auto;
   top: 50px;
   border-radius: 3px;

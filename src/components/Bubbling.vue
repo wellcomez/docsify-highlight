@@ -13,8 +13,10 @@
 </template>
 <script>
 import { checkClickOut } from "../mountCmp";
+import SvgButton from "./SvgButton";
 export default {
   name: "Bubbling",
+  components: {SvgButton},
   data() {
     return {
       list: [

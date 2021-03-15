@@ -9,9 +9,12 @@
 import { book } from "../store";
 import { parseurl, scollTopID } from "../mountCmp";
 import { preHighLightItems } from "../DocHighlighter";
+import TocOutLine from "./TocOutLine"
 
 export default {
   name: "TocNote",
+  // eslint-disable-next-line vue/no-unused-components
+  components:{ TocOutLine},
   computed: {
     data() {
       let b = new book();
