@@ -128,10 +128,13 @@ export class DocHighlighter {
         this.removeHighLight(noteid);
         this.procssAllElements(noteid, (a) => {
             if (disable) {
-                colorhex = ""
+                colorhex = undefined
             }
             if (color == ul) {
-                a.style.borderBottom = "2px solid " + colorhex
+                if (colorhex != undefined)
+                    a.style.borderBottom = "2px solid " + colorhex
+                else
+                    a.style.borderBottom = ""
             } else if (color == fontColor) {
                 a.style.color = colorhex
             } else {

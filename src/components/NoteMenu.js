@@ -1,14 +1,10 @@
 import {
     backgroundColor,
-    yellow,
-    green,
-    red,
     ul,
     getcsscolorbyid,
     updateCssRule,
     customColor,
     fontColor,
-    classNameFromColor,
 } from "../colorSelector";
 
 import { Modal } from "iview";
@@ -29,6 +25,12 @@ class highlightType {
         this.noteid = noteid
         this.allTypes = {
         }
+        this.currentType = undefined
+    }
+    getType(type) {
+        let a = this.allTypes[type]
+        if(a)return a
+        return{} 
     }
     setType({ type, enable, colorhex }) {
         let { noteid } = this
@@ -41,6 +43,9 @@ class highlightType {
         let disable = enable != true
         this.allTypes[type] = { enable, colorhex }
         this.hl.updateHignLightColor(noteid, color, colorhex, disable)
+        if(enable){
+            this.currentType = type
+        }
     }
 }
 export const NoteMenu = {
@@ -57,14 +62,12 @@ export const NoteMenu = {
                 // width: 6 * 30,
             },
             hlType: customColor,
-            selectedSubColor: 2,
+            selectedSubColor: undefined,
             notetext: this.note ? this.note : "",
-            color1: "green",
+            color1: "",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
             recommendedColor,
-            underlineColor: undefined,
-            fontColor: "red"
         };
     },
     watch: {
@@ -74,6 +77,12 @@ export const NoteMenu = {
         }
     },
     computed: {
+        underlineColor(){
+            let {hlStyle} = this
+            let a = hlStyle.getType(ul)
+            let {enable} = a;
+            if(enable)return a.colorhex
+        },
         colorList() {
             let ret = [
                 {
@@ -98,29 +107,14 @@ export const NoteMenu = {
             }
             return 'note-color-picker'
         },
-        fontColorEnable() {
-            return this.color == customColor
-        },
-        UnderlineEnable() {
-            return this.color == ul;
-        },
-        isYellow() {
-            return this.color == yellow;
-        },
-        isRed() {
-            return this.color == red;
-        },
-        isGreen() {
-            return this.color == green;
-        },
     },
     mounted() {
-        let { hlStyle } = this;
-        let enable = true;
-        this.hlType = backgroundColor;
-        let colorhex = this.color1;
-        hlStyle.setType({ type: this.hlStyle, enable, colorhex })
-        this.updateUnderLineColor();
+        // let { hlStyle } = this;
+        // let enable = true;
+        // this.hlType = backgroundColor;
+        // let colorhex = this.color1;
+        // hlStyle.setType({ type: this.hlStyle, enable, colorhex })
+        // this.updateUnderLineColor();
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
@@ -133,16 +127,6 @@ export const NoteMenu = {
             this.hlStyle.setType({ type, enable, colorhex });
         },
         updateUnderLineColor() {
-            if (this.color == ul) {
-                this.underlineColor = this.color1;
-            } else {
-                this.underlineColor = undefined;
-            }
-            if (this.color == fontColor) {
-                this.fontColor = this.color1;
-            } else {
-                this.fontColor = undefined;
-            }
         },
         openEditor() {
             var tmpdata = this.notetext;
@@ -172,18 +156,18 @@ export const NoteMenu = {
             });
         },
         onFontColor(e) {
-            if (this.fontColorEnable == false) {
-                this.onClick(e, fontColor);
-            } else {
-                this.onClick(e, red);
-            }
+            this.setFontType(e,fontColor)
+        },
+        setFontType(e,t) {
+            e.stopPropagation();
+            let {enable} = this.hlStyle.getType(t)
+            enable = enable == true ? false : true
+            let colorhex = this.color1
+            let type = ul
+            this.hlStyle.setType({ type, enable, colorhex })
         },
         onUnderline(e) {
-            if (this.UnderlineEnable == false) {
-                this.onClick(e, ul);
-            } else {
-                this.onClick(e, red);
-            }
+            this.setFontType(e,ul)
         },
         onSearch() {
             // console.log("xx");
@@ -224,12 +208,6 @@ export const NoteMenu = {
             this.removeMenu();
         },
         onChangeColor() {
-            let x = classNameFromColor(this.color)
-            if (x == undefined) {
-                this.color = customColor;
-            }
-            this.updateUnderLineColor();
-            // console.log("cccc", this.color1)
             updateCssRule(this.color, this.color1)
             this.saveNoteData()
         },
