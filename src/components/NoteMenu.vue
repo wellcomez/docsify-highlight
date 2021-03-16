@@ -83,16 +83,12 @@ export default NoteMenu;
   position: absolute;
   border: 1px solid #fff;
   border-radius: 3px;
-  width: fit-content;
+  width: 360px;
   height: fit-content;
-  /* width        : 90px; */
-  color: #fff;
   background: var(--theme-color, #42b983);
-  /* background: rgb(226, 223, 223); */
-  /* text-align   : center; */
   font-size: 12px;
   cursor: pointer;
-  line-height: 18px;
+  /* line-height: 18px; */
   overflow: visible;
   padding: 4px;
 }
