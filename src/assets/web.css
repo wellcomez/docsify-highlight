@@ -10,6 +10,7 @@ div.d1{
   width: 32px;
   border-radius:16px;
   margin-left: 2px;
+  border:2px solid white;
 }
 div.d1 span {
   height: 32px;

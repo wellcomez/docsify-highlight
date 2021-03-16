@@ -43,15 +43,6 @@
             v-on:click="onChange"
           />
         </Col>
-        <!-- <Col>
-          <div
-            class="d1"
-            v-if="checked"
-            style="background-color: rgb(202, 233, 202)"
-          >
-            <span class="d1" style="">{{ count2 }}</span>
-          </div>
-        </Col> -->
         <Col>
           <SvgButton
             v-if="checked"
@@ -218,25 +209,22 @@ export default {
   position: fixed;
   right: 150px;
   left: auto;
-  top: 50px;
+  top: 25px;
   border-radius: 3px;
   color: black;
   padding: 4px;
+  background: var(--theme-color, #42b983);
 }
 .contenttable {
   width: 400px;
   height: 640px;
   background: white;
-  border: 1px solid var(--theme-color, #42b983);
+  /* border: 1px solid var(--theme-color, #42b983); */
 }
 .contenttable .tabs{
   height:inherit
 }
 
-.panel-header {
-  /* height: fit-content; */
-  background: var(--theme-color, #42b983);
-}
 
 
 

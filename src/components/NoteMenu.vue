@@ -87,12 +87,18 @@ export default NoteMenu;
   height: fit-content;
   /* width        : 90px; */
   color: #fff;
-  background: rgb(226, 223, 223);
+  background: var(--theme-color, #42b983);
+  /* background: rgb(226, 223, 223); */
   /* text-align   : center; */
   font-size: 12px;
   cursor: pointer;
   line-height: 18px;
   overflow: visible;
   padding: 4px;
+}
+@media screen and (max-width: 640px) {
+  .my-remove-tip{
+    width:360px
+  }
 }
 </style>
