@@ -44,6 +44,7 @@ export const NoteMenu = {
             color1: "",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
+            colorList:[]
         };
     },
     watch: {
@@ -57,19 +58,10 @@ export const NoteMenu = {
     },
     computed: {
         recommendedColor() {
-            if (this.hlType==tUl||this.hlStyle==tfontColor) {
+            if (this.hlType == tUl || this.hlStyle == tfontColor) {
                 return recommendedColorNoAlpha
             }
             return recommendedColor
-        },
-        colorList() {
-            let ret = []
-            for (let i = 0; i < 3; i++) {
-                let colorhex = this.first3Colors[i]
-                let style = `background-color: ${colorhex}`
-                ret.push({ style })
-            }
-            return ret
         },
         EditTextTips() {
             if (this.notetext.length) return this.notetext;
@@ -83,16 +75,27 @@ export const NoteMenu = {
         },
     },
     mounted() {
+        this.colorList = this.getColorList()
         this.updateSelection();
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        getColorList: function () {
+            let ret = []
+            for (let i = 0; i < 3; i++) {
+                let colorhex = this.first3Colors[i]
+                let style = `background-color: ${colorhex}`
+                ret.push({ style })
+            }
+            return ret
+        },
         updatePreDefineColor(colorhex) {
             this.first3Colors[this.selectedSubColor] = colorhex;
             let color = this.first3Colors;
+            this.colorList = this.getColorList()
             getConfig().save({ color })
-            this.backgroundColorKey = new Date() * 1
+            this.backgroundColorKey = this.backgroundColorKey + 1
         },
         updateSelection(a) {
             let updateButtonColor = (type, enable, colorhex) => {
@@ -219,6 +222,8 @@ export const NoteMenu = {
             let type = this.hlType;
             let { enable, colorhex } = this.hlStyle.getType(type)
             colorhex = this.color1
+            if (type === tBackgroundColor)
+                this.updatePreDefineColor(colorhex)
             this.hlStyle.setType({ type, enable, colorhex })
             this.updateSelection(type)
             this.saveNoteData()
