@@ -44,7 +44,7 @@ export const NoteMenu = {
             color1: "",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
-            colorList:[]
+            colorList: []
         };
     },
     watch: {
@@ -198,7 +198,14 @@ export const NoteMenu = {
         },
         notedata() {
             let { sources } = this;
-            let style = this.hlStyle.allTypes
+            let style = undefined;
+            for (let a in this.hlStyle.allTypes) {
+                let { enable, colorhex } = this.hlStyle.allTypes[a]
+                if (enable) {
+                    if (style == undefined) style = {}
+                    style[a] = { enable, colorhex }
+                }
+            }
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
             return { note, sources, style };
