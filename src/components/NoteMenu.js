@@ -27,7 +27,7 @@ export const NoteMenu = {
     },
     data() {
         return {
-            default_color_list,
+            first3Colors: default_color_list,
             backgroundColorKey: 1,
             underlineColor: undefined,
             UnderlineEnable: false,
@@ -50,14 +50,14 @@ export const NoteMenu = {
         // eslint-disable-next-line no-unused-vars
         selectedSubColor(val) {
             let type = tBackgroundColor, enable = this.selectedSubColor != undefined, colorhex;
-            colorhex = default_color_list[this.selectedSubColor];
+            colorhex = this.first3Colors[this.selectedSubColor];
             this.hlStyle.setType({ type, enable, colorhex });
             this.updateSelection(type)
         }
     },
     computed: {
         recommendedColor() {
-            if (this.UnderlineEnable || this.fontColorEnable) {
+            if (this.hlType==tUl||this.hlStyle==tfontColor) {
                 return recommendedColorNoAlpha
             }
             return recommendedColor
@@ -65,7 +65,7 @@ export const NoteMenu = {
         colorList() {
             let ret = []
             for (let i = 0; i < 3; i++) {
-                let colorhex = default_color_list[i]
+                let colorhex = this.first3Colors[i]
                 let style = `background-color: ${colorhex}`
                 ret.push({ style })
             }
@@ -88,8 +88,14 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        updatePreDefineColor(colorhex) {
+            this.first3Colors[this.selectedSubColor] = colorhex;
+            let color = this.first3Colors;
+            getConfig().save({ color })
+            this.backgroundColorKey = new Date() * 1
+        },
         updateSelection(a) {
-            let updateButtonColor=(type, enable, colorhex) =>{
+            let updateButtonColor = (type, enable, colorhex) => {
                 if (type == tUl) {
                     this.underlineColor = enable ? colorhex : undefined;
                     this.UnderlineEnable = enable;
@@ -97,17 +103,19 @@ export const NoteMenu = {
                     this.fontColor = enable ? colorhex : undefined;
                     this.fontColorEnable = enable;
                 } else {
-                    this.default_color_list[this.selectedSubColor] = colorhex;
-                    let color = this.default_color_list;
-                    getConfig().save({ color })
-                    this.backgroundColorKey = new Date() * 1
+                    if (enable) {
+                        this.selectedSubColor = this.first3Colors.indexOf(colorhex)
+                    } else {
+                        this.selectedSubColor = undefined;
+                    }
                 }
             }
             updateButtonColor = updateButtonColor.bind(this)
             if (a != undefined) {
                 let { enable, colorhex } = this.hlStyle.getType(a)
                 updateButtonColor(a, enable, colorhex)
-                this.color1 = colorhex
+                if (colorhex != undefined)
+                    this.color1 = colorhex
                 this.hlType = a
                 return
             }
@@ -116,7 +124,8 @@ export const NoteMenu = {
                 updateButtonColor(a, enable, colorhex)
                 if (enable) {
                     this.hlType = a
-                    this.color1 = colorhex
+                    if (colorhex != undefined)
+                        this.color1 = colorhex
                 }
             })
         },

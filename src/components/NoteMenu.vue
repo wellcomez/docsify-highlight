@@ -38,6 +38,7 @@
           offset="[-1,1]"
           v-model="color1"
           alpha
+          format="hex"
           :colors="recommendedColor"
           @on-change="onChangeColorPicker"
           :class="classColorPicker"
