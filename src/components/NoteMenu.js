@@ -72,7 +72,6 @@ export const NoteMenu = {
             color1: "",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
-            recommendedColor,
         };
     },
     watch: {
@@ -82,6 +81,12 @@ export const NoteMenu = {
         }
     },
     computed: {
+        recommendedColor(){
+            if(this.UnderlineEnable||this.fontColorEnable){
+                return recommendedColorNoAlpha
+            }
+            return recommendedColor
+        },
         colorList() {
             let ret = [
                 {
@@ -320,5 +325,33 @@ const recommendedColor = [
     "rgba(255, 255, 255, 0.5)",
     "rgba(29, 53, 234, 0.5)",
 ]
+
+const recommendedColorNoAlpha = [
+    "rgba(45, 140, 240, 1)",
+    "rgba(139, 195, 74, 1)",
+    "rgba(241, 107, 98, 1)",
+    "rgba(25, 190, 107, 1)",
+    "rgba(255, 153, 0, 1)",
+    "rgba(234, 76, 163, 1)",
+    "rgba(13, 148, 170, 1)",
+    "rgba(237, 64, 20, 1)",
+    "rgba(0, 181, 255, 1)",
+    "rgba(254, 189, 121, 1)",
+    "rgba(93, 64, 55, 1)",
+    "rgba(25, 201, 25, 1)",
+    "rgba(249, 227, 28, 1)",
+    "rgba(0, 188, 212, 1)",
+    "rgba(240, 98, 146, 1)",
+    "rgba(234, 26, 26, 1)",
+    "rgba(155, 29, 234, 1)",
+    "rgba(205, 220, 57, 1)",
+    "rgba(96, 125, 139, 1)",
+    "rgba(0, 194, 177, 1)",
+    "rgba(172, 122, 51, 1)",
+    "rgba(0, 0, 0, 1)",
+    "rgba(255, 255, 255, 1)",
+    "rgba(29, 53, 234, 1)",
+]
+
 
 
