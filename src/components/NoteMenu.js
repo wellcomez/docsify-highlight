@@ -50,7 +50,7 @@ export const NoteMenu = {
     watch: {
         // eslint-disable-next-line no-unused-vars
         selectedSubColor(val) {
-            if(val<0)return
+            if (val < 0) return
             let type = tBackgroundColor, enable = this.selectedSubColor != undefined, colorhex;
             colorhex = this.first3Colors[this.selectedSubColor];
             this.hlStyle.setType({ type, enable, colorhex });
@@ -92,7 +92,9 @@ export const NoteMenu = {
             return ret
         },
         updatePreDefineColor(colorhex) {
-            this.first3Colors[this.selectedSubColor] = colorhex;
+            let index = this.selectedSubColor
+            if (index == undefined || index < 0) return
+            this.first3Colors[index] = colorhex;
             let color = this.first3Colors;
             this.colorList = this.getColorList()
             getConfig().save({ color })
@@ -230,6 +232,18 @@ export const NoteMenu = {
             let type = this.hlType;
             let { enable, colorhex } = this.hlStyle.getType(type)
             colorhex = this.color1
+            if (enable == undefined) {
+                enable = true
+            }
+            if (type == undefined) {
+                type = tBackgroundColor
+            }
+            if (type == tBackgroundColor) {
+                let c = this.first3Colors[this.selectedSubColor]
+                if (c == undefined) {
+                    enable = true
+                }
+            }
             if (type === tBackgroundColor)
                 this.updatePreDefineColor(colorhex)
             this.hlStyle.setType({ type, enable, colorhex })
