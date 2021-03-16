@@ -5,26 +5,11 @@
 .highlight-mengshou-wrap {
   background: lightcyan;
 }
-/* .hl_ul {
-  border-bottom:2px solid red
-}
-.hlgreen {
-  background-color:#33FF33
-}
-
-.hlyellow {
-  background-color:#FFFF3355
-}
-
-.hlred {
-  background-color:#ff336659
-} */
-/* <div style=" width:50px; height:50px; background-color:#F00; border-radius:25px;"> */
 div.d1{
   height: 32px;
   width: 32px;
   border-radius:16px;
-  margin: 4px;
+  margin-left: 2px;
 }
 div.d1 span {
   height: 32px;
@@ -94,70 +79,9 @@ input[type='checkbox'].switch:checked::after {
 }
 
 
-.round_button{
-  margin: 4px;
-  display            : inline-block;
-  line-height        : 1;
-  white-space        : nowrap;
-  cursor             : pointer;
-  background         : #fff;
-  border             : 1px solid #dcdfe6;
-  color              : #606266;
-  -webkit-appearance : none;
-  text-align         : center;
-  box-sizing         : border-box;
-  outline            : none;
-  transition         : .1s;
-  font-weight        : 500;
-  -moz-user-select   : none;
-  -webkit-user-select: none;
-  -ms-user-select    : none;
-  padding            : 4px 2px;
-  font-size          : 12px;
-  border-radius      : 4px;
-}
 
-.round_button:active {
-  border             : 1px solid rgb(19, 206, 102);
-}
 
-.underline {
-  text-decoration: underline;
-  text-decoration-color: red;
-}
 .docsify-highlighter{
   font-style: normal;
 }
 
-
-.svg-icon {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  color: inherit;
-  vertical-align: middle;
-  fill: none;
-  stroke: currentColor;
-}
-
-.svg-fill {
-  fill: currentColor;
-  stroke: none;
-}
-
-.svg-up {
-  /* default */
-  transform: rotate(0deg);
-}
-
-.svg-right {
-  transform: rotate(90deg);
-}
-
-.svg-down {
-  transform: rotate(180deg);
-}
-
-.svg-left {
-  transform: rotate(-90deg);
-}

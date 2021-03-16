@@ -35,7 +35,7 @@ export const NoteMenu = {
             fontColorEnable: false,
             hlStyle: new highlightType(this.hl, this.noteid, this.data),
             style: {
-                left: Math.min(leftPos(), this.left - 20) + "px",
+                left: this.menuLeft(),
                 top: this.top - 80 - window.pageYOffset + "px",
             },
             hlType: undefined,
@@ -82,6 +82,10 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        menuLeft() {
+            if (window.screen.availWidth < 450) return "0px";
+            return Math.min(leftPos(), this.left - 20) + "px"
+        },
         getColorList: function () {
             let ret = []
             for (let i = 0; i < 3; i++) {

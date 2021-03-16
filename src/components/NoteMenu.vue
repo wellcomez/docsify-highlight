@@ -42,7 +42,6 @@
           @on-change="onChangeColorPicker"
           :class="classColorPicker"
           :key="hlType"
-          size="small"
         />
       </Col>
       <Col>
@@ -74,28 +73,10 @@ import { NoteMenu } from "./NoteMenu";
 export default NoteMenu;
 </script>
 <style>
-.note-color-picker,
-.note-color-picker-selected {
-  margin: 8px;
-}
 </style>
 .note-color-picker-selected{
   border: 1px solid var(--theme-color, #42b983)
 }
-<style scoped>
-.button {
-  height: 22px;
-  padding: 1px;
-  width: 22px;
-  margin: 4px;
-  border: 1px;
-  border-radius: 3px;
-}
-.button {
-  width: fit-content;
-  font-size: small;
-}
-</style>
 <style type="text/css">
 .my-remove-tip {
   box-sizing: border-box;
@@ -112,5 +93,6 @@ export default NoteMenu;
   cursor: pointer;
   line-height: 18px;
   overflow: visible;
+  padding: 4px;
 }
 </style>
