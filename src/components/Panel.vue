@@ -221,6 +221,7 @@ export default {
   top: 50px;
   border-radius: 3px;
   color: black;
+  padding: 4px;
 }
 .contenttable {
   width: 400px;
@@ -233,19 +234,11 @@ export default {
 }
 
 .panel-header {
-  height: fit-content;
+  /* height: fit-content; */
   background: var(--theme-color, #42b983);
 }
 
-.headtile {
-  font-size: xx-small;
-  color: white;
-  margin: 2px;
-}
 
-button {
-  margin: 4px;
-}
 
 @media screen and (max-width: 640px) {
   .contenttable {
