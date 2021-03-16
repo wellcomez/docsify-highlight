@@ -12,43 +12,13 @@ const leftPos = () => {
     return document.getElementsByClassName("content")[0].offsetWidth - 300;
 };
 
+const default_green = "#33FF33";
+const default_red = "#ff336659";
+const default_yellow = "#FFFF3355";
+export const default_color_list = [default_red, default_green, default_yellow];
 import SvgButton from './SvgButton'
 import BackgroudSelector from './BackgroudSelector'
-// eslint-disable-next-line no-unused-vars
-const default_green = "#33FF33"
-const default_red = "#ff336659"
-const default_yellow = "#FFFF3355"
-const default_color_list = [default_red, default_green, default_yellow]
-class highlightType {
-    constructor(hl, noteid) {
-        this.hl = hl
-        this.noteid = noteid
-        this.allTypes = {
-        }
-        this.allTypes[tfontColor] = { colorhex: "red" }
-        this.currentType = undefined
-    }
-    getType(type) {
-        let a = this.allTypes[type]
-        if (a) return a
-        return {}
-    }
-    setType({ type, enable, colorhex }) {
-        let { noteid } = this
-        if (colorhex) {
-            if (enable == false) {
-                colorhex = getcsscolorbyid(type)
-            }
-        }
-        let color = type
-        let disable = enable != true
-        this.allTypes[type] = { enable, colorhex }
-        this.hl.updateHignLightColor(noteid, color, colorhex, disable)
-        if (enable) {
-            this.currentType = type
-        }
-    }
-}
+import { highlightType } from "./highlightType";
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
@@ -81,8 +51,8 @@ export const NoteMenu = {
         }
     },
     computed: {
-        recommendedColor(){
-            if(this.UnderlineEnable||this.fontColorEnable){
+        recommendedColor() {
+            if (this.UnderlineEnable || this.fontColorEnable) {
                 return recommendedColorNoAlpha
             }
             return recommendedColor
@@ -123,9 +93,9 @@ export const NoteMenu = {
         updateColor1() {
             let yes = false;
             [tUl, tfontColor, tBackgroundColor].forEach((a) => {
-                if(yes)return;
-                let {enable,colorhex} = this.hlStyle.getType(a)
-                if(enable){
+                if (yes) return;
+                let { enable, colorhex } = this.hlStyle.getType(a)
+                if (enable) {
                     yes = true;
                     this.color1 = colorhex
                 }
@@ -138,11 +108,9 @@ export const NoteMenu = {
             this.hlStyle.setType({ type, enable, colorhex });
             if (enable) {
                 this.color1 = colorhex;
-            }else{
+            } else {
                 this.updateColor1()
             }
-        },
-        updateUnderLineColor() {
         },
         openEditor() {
             var tmpdata = this.notetext;
@@ -190,9 +158,9 @@ export const NoteMenu = {
                 this.fontColor = enable ? colorhex : undefined
                 this.fontColorEnable = enable
             }
-            if(enable){
+            if (enable) {
                 this.color1 = colorhex
-            }else{
+            } else {
                 this.updateColor1()
             }
         },
@@ -250,7 +218,6 @@ export const NoteMenu = {
             } else {
                 this.colorhex = this.color1;
             }
-            this.updateUnderLineColor();
             this.saveNoteData();
         },
         removeMenu() {
