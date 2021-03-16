@@ -13,10 +13,14 @@ const leftPos = () => {
 const default_green = "#33FF33";
 const default_red = "#ff336659";
 const default_yellow = "#FFFF3355";
-export const default_color_list = [default_red, default_green, default_yellow];
+let default_color_list = getConfig().color
+if (default_color_list == undefined) {
+    default_color_list = [default_red, default_green, default_yellow];
+}
 import SvgButton from './SvgButton'
 import BackgroudSelector from './BackgroudSelector'
 import { highlightType } from "../highlightType";
+import { getConfig } from "../ANoteConfig";
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
@@ -24,12 +28,13 @@ export const NoteMenu = {
     },
     data() {
         return {
+            default_color_list,
             backgroundColorKey: 1,
             underlineColor: undefined,
             UnderlineEnable: false,
             fontColor: undefined,
             fontColorEnable: false,
-            hlStyle: new highlightType(this.hl, this.noteid,this.style),
+            hlStyle: new highlightType(this.hl, this.noteid, this.style),
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
                 top: this.top - 80 - window.pageYOffset + "px",
@@ -147,8 +152,11 @@ export const NoteMenu = {
                 this.fontColor = enable ? colorhex : undefined;
                 this.fontColorEnable = enable;
             } else {
-                let style = `background-color: ${colorhex}`
-                this.colorList[this.selectedSubColor].style = style;
+                this.default_color_list[this.selectedSubColor] = colorhex;
+                let color = this.default_color_list;
+                getConfig().save({ color })
+                // let a = this.colorList
+                // this.colorList = a
                 this.backgroundColorKey = new Date() * 1
             }
         },

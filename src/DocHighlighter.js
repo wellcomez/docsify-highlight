@@ -119,11 +119,6 @@ export class DocHighlighter {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
-    // setHighlightColor(color, noteid, colorhex) {
-    //     this.updateHignLightColor(noteid, color, colorhex);
-    //     getConfig().save({ color, colorhex });
-    //     this.store.update({ id: noteid, color, colorhex })
-    // }
     updateHignLightColor(noteid, color, colorhex, disable) {
         this.removeHighLight(noteid);
         this.procssAllElements(noteid, (a) => {

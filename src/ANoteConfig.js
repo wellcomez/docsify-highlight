@@ -35,9 +35,6 @@ export class ANoteConfig {
         } catch (error) {
         }
 
-        if (this.color == undefined) {
-            this.color = "yellow"
-        }
         if (this.on == undefined) {
             this.on = true;
         }
