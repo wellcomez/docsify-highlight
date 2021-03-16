@@ -1,8 +1,7 @@
 import {
     getcsscolorbyid,
-
-
-    tfontColor
+    tfontColor,
+    tUl
 } from "../colorSelector";
 
 // eslint-disable-next-line no-unused-vars
@@ -12,6 +11,7 @@ export class highlightType {
         this.noteid = noteid;
         this.allTypes = {};
         this.allTypes[tfontColor] = { colorhex: "red" };
+        this.allTypes[tUl] = { colorhex: "red" };
         this.currentType = undefined;
     }
     getType(type) {
@@ -34,5 +34,8 @@ export class highlightType {
         if (enable) {
             this.currentType = type;
         }
+    }
+    json() {
+        return this.allTypes;
     }
 }

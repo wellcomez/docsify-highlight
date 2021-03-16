@@ -166,8 +166,8 @@ export const markColorListForSelection = hlList
 export const yellow = hlList.indexOf(hlyellow)
 export const red = hlList.indexOf(hlred)
 export const green = hlList.indexOf(hlgreen)
-export const tUl = hlList.indexOf(hl_ul)
-export const tfontColor = hlList.indexOf(hl_fc)
+export const tUl = 1
+export const tfontColor =0
 export const tCustomColor = tfontColor + 1
-export const tBackgroundColor = 0
+export const tBackgroundColor = 2
 

@@ -1,7 +1,7 @@
 <template>
   <Row type="flex">
-    <Col v-for="({ subclass }, index) in colorList" :key="index">
-      <div :class="subclass" v-on:click="onClick($event, index)">
+    <Col v-for="({ style}, index) in colorList" :key="index">
+      <div class="d1" :style="style" v-on:click="onClick($event, index)">
         <span v-if="index == selectedIndex">&#10004;</span>
       </div>
     </Col>
@@ -22,15 +22,6 @@ export default {
       type: Array,
       default: function () {
         return [
-          {
-            subclass: "hlred d1",
-          },
-          {
-            subclass: "hlgreen d1",
-          },
-          {
-            subclass: "hlyellow d1",
-          },
         ];
       },
     },

@@ -5,7 +5,7 @@
     @touchstart="onClickMask"
   >
     <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex">
-      <Col>
+      <Col :style="col(0)">
         <SvgButton
           onOff
           v-bind:on="fontColorEnable"
@@ -16,7 +16,7 @@
           tips="Font Color"
         ></SvgButton>
       </Col>
-      <Col>
+      <Col :style="col(1)">
         <SvgButton
           onOff
           v-bind:on="UnderlineEnable"
@@ -27,7 +27,12 @@
           tips="Underline"
         ></SvgButton>
       </Col>
-      <Col><BackgroudSelector :colorList="colorList" :selectedIndex.sync="selectedSubColor"/></Col>
+      <Col :style="col(2)">
+        <BackgroudSelector
+          :colorList="colorList"
+          :selectedIndex.sync="selectedSubColor"
+          :key="backgroundColorKey"
+      /></Col>
       <Col>
         <ColorPicker
           offset="[-1,1]"
