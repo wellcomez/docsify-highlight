@@ -8,7 +8,7 @@ import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
-import { markColorList, hl_note, ul, getcsscolorbyid, customColor,fontColor } from './colorSelector';
+import { markColorList, hl_note, ul, getcsscolorbyid, customColor, fontColor } from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -124,17 +124,17 @@ export class DocHighlighter {
         getConfig().save({ color, colorhex });
         this.store.update({ id: noteid, color, colorhex })
     }
-    updateHignLightColor(noteid, color, colorhex) {
+    updateHignLightColor(noteid, color, colorhex, disable) {
         this.removeHighLight(noteid);
         this.procssAllElements(noteid, (a) => {
-                a.style.borderBottom = ""
-                a.style.backgroundColor = ""
-                a.style.color = ""
+            if (disable) {
+                colorhex = ""
+            }
             if (color == ul) {
                 a.style.borderBottom = "2px solid " + colorhex
-            } else  if(color == fontColor){
-                a.style.color= colorhex
-            }else{
+            } else if (color == fontColor) {
+                a.style.color = colorhex
+            } else {
                 a.style.backgroundColor = colorhex
             }
         })
@@ -173,7 +173,7 @@ export class DocHighlighter {
         this.parseurlResult = parseurl();
         const onClick = (noteid) => {
             // const classname = 'docsify-highlighter'
-            let {id} = noteid;
+            let { id } = noteid;
             let node = this.getElement(id)
             this.createNoteMenu(node)
         };
@@ -280,7 +280,7 @@ export class DocHighlighter {
             })
             let hs = sources[0]
             let menu = document.getElementsByClassName("note-menu")
-            if(menu&&menu.length){
+            if (menu && menu.length) {
                 this.highlighter.remove(hs.id);
                 return;
             }

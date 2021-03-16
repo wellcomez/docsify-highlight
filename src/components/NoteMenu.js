@@ -1,4 +1,5 @@
 import {
+    backgroundColor,
     yellow,
     green,
     red,
@@ -14,57 +15,79 @@ import { Modal } from "iview";
 const leftPos = () => {
     return document.getElementsByClassName("content")[0].offsetWidth - 300;
 };
-const recommendedColor = [
-    "rgba(45, 140, 240, 0.5)",
-    "rgba(139, 195, 74, 0.5)",
-    "rgba(241, 107, 98, 0.5)",
-    "rgba(25, 190, 107, 0.5)",
-    "rgba(255, 153, 0, 0.5)",
-    "rgba(234, 76, 163, 0.5)",
-    "rgba(13, 148, 170, 0.5)",
-    "rgba(237, 64, 20, 0.5)",
-    "rgba(0, 181, 255, 0.5)",
-    "rgba(254, 189, 121, 0.5)",
-    "rgba(93, 64, 55, 0.5)",
-    "rgba(25, 201, 25, 0.5)",
-    "rgba(249, 227, 28, 0.5)",
-    "rgba(0, 188, 212, 0.5)",
-    "rgba(240, 98, 146, 0.5)",
-    "rgba(234, 26, 26, 0.5)",
-    "rgba(155, 29, 234, 0.5)",
-    "rgba(205, 220, 57, 0.5)",
-    "rgba(96, 125, 139, 0.5)",
-    "rgba(0, 194, 177, 0.5)",
-    "rgba(172, 122, 51, 0.5)",
-    "rgba(0, 0, 0, 0.5)",
-    "rgba(255, 255, 255, 0.5)",
-    "rgba(29, 53, 234, 0.5)",
-]
+
 import SvgButton from './SvgButton'
-import BackgroudSelector from'./BackgroudSelector'
+import BackgroudSelector from './BackgroudSelector'
+// eslint-disable-next-line no-unused-vars
+const default_green = "#33FF33"
+const default_red = "#ff336659"
+const default_yellow = "#FFFF3355"
+const default_color_list = [default_red, default_green, default_yellow]
+class highlightType {
+    constructor(hl, noteid) {
+        this.hl = hl
+        this.noteid = noteid
+        this.allTypes = {
+        }
+    }
+    setType({ type, enable, colorhex }) {
+        let { noteid } = this
+        if (colorhex) {
+            if (enable == false) {
+                colorhex = getcsscolorbyid(type)
+            }
+        }
+        let color = type
+        let disable = enable != true
+        this.allTypes[type] = { enable, colorhex }
+        this.hl.updateHignLightColor(noteid, color, colorhex, disable)
+    }
+}
 export const NoteMenu = {
     name: "NoteMenu",
-    components:{
-        SvgButton,BackgroudSelector
+    components: {
+        SvgButton, BackgroudSelector
     },
     data() {
         return {
+            hlStyle: new highlightType(this.hl, this.noteid),
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
                 top: this.top - 80 - window.pageYOffset + "px",
                 // width: 6 * 30,
             },
-            selectedSubColor:2,
+            hlType: customColor,
+            selectedSubColor: 2,
             notetext: this.note ? this.note : "",
             color1: "green",
             notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
             recommendedColor,
-            underlineColor:undefined,
-            fontColor:"red"
+            underlineColor: undefined,
+            fontColor: "red"
         };
     },
+    watch: {
+        // eslint-disable-next-line no-unused-vars
+        selectedSubColor(val) {
+            this.updateBackgroudColor();
+        }
+    },
     computed: {
+        colorList() {
+            let ret = [
+                {
+                    subclass: "hlred d1",
+                },
+                {
+                    subclass: "hlgreen d1",
+                },
+                {
+                    subclass: "hlyellow d1",
+                },
+            ];
+            return ret
+        },
         EditTextTips() {
             if (this.notetext.length) return this.notetext;
             return "Note"
@@ -75,7 +98,7 @@ export const NoteMenu = {
             }
             return 'note-color-picker'
         },
-        fontColorEnable(){
+        fontColorEnable() {
             return this.color == customColor
         },
         UnderlineEnable() {
@@ -92,27 +115,32 @@ export const NoteMenu = {
         },
     },
     mounted() {
-        this.color1 = getcsscolorbyid(this.color)
-        if (this.colorhex) {
-            if (this.colorhex.length) {
-
-                this.color1 = this.colorhex
-            }
-        }
+        let { hlStyle } = this;
+        let enable = true;
+        this.hlType = backgroundColor;
+        let colorhex = this.color1;
+        hlStyle.setType({ type: this.hlStyle, enable, colorhex })
         this.updateUnderLineColor();
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        updateBackgroudColor() {
+            let type = backgroundColor, enable = true, colorhex;
+            this.hlType = type
+            colorhex = default_color_list[this.selectedSubColor];
+            this.color1 = colorhex;
+            this.hlStyle.setType({ type, enable, colorhex });
+        },
         updateUnderLineColor() {
             if (this.color == ul) {
                 this.underlineColor = this.color1;
             } else {
                 this.underlineColor = undefined;
             }
-            if(this.color==fontColor){
+            if (this.color == fontColor) {
                 this.fontColor = this.color1;
-            }else{
+            } else {
                 this.fontColor = undefined;
             }
         },
@@ -143,10 +171,10 @@ export const NoteMenu = {
                 },
             });
         },
-        onFontColor(e){
-            if(this.fontColorEnable==false){
-                this.onClick(e,fontColor);   
-            }else{
+        onFontColor(e) {
+            if (this.fontColorEnable == false) {
+                this.onClick(e, fontColor);
+            } else {
                 this.onClick(e, red);
             }
         },
@@ -195,10 +223,6 @@ export const NoteMenu = {
             this.removeSelectionHighLight();
             this.removeMenu();
         },
-        // eslint-disable-next-line no-unused-vars
-        // onActiveChange(a, b) {
-        //     console.log("cccc", a, b)
-        // },
         onChangeColor() {
             let x = classNameFromColor(this.color)
             if (x == undefined) {
@@ -210,7 +234,7 @@ export const NoteMenu = {
             this.saveNoteData()
         },
         onClick(e, color) {
-            e.stopPropagation()
+            if (e == undefined) return
             this.color = color;
             let color1 = getcsscolorbyid(this.color)
             if (color1.length) {
@@ -220,15 +244,6 @@ export const NoteMenu = {
             }
             this.updateUnderLineColor();
             this.saveNoteData();
-        },
-        onRed(e) {
-            this.onClick(e, red);
-        },
-        onGreen(e) {
-            this.onClick(e, green);
-        },
-        onYellow(e) {
-            this.onClick(e, yellow);
         },
         removeMenu() {
             var tips = document.getElementsByClassName("note-menu");
@@ -276,3 +291,31 @@ export const NoteMenu = {
         },
     },
 }
+const recommendedColor = [
+    "rgba(45, 140, 240, 0.5)",
+    "rgba(139, 195, 74, 0.5)",
+    "rgba(241, 107, 98, 0.5)",
+    "rgba(25, 190, 107, 0.5)",
+    "rgba(255, 153, 0, 0.5)",
+    "rgba(234, 76, 163, 0.5)",
+    "rgba(13, 148, 170, 0.5)",
+    "rgba(237, 64, 20, 0.5)",
+    "rgba(0, 181, 255, 0.5)",
+    "rgba(254, 189, 121, 0.5)",
+    "rgba(93, 64, 55, 0.5)",
+    "rgba(25, 201, 25, 0.5)",
+    "rgba(249, 227, 28, 0.5)",
+    "rgba(0, 188, 212, 0.5)",
+    "rgba(240, 98, 146, 0.5)",
+    "rgba(234, 26, 26, 0.5)",
+    "rgba(155, 29, 234, 0.5)",
+    "rgba(205, 220, 57, 0.5)",
+    "rgba(96, 125, 139, 0.5)",
+    "rgba(0, 194, 177, 0.5)",
+    "rgba(172, 122, 51, 0.5)",
+    "rgba(0, 0, 0, 0.5)",
+    "rgba(255, 255, 255, 0.5)",
+    "rgba(29, 53, 234, 0.5)",
+]
+
+

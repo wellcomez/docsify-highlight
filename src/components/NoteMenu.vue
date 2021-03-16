@@ -27,22 +27,7 @@
           tips="Underline"
         ></SvgButton>
       </Col>
-      <Col><BackgroudSelector :selectedIndex.sync="selectedSubColor"/></Col>
-      <Col>
-        <div class="d1 hlyellow" v-on:click="onYellow">
-          <span v-if="isYellow">&#10004;</span>
-        </div>
-      </Col>
-      <Col>
-        <div class="d1 hlred" v-on:click="onRed">
-          <span v-if="isRed">&#10004;</span>
-        </div>
-      </Col>
-      <Col>
-        <div class="d1 hlgreen" v-on:click="onGreen">
-          <span v-if="isGreen">&#10004;</span>
-        </div>
-      </Col>
+      <Col><BackgroudSelector :colorList="colorList" :selectedIndex.sync="selectedSubColor"/></Col>
       <Col>
         <ColorPicker
           offset="[-1,1]"

@@ -169,4 +169,5 @@ export const green = hlList.indexOf(hlgreen)
 export const ul = hlList.indexOf(hl_ul)
 export const fontColor = hlList.indexOf(hl_fc)
 export const customColor = fontColor + 1
+export const backgroundColor = 0
 
