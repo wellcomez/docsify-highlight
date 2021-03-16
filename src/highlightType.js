@@ -14,7 +14,7 @@ export class highlightType {
         if (this.allTypes[tfontColor] == undefined) {
             this.allTypes[tfontColor] = { colorhex: "red" };
         }
-        if (this.allTypes[tUl])
+        if (this.allTypes[tUl]==undefined)
             this.allTypes[tUl] = { colorhex: "red" };
     }
     showHighlight() {

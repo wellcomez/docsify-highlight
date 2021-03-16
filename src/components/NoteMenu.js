@@ -89,16 +89,31 @@ export const NoteMenu = {
     },
     methods: {
         updateSelection(a) {
+            let updateButtonColor=(type, enable, colorhex) =>{
+                if (type == tUl) {
+                    this.underlineColor = enable ? colorhex : undefined;
+                    this.UnderlineEnable = enable;
+                } else if (type == tfontColor) {
+                    this.fontColor = enable ? colorhex : undefined;
+                    this.fontColorEnable = enable;
+                } else {
+                    this.default_color_list[this.selectedSubColor] = colorhex;
+                    let color = this.default_color_list;
+                    getConfig().save({ color })
+                    this.backgroundColorKey = new Date() * 1
+                }
+            }
+            updateButtonColor = updateButtonColor.bind(this)
             if (a != undefined) {
                 let { enable, colorhex } = this.hlStyle.getType(a)
-                this.updateButtonColor(a, enable, colorhex)
+                updateButtonColor(a, enable, colorhex)
                 this.color1 = colorhex
                 this.hlType = a
                 return
             }
             [tfontColor, tBackgroundColor, tUl].forEach((a) => {
                 let { enable, colorhex } = this.hlStyle.getType(a)
-                this.updateButtonColor(a, enable, colorhex)
+                updateButtonColor(a, enable, colorhex)
                 if (enable) {
                     this.hlType = a
                     this.color1 = colorhex
@@ -141,20 +156,7 @@ export const NoteMenu = {
         onFontColor(e) {
             this.setFontType(e, tfontColor)
         },
-        updateButtonColor(type, enable, colorhex) {
-            if (type == tUl) {
-                this.underlineColor = enable ? colorhex : undefined;
-                this.UnderlineEnable = enable;
-            } else if (type == tfontColor) {
-                this.fontColor = enable ? colorhex : undefined;
-                this.fontColorEnable = enable;
-            } else {
-                this.default_color_list[this.selectedSubColor] = colorhex;
-                let color = this.default_color_list;
-                getConfig().save({ color })
-                this.backgroundColorKey = new Date() * 1
-            }
-        },
+
         setFontType(e, t) {
             e.stopPropagation();
             let { enable, colorhex } = this.hlStyle.getType(t)
