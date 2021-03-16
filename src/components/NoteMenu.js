@@ -25,6 +25,7 @@ class highlightType {
         this.noteid = noteid
         this.allTypes = {
         }
+        this.allTypes[tfontColor] = { colorhex: "red" }
         this.currentType = undefined
     }
     getType(type) {
@@ -56,9 +57,9 @@ export const NoteMenu = {
     data() {
         return {
             underlineColor: undefined,
-            UnderlineEnable:false,
-            fontColor:undefined,
-            fontColorEnable:false,
+            UnderlineEnable: false,
+            fontColor: undefined,
+            fontColorEnable: false,
             hlStyle: new highlightType(this.hl, this.noteid),
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
@@ -114,12 +115,27 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        updateColor1() {
+            let yes = false;
+            [tUl, tfontColor, tBackgroundColor].forEach((a) => {
+                if(yes)return;
+                let {enable,colorhex} = this.hlStyle.getType(a)
+                if(enable){
+                    yes = true;
+                    this.color1 = colorhex
+                }
+            })
+        },
         updateBackgroudColor() {
-            let type = tBackgroundColor, enable = true, colorhex;
+            let type = tBackgroundColor, enable = this.selectedSubColor != undefined, colorhex;
             this.hlType = type
             colorhex = default_color_list[this.selectedSubColor];
-            this.color1 = colorhex;
             this.hlStyle.setType({ type, enable, colorhex });
+            if (enable) {
+                this.color1 = colorhex;
+            }else{
+                this.updateColor1()
+            }
         },
         updateUnderLineColor() {
         },
@@ -168,6 +184,11 @@ export const NoteMenu = {
             } else {
                 this.fontColor = enable ? colorhex : undefined
                 this.fontColorEnable = enable
+            }
+            if(enable){
+                this.color1 = colorhex
+            }else{
+                this.updateColor1()
             }
         },
         onUnderline(e) {

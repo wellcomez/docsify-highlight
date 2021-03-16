@@ -38,6 +38,9 @@ export default {
   methods: {
     onClick(e, index) {
       e.stopPropagation();
+      if(index==this.selectedIndex){
+          index = undefined;
+      }
       this.$emit("update:selectedIndex", index);
     },
   },
