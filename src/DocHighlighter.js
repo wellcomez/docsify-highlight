@@ -8,7 +8,7 @@ import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
-import { markColorList, hl_note, tUl, getcsscolorbyid, tCustomColor, tfontColor } from './colorSelector';
+import { hl_note, tUl, tfontColor } from './colorSelector';
 import {highlightType} from './highlightType'
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
@@ -139,9 +139,6 @@ export class DocHighlighter {
     }
 
     removeHighLight(noteid) {
-        markColorList.forEach((a) => {
-            this.highlighter.removeClass(a, noteid);
-        });
     }
 
     onHover(a) {

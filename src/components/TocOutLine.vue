@@ -8,7 +8,7 @@
     placement="bottom-start"
   >
     <Icon v-if="icon" :type="icon"></Icon>
-    <span :style="style" :class="classOfSpan" @click="onSelected">{{
+    <span :style="style" @click="onSelected">{{
       title2
     }}</span>
     <div slot="content">
@@ -23,12 +23,12 @@
   </Tooltip>
 </template>
 <script>
-import { classNameFromColor, tBackgroundColor, tUl } from "../colorSelector";
+import { tBackgroundColor, tUl } from "../colorSelector";
 export default {
   name: "TocOutLine",
   created() {
     let { label: title, children, note, style: styleDefine } = this.notedata;
-    this.classOfSpan = this.spanclass(this.notedata);
+    // this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {
       this.title2 = `"${note}"-${title}`;
@@ -85,18 +85,18 @@ export default {
     },
   },
   methods: {
-    spanclass(data) {
-      let { id, color, className } = data;
-      if (className != undefined) {
-        return className;
-      }
-      if (id == undefined) {
-        return "chartper";
-      } else {
-        let ret = "chartper-note " + classNameFromColor(color);
-        return ret;
-      }
-    },
+    // spanclass(data) {
+    //   let { id, color, className } = data;
+    //   if (className != undefined) {
+    //     return className;
+    //   }
+    //   if (id == undefined) {
+    //     return "chartper";
+    //   } else {
+    //     let ret = "chartper-note " + classNameFromColor(color);
+    //     return ret;
+    //   }
+    // },
   },
 };
 </script>
