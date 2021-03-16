@@ -50,6 +50,7 @@ export const NoteMenu = {
     watch: {
         // eslint-disable-next-line no-unused-vars
         selectedSubColor(val) {
+            if(val<0)return
             let type = tBackgroundColor, enable = this.selectedSubColor != undefined, colorhex;
             colorhex = this.first3Colors[this.selectedSubColor];
             this.hlStyle.setType({ type, enable, colorhex });
