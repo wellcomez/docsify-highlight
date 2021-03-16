@@ -60,11 +60,10 @@ export default {
       let notedata = item
       const render = (h) => {
         return h(
-          "span",
+          TocOutLine,
           {
             props: {notedata,onSelected:()=>{this.handleNodeClick(item)}},
-          },
-          title
+          }
         );
       };
       return { title, children, expand, render };

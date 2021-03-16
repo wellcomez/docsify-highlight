@@ -8,28 +8,26 @@
     placement="bottom-start"
   >
     <Icon v-if="icon" :type="icon"></Icon>
-    <span
-      :style="style"
-      :class="classOfSpan"
-      @click="onSelected"
-    >{{title2}}</span>
+    <span :style="style" :class="classOfSpan" @click="onSelected">{{
+      title2
+    }}</span>
     <div slot="content">
       <div v-if="note" class="outline-title">
-        <p>{{note}}</p>
+        <p>{{ note }}</p>
       </div>
       <div v-if="note" class="outline-note">
-        <p style="padding:10px;margin:10px">{{title}}</p>
+        <p style="padding: 10px; margin: 10px">{{ title }}</p>
       </div>
-      <p  v-else class="outline-title">{{title}}</p>
+      <p v-else class="outline-title">{{ title }}</p>
     </div>
   </Tooltip>
 </template>
 <script>
-import { classNameFromColor, ul } from "../colorSelector";
+import { classNameFromColor, tBackgroundColor, tUl } from "../colorSelector";
 export default {
   name: "TocOutLine",
   created() {
-    let { label: title, children, colorhex, note, color } = this.notedata;
+    let { label: title, children, note, style: styleDefine } = this.notedata;
     this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {
@@ -38,10 +36,18 @@ export default {
     this.title = title;
     this.note = note && note.length ? `"${note}"` : undefined;
     let style = {};
-    if (color == ul) {
-      style.borderBottom = "1px solid " + colorhex;
-    } else {
-      style.backgroundColor = colorhex;
+    for (let color in styleDefine) {
+      color = parseInt(color)
+      let a = styleDefine[color];
+      let { colorhex, enable } = a;
+      if (enable == false) continue;
+      if (color == tUl) {
+        style.borderBottom = "1px solid " + colorhex;
+      } else if (color == tBackgroundColor) {
+        style.backgroundColor = colorhex;
+      } else {
+        style.color = colorhex;
+      }
     }
     let icon = "ios-brush-outline";
     if (note) {
@@ -104,8 +110,8 @@ export default {
 }
 .outline-note {
   background: #80808026 !important;
-  border-left-color: red  !important;
-  border-left-width: 2px!important;
-  border-left-style: solid!important;
+  border-left-color: red !important;
+  border-left-width: 2px !important;
+  border-left-style: solid !important;
 }
 </style>

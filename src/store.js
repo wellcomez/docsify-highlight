@@ -197,10 +197,10 @@ class Chapter {
       this.label = store.title;
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
-        let { id, text: label, top, color, colorhex, note } = hs;
+        let { id, text: label, top, style, note } = hs;
         top = top.top;
         let textOffset = hs.startMeta.textOffset;
-        return { idx, id, label, key, textOffset, top, color, colorhex, note };
+        return { idx, id, label, key, textOffset, top, style, note };
       });
       let aa = this.children.sort((a, b) => {
         if (a.top == b.top) return 0;
