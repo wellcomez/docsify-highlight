@@ -228,9 +228,15 @@ class Chapter {
     let title = ["## 章节 " + this.label];
     if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
-      let { label, color, colorhex, note } = a;
-      let classname = colorClassList.getClass(color, colorhex);
-      let hlyellow = classname
+      let { label, style, note } = a;
+      let hlyellow = ''
+      for (let color in style) {
+        let { enable, colorhex } = style[color];
+        if (enable) {
+          let classname = colorClassList.getClass(color, colorhex);
+          hlyellow = `${hlyellow} ${classname}`
+        }
+      }
       if (note) {
         note = "\n\n\t>" + note
       } else {

@@ -140,7 +140,7 @@ export const NoteMenu = {
             })
         },
         col(i) {
-            let a = "border-bottom:2px solid var(--theme-color, #42b983);";
+            let a = "border-bottom:2px solid white;";
             if (i == this.hlType)
                 return a
             return ""

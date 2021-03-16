@@ -96,6 +96,10 @@ export default NoteMenu;
   overflow: visible;
   padding: 4px;
 }
+
+.my-remove-tip .ivu-col {
+  padding-bottom: 2px;
+}
 @media screen and (max-width: 640px) {
   .my-remove-tip{
     width:360px
