@@ -22,7 +22,7 @@ export class ColorClassCreate {
         if (idx ==undefined) {
             let classname = 'hl_custom_' + Object.keys(this.customcolorClassList).length;
             let css = `.${classname}{background-color:${hex}}`
-            if (ul == color) {
+            if (tUl == color) {
                 css = `.${classname}{border-bottom:2px solid ${hex}}`
             }
             customcolorClassList[colorvlaue] = classname
@@ -166,8 +166,8 @@ export const markColorListForSelection = hlList
 export const yellow = hlList.indexOf(hlyellow)
 export const red = hlList.indexOf(hlred)
 export const green = hlList.indexOf(hlgreen)
-export const ul = hlList.indexOf(hl_ul)
-export const fontColor = hlList.indexOf(hl_fc)
-export const customColor = fontColor + 1
-export const backgroundColor = 0
+export const tUl = hlList.indexOf(hl_ul)
+export const tfontColor = hlList.indexOf(hl_fc)
+export const tCustomColor = tfontColor + 1
+export const tBackgroundColor = 0
 

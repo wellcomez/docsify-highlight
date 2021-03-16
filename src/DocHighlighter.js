@@ -8,7 +8,7 @@ import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
-import { markColorList, hl_note, ul, getcsscolorbyid, customColor, fontColor } from './colorSelector';
+import { markColorList, hl_note, tUl, getcsscolorbyid, tCustomColor, tfontColor } from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -130,12 +130,12 @@ export class DocHighlighter {
             if (disable) {
                 colorhex = undefined
             }
-            if (color == ul) {
+            if (color == tUl) {
                 if (colorhex != undefined)
                     a.style.borderBottom = "2px solid " + colorhex
                 else
                     a.style.borderBottom = ""
-            } else if (color == fontColor) {
+            } else if (color == tfontColor) {
                 a.style.color = colorhex
             } else {
                 a.style.backgroundColor = colorhex
@@ -263,7 +263,7 @@ export class DocHighlighter {
             sources.forEach(hs => {
                 let { id, color, colorhex, note } = this.store.geths(hs.id)
                 if (colorhex && getcsscolorbyid(color) != colorhex) {
-                    color = customColor
+                    color = tCustomColor
                     this.store.update({ id, color })
                 }
                 if (note && note.length) {

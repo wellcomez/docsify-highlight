@@ -1,10 +1,10 @@
 import {
-    backgroundColor,
-    ul,
+    tBackgroundColor,
+    tUl,
     getcsscolorbyid,
     updateCssRule,
-    customColor,
-    fontColor,
+    tCustomColor,
+    tfontColor,
 } from "../colorSelector";
 
 import { Modal } from "iview";
@@ -29,8 +29,8 @@ class highlightType {
     }
     getType(type) {
         let a = this.allTypes[type]
-        if(a)return a
-        return{} 
+        if (a) return a
+        return {}
     }
     setType({ type, enable, colorhex }) {
         let { noteid } = this
@@ -43,7 +43,7 @@ class highlightType {
         let disable = enable != true
         this.allTypes[type] = { enable, colorhex }
         this.hl.updateHignLightColor(noteid, color, colorhex, disable)
-        if(enable){
+        if (enable) {
             this.currentType = type
         }
     }
@@ -55,13 +55,17 @@ export const NoteMenu = {
     },
     data() {
         return {
+            underlineColor: undefined,
+            UnderlineEnable:false,
+            fontColor:undefined,
+            fontColorEnable:false,
             hlStyle: new highlightType(this.hl, this.noteid),
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
                 top: this.top - 80 - window.pageYOffset + "px",
                 // width: 6 * 30,
             },
-            hlType: customColor,
+            hlType: undefined,
             selectedSubColor: undefined,
             notetext: this.note ? this.note : "",
             color1: "",
@@ -77,12 +81,6 @@ export const NoteMenu = {
         }
     },
     computed: {
-        underlineColor(){
-            let {hlStyle} = this
-            let a = hlStyle.getType(ul)
-            let {enable} = a;
-            if(enable)return a.colorhex
-        },
         colorList() {
             let ret = [
                 {
@@ -102,25 +100,22 @@ export const NoteMenu = {
             return "Note"
         },
         classColorPicker() {
-            if (this.color == customColor) {
+            if (this.color == tCustomColor) {
                 return "note-color-picker-selected"
             }
             return 'note-color-picker'
         },
     },
     mounted() {
-        // let { hlStyle } = this;
-        // let enable = true;
-        // this.hlType = backgroundColor;
-        // let colorhex = this.color1;
-        // hlStyle.setType({ type: this.hlStyle, enable, colorhex })
-        // this.updateUnderLineColor();
+        let { hlStyle } = this;
+        this.UnderlineEnable = hlStyle.getType(tUl).enable
+        this.fontColorEnable = hlStyle.getType(tfontColor).enable
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
         updateBackgroudColor() {
-            let type = backgroundColor, enable = true, colorhex;
+            let type = tBackgroundColor, enable = true, colorhex;
             this.hlType = type
             colorhex = default_color_list[this.selectedSubColor];
             this.color1 = colorhex;
@@ -156,18 +151,27 @@ export const NoteMenu = {
             });
         },
         onFontColor(e) {
-            this.setFontType(e,fontColor)
+            this.setFontType(e, tfontColor)
         },
-        setFontType(e,t) {
+        setFontType(e, t) {
             e.stopPropagation();
-            let {enable} = this.hlStyle.getType(t)
+            let { enable, colorhex } = this.hlStyle.getType(t)
             enable = enable == true ? false : true
-            let colorhex = this.color1
-            let type = ul
+            if (colorhex == undefined || colorhex.length == 0) {
+                colorhex = this.color1
+            }
+            let type = t
             this.hlStyle.setType({ type, enable, colorhex })
+            if (type == tUl) {
+                this.underlineColor = enable ? colorhex : undefined
+                this.UnderlineEnable = enable
+            } else {
+                this.fontColor = enable ? colorhex : undefined
+                this.fontColorEnable = enable
+            }
         },
         onUnderline(e) {
-            this.setFontType(e,ul)
+            this.setFontType(e, tUl)
         },
         onSearch() {
             // console.log("xx");
