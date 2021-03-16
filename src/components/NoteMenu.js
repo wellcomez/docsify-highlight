@@ -41,10 +41,11 @@ const recommendedColor = [
     "rgba(29, 53, 234, 0.5)",
 ]
 import SvgButton from './SvgButton'
+import BackgroudSelector from'./BackgroudSelector'
 export const NoteMenu = {
     name: "NoteMenu",
     components:{
-        SvgButton
+        SvgButton,BackgroudSelector
     },
     data() {
         return {
@@ -53,6 +54,7 @@ export const NoteMenu = {
                 top: this.top - 80 - window.pageYOffset + "px",
                 // width: 6 * 30,
             },
+            selectedSubColor:2,
             notetext: this.note ? this.note : "",
             color1: "green",
             notecouter: this.note ? this.note.length : 0,

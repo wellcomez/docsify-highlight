@@ -27,6 +27,7 @@
           tips="Underline"
         ></SvgButton>
       </Col>
+      <Col><BackgroudSelector :selectedIndex.sync="selectedSubColor"/></Col>
       <Col>
         <div class="d1 hlyellow" v-on:click="onYellow">
           <span v-if="isYellow">&#10004;</span>
