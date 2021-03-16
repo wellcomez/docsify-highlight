@@ -9,6 +9,7 @@ import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import { markColorList, hl_note, tUl, getcsscolorbyid, tCustomColor, tfontColor } from './colorSelector';
+import {highlightType} from './highlightType'
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -35,18 +36,17 @@ export class DocHighlighter {
         let { top, left } = position;
         removeTips();
         let note = undefined
-        let color, colorhex
+        let style = {}
         try {
             let hs = this.store.geths(noteid)
             note = hs.note;
-            colorhex = hs.colorhex
-            color = hs.color
+            style = hs.style
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        log("createNoteMenu", top, left, color)
+        // log("createNoteMenu", top, left, color)
         let hl = this;
-        mountCmp(NoteMenu, { top, left, noteid, color, hl, note, colorhex, sources }, document.body)
+        mountCmp(NoteMenu, { top, left, noteid, hl, note, style, sources }, document.body)
         // }
     };
     procssAllElements(nodeid, cb) {
@@ -119,11 +119,11 @@ export class DocHighlighter {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
-    setHighlightColor(color, noteid, colorhex) {
-        this.updateHignLightColor(noteid, color, colorhex);
-        getConfig().save({ color, colorhex });
-        this.store.update({ id: noteid, color, colorhex })
-    }
+    // setHighlightColor(color, noteid, colorhex) {
+    //     this.updateHignLightColor(noteid, color, colorhex);
+    //     getConfig().save({ color, colorhex });
+    //     this.store.update({ id: noteid, color, colorhex })
+    // }
     updateHignLightColor(noteid, color, colorhex, disable) {
         this.removeHighLight(noteid);
         this.procssAllElements(noteid, (a) => {
@@ -261,15 +261,12 @@ export class DocHighlighter {
         if (type == "from-store") {
             this.store.getAll()
             sources.forEach(hs => {
-                let { id, color, colorhex, note } = this.store.geths(hs.id)
-                if (colorhex && getcsscolorbyid(color) != colorhex) {
-                    color = tCustomColor
-                    this.store.update({ id, color })
-                }
+                let { id, style, note } = this.store.geths(hs.id)
+                let a = new highlightType(this,id, style)
+                a.showHighlight()
                 if (note && note.length) {
                     this.createMarkNode(id, note);
                 }
-                this.updateHignLightColor(id, color, colorhex);
                 if (this.parseurlResult.id == hs.id) {
                     this.scollTopID(hs.id);
                 }
@@ -291,8 +288,8 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
-        let { color, note, sources, colorhex } = data ? data : {}
-        let change = color != undefined || note
+        let { note, sources,style} = data ? data : {}
+        let change = style!= undefined || note
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
@@ -304,10 +301,8 @@ export class DocHighlighter {
         if (change && noteid != undefined) {
             if (sources) {
                 let sources2 = sources.map(hs => {
-                    if (color) {
-                        hs.color = color;
-                        hs.colorhex = colorhex
-                        this.setHighlightColor(color, noteid, colorhex);
+                    if (style) {
+                        hs.style = style;
                     }
                     if (note) {
                         hs.note = note
@@ -323,10 +318,7 @@ export class DocHighlighter {
                 this.store.save(sources2);
                 this.updatePanel();
             } else {
-                if (color != undefined) {
-                    this.setHighlightColor(color, noteid, colorhex);
-                }
-                this.store.update({ id: noteid, note })
+                this.store.update({ id: noteid, note,style })
             }
         } else {
             this.removeHighLight(noteid);

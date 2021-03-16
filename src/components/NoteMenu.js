@@ -1,8 +1,6 @@
 import {
     tBackgroundColor,
     tUl,
-    getcsscolorbyid,
-    // updateCssRule,
     tCustomColor,
     tfontColor,
 } from "../colorSelector";
@@ -18,7 +16,7 @@ const default_yellow = "#FFFF3355";
 export const default_color_list = [default_red, default_green, default_yellow];
 import SvgButton from './SvgButton'
 import BackgroudSelector from './BackgroudSelector'
-import { highlightType } from "./highlightType";
+import { highlightType } from "../highlightType";
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
@@ -31,7 +29,7 @@ export const NoteMenu = {
             UnderlineEnable: false,
             fontColor: undefined,
             fontColorEnable: false,
-            hlStyle: new highlightType(this.hl, this.noteid),
+            hlStyle: new highlightType(this.hl, this.noteid,this.style),
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
                 top: this.top - 80 - window.pageYOffset + "px",
@@ -188,17 +186,14 @@ export const NoteMenu = {
             this.removeMenu();
         },
         notedata() {
-            let { sources, color, color1: colorhex } = this;
-            if (this.newnote == false) {
-                sources = undefined;
-            }
-            if (colorhex && colorhex.length == 0) colorhex = undefined;
+            let { sources } = this;
+            let style = this.hlStyle.allTypes
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
-            return { note, color, sources, colorhex };
+            return { note, sources, style };
         },
         saveNoteData() {
-            // this.hl.saveNoteData(this.noteid, this.notedata());
+            this.hl.saveNoteData(this.noteid, this.notedata());
             this.newnote = false;
         },
         // eslint-disable-next-line no-unused-vars
@@ -220,17 +215,6 @@ export const NoteMenu = {
             this.updateButtonColor(type, enable, colorhex)
             // updateCssRule(this.color, this.color1)
             this.saveNoteData()
-        },
-        onClick(e, color) {
-            if (e == undefined) return
-            this.color = color;
-            let color1 = getcsscolorbyid(this.color)
-            if (color1.length) {
-                this.colorhex = this.color1 = color1;
-            } else {
-                this.colorhex = this.color1;
-            }
-            this.saveNoteData();
         },
         removeMenu() {
             var tips = document.getElementsByClassName("note-menu");
