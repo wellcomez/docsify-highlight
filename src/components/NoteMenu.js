@@ -12,6 +12,7 @@ const leftPos = () => {
 const default_green = "#33FF33";
 const default_red = "#ff336659";
 const default_yellow = "#FFFF3355";
+import α from 'color-alpha'
 let default_color_list = getConfig().color
 if (default_color_list == undefined) {
     default_color_list = [default_red, default_green, default_yellow];
@@ -90,6 +91,7 @@ export const NoteMenu = {
             let ret = []
             for (let i = 0; i < 3; i++) {
                 let colorhex = this.first3Colors[i]
+                colorhex =  α(colorhex, .8);
                 let style = `background-color: ${colorhex}`
                 ret.push({ style })
             }

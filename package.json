@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "jsdelivr": [
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
@@ -34,6 +34,7 @@
     "dist/img"
   ],
   "dependencies": {
+    "color-alpha": "^1.1.2",
     "core-js": "^3.6.5",
     "file-saver": "^2.0.5",
     "iview": "^3.5.4",
