@@ -6,6 +6,7 @@ import {
     getcsscolorbyid,
     updateCssRule,
     customColor,
+    fontColor,
     classNameFromColor,
 } from "../colorSelector";
 
@@ -58,7 +59,7 @@ export const NoteMenu = {
             newnote: this.sources != undefined,
             recommendedColor,
             underlineColor:undefined,
-            fontColor:"black"
+            fontColor:"red"
         };
     },
     computed: {
@@ -71,6 +72,9 @@ export const NoteMenu = {
                 return "note-color-picker-selected"
             }
             return 'note-color-picker'
+        },
+        fontColorEnable(){
+            return this.color == customColor
         },
         UnderlineEnable() {
             return this.color == ul;
@@ -104,6 +108,11 @@ export const NoteMenu = {
             } else {
                 this.underlineColor = undefined;
             }
+            if(this.color==fontColor){
+                this.fontColor = this.color1;
+            }else{
+                this.fontColor = undefined;
+            }
         },
         openEditor() {
             var tmpdata = this.notetext;
@@ -132,8 +141,12 @@ export const NoteMenu = {
                 },
             });
         },
-        onFontColor(){
-            
+        onFontColor(e){
+            if(this.fontColorEnable==false){
+                this.onClick(e,fontColor);   
+            }else{
+                this.onClick(e, red);
+            }
         },
         onUnderline(e) {
             if (this.UnderlineEnable == false) {

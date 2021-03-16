@@ -8,7 +8,7 @@
       <Col>
         <SvgButton
           onOff
-          v-bind:on="UnderlineEnable"
+          v-bind:on="fontColorEnable"
           name="icon-ai247"
           custom
           v-bind:onClick="onFontColor"

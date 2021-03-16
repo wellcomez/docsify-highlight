@@ -3,8 +3,9 @@ const hlyellow = "hlyellow";
 const hlgreen = "hlgreen";
 const hlred = "hlred";
 const hl_ul = 'hl_ul'
+const hl_fc = 'hl_fc'
 export const hl_note = 'hl_note'
-const hlList = [hlyellow, hlgreen, hlred, hl_ul]
+const hlList = [hlyellow, hlgreen, hlred, hl_ul,hl_fc]
 let a = localStorage.getItem("colormap");
 
 
@@ -91,8 +92,13 @@ function getcsscolor(colorclassname) {
     let css = getCssRule('.' + colorclassname);
     if (css) {
         let a = css.style.borderBottomColor;
-        if (a == undefined || a.length == 0)
+
+        if (a == undefined || a.length == 0){
             a = css.style.backgroundColor;
+        }
+        if (a == undefined || a.length == 0){
+            a = css.style.color;
+        }
         return a
     }
     return ''
@@ -161,5 +167,6 @@ export const yellow = hlList.indexOf(hlyellow)
 export const red = hlList.indexOf(hlred)
 export const green = hlList.indexOf(hlgreen)
 export const ul = hlList.indexOf(hl_ul)
-export const customColor = ul + 1
+export const fontColor = hlList.indexOf(hl_fc)
+export const customColor = fontColor + 1
 

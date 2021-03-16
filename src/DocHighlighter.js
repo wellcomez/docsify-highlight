@@ -8,7 +8,7 @@ import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
-import { markColorList, hl_note, ul, getcsscolorbyid, customColor } from './colorSelector';
+import { markColorList, hl_note, ul, getcsscolorbyid, customColor,fontColor } from './colorSelector';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -127,11 +127,14 @@ export class DocHighlighter {
     updateHignLightColor(noteid, color, colorhex) {
         this.removeHighLight(noteid);
         this.procssAllElements(noteid, (a) => {
+                a.style.borderBottom = ""
+                a.style.backgroundColor = ""
+                a.style.color = ""
             if (color == ul) {
                 a.style.borderBottom = "2px solid " + colorhex
-                a.style.backgroundColor = ""
-            } else {
-                a.style.borderBottom = ""
+            } else  if(color == fontColor){
+                a.style.color= colorhex
+            }else{
                 a.style.backgroundColor = colorhex
             }
         })
