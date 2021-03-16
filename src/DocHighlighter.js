@@ -36,17 +36,17 @@ export class DocHighlighter {
         let { top, left } = position;
         removeTips();
         let note = undefined
-        let style = {}
+        let data = {}
         try {
             let hs = this.store.geths(noteid)
             note = hs.note;
-            style = hs.style
+            data = hs.style
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
         // log("createNoteMenu", top, left, color)
         let hl = this;
-        mountCmp(NoteMenu, { top, left, noteid, hl, note, style, sources }, document.body)
+        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources }, document.body)
         // }
     };
     procssAllElements(nodeid, cb) {

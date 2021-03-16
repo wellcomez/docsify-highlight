@@ -1,7 +1,6 @@
 import {
     tBackgroundColor,
     tUl,
-    tCustomColor,
     tfontColor,
 } from "../colorSelector";
 
@@ -34,11 +33,10 @@ export const NoteMenu = {
             UnderlineEnable: false,
             fontColor: undefined,
             fontColorEnable: false,
-            hlStyle: new highlightType(this.hl, this.noteid, this.style),
+            hlStyle: new highlightType(this.hl, this.noteid, this.data),
             style: {
                 left: Math.min(leftPos(), this.left - 20) + "px",
                 top: this.top - 80 - window.pageYOffset + "px",
-                // width: 6 * 30,
             },
             hlType: undefined,
             selectedSubColor: undefined,
@@ -52,14 +50,9 @@ export const NoteMenu = {
         // eslint-disable-next-line no-unused-vars
         selectedSubColor(val) {
             let type = tBackgroundColor, enable = this.selectedSubColor != undefined, colorhex;
-            this.hlType = type
             colorhex = default_color_list[this.selectedSubColor];
             this.hlStyle.setType({ type, enable, colorhex });
-            if (enable) {
-                this.color1 = colorhex;
-            } else {
-                this.updateColor1()
-            }
+            this.updateSelection(type)
         }
     },
     computed: {
@@ -83,36 +76,40 @@ export const NoteMenu = {
             return "Note"
         },
         classColorPicker() {
-            if (this.color == tCustomColor) {
+            if (this.hlType == tBackgroundColor) {
                 return "note-color-picker-selected"
             }
             return 'note-color-picker'
         },
     },
     mounted() {
-        let { hlStyle } = this;
-        this.UnderlineEnable = hlStyle.getType(tUl).enable
-        this.fontColorEnable = hlStyle.getType(tfontColor).enable
+        this.updateSelection();
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        updateSelection(a) {
+            if (a != undefined) {
+                let { enable, colorhex } = this.hlStyle.getType(a)
+                this.updateButtonColor(a, enable, colorhex)
+                this.color1 = colorhex
+                this.hlType = a
+                return
+            }
+            [tfontColor, tBackgroundColor, tUl].forEach((a) => {
+                let { enable, colorhex } = this.hlStyle.getType(a)
+                this.updateButtonColor(a, enable, colorhex)
+                if (enable) {
+                    this.hlType = a
+                    this.color1 = colorhex
+                }
+            })
+        },
         col(i) {
             let a = "border-bottom:2px solid var(--theme-color, #42b983);";
             if (i == this.hlType)
                 return a
             return ""
-        },
-        updateColor1() {
-            let yes = false;
-            [tUl, tfontColor, tBackgroundColor].forEach((a) => {
-                if (yes) return;
-                let { enable, colorhex } = this.hlStyle.getType(a)
-                if (enable) {
-                    yes = true;
-                    this.color1 = colorhex
-                }
-            })
         },
         openEditor() {
             var tmpdata = this.notetext;
@@ -155,8 +152,6 @@ export const NoteMenu = {
                 this.default_color_list[this.selectedSubColor] = colorhex;
                 let color = this.default_color_list;
                 getConfig().save({ color })
-                // let a = this.colorList
-                // this.colorList = a
                 this.backgroundColorKey = new Date() * 1
             }
         },
@@ -169,13 +164,7 @@ export const NoteMenu = {
             }
             let type = t
             this.hlStyle.setType({ type, enable, colorhex })
-            this.updateButtonColor(type, enable, colorhex);
-            if (enable) {
-                this.color1 = colorhex
-                this.hlType = t;
-            } else {
-                this.updateColor1()
-            }
+            this.updateSelection(t)
         },
         onUnderline(e) {
             this.setFontType(e, tUl)
@@ -220,8 +209,7 @@ export const NoteMenu = {
             let { enable, colorhex } = this.hlStyle.getType(type)
             colorhex = this.color1
             this.hlStyle.setType({ type, enable, colorhex })
-            this.updateButtonColor(type, enable, colorhex)
-            // updateCssRule(this.color, this.color1)
+            this.updateSelection(type)
             this.saveNoteData()
         },
         removeMenu() {
@@ -239,13 +227,10 @@ export const NoteMenu = {
         },
     },
     props: {
+        data: { type: Object, default: {} },
         colorhex: { type: String, default: "" },
         note: {
             type: String,
-            default: undefined,
-        },
-        color: {
-            type: Number,
             default: undefined,
         },
         left: {

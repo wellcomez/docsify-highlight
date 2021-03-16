@@ -1,5 +1,4 @@
 import {
-    getcsscolorbyid,
     tfontColor,
     tUl
 } from "./colorSelector";
@@ -36,11 +35,6 @@ export class highlightType {
     }
     setType({ type, enable, colorhex }) {
         let { noteid } = this;
-        if (colorhex) {
-            if (enable == false) {
-                colorhex = getcsscolorbyid(type);
-            }
-        }
         let color = type;
         let disable = enable != true;
         this.allTypes[type] = { enable, colorhex };
