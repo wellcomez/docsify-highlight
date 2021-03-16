@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "0.9.1",
+  "version": "0.9.10",
   "jsdelivr": [
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
@@ -40,10 +40,9 @@
     "leancloud-storage": "^4.10.0",
     "md5": "^2.3.0",
     "vue": "^2.6.11",
+    "vue-click-outside": "^1.1.0",
     "web-highlighter": "^0.7.1"
   },
-
-  
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",

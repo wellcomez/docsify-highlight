@@ -1,6 +1,6 @@
 
 <template>
-  <div class="op-panel">
+  <div class="op-panel" v-click-outside="hide">
     <Badge :count="count2">
       <Row class="panel-header" type="flex">
         <Col>
@@ -85,10 +85,15 @@ import TocNote from "./TocNote";
 import Bubbling from "./Bubbling";
 import SvgButton from "./SvgButton";
 import BookMarks from "./BookMarks";
+import ClickOutside from 'vue-click-outside'
+
 // import { checkClickOut } from "../mountCmp";
 export default {
   components: { TocNote, Bubbling,SvgButton,BookMarks },
   name: "Panel",
+    directives: {
+    ClickOutside
+  },
   computed: {
     count2() {
       let a = new book().count() + this.count;
@@ -146,13 +151,8 @@ export default {
     },
   },
   methods: {
-    show(){
-      // let a = document.getElementsByClassName('markdown-section')[0]
-      // a.classList.add('alpha')
-    },
     hide(){
-      // let a = document.getElementsByClassName('markdown-section')[0]
-      // a.classList.remove('alpha')
+      this.showdetail = false;
     },
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);
