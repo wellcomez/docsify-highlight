@@ -205,7 +205,7 @@ export const NoteMenu = {
             this.removeSelectionHighLight();
             this.removeMenu();
         },
-        onChangeColor() {
+        onChangeColorPicker() {
             updateCssRule(this.color, this.color1)
             this.saveNoteData()
         },

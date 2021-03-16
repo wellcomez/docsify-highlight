@@ -34,7 +34,7 @@
           v-model="color1"
           alpha
           :colors="recommendedColor"
-          @on-change="onChangeColor"
+          @on-change="onChangeColorPicker"
           :class="classColorPicker"
           size="small"
         />
@@ -91,19 +91,6 @@ export default NoteMenu;
 }
 </style>
 <style type="text/css">
-.icon-del {
-  /* background-image: url(../assets/del.svg); */
-  background-size: 16px 16px;
-  background-position: 2px 2px;
-  background-repeat: no-repeat;
-  padding: 2px 2px 2px 2px;
-  border: 1px solid #ddd;
-  margin: 4px;
-  width: 30px;
-  border-radius: 3px;
-  text-align: center;
-  height: 22px;
-}
 .my-remove-tip {
   box-sizing: border-box;
   position: absolute;
