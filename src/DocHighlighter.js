@@ -395,11 +395,9 @@ export class DocHighlighter {
         let { top, left } = this.getElementPosition(id);
         if (top != undefined) {
             window.scrollTo(0, top - 120);
-            let top2 = top;//+window.screen.off
-            left = 100
             let b = document.getElementsByClassName('content')[0]
             let pp = this.getPosition(b)
-            mountCmp(ScrollMark, { id, hl: this, left:pp.left, top }, document.body);
+            mountCmp(ScrollMark, { id, hl: this, left:pp.left+10, top }, document.body);
         }
     }
     // offsetHeight: 40

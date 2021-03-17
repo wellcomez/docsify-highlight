@@ -1,6 +1,6 @@
 <template>
   <div class="scollposion" :style="style">
-    <Icon size="32" type="ios-link" color="red" />
+    <Icon size="32" type="ios-play-outline " color="#42b983" />
   </div>
 </template>>
 <script>
@@ -27,7 +27,8 @@ export default {
       }
       this.$destroy(true);
     };
-    setTimeout(removeself, 500);
+    this.removeself = removeself;
+    setTimeout(removeself, 1000);
   },
   props: {
     id: {
