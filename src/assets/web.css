@@ -5,18 +5,20 @@
 .highlight-mengshou-wrap {
   background: lightcyan;
 }
-div.d1{
-  height: 32px;
-  width: 32px;
-  border-radius:16px;
-  margin-left: 2px;
-  border:2px solid white;
+
+div.d1 {
+  height       : 32px;
+  width        : 32px;
+  border-radius: 16px;
+  margin-left  : 2px;
+  border       : 2px solid white;
 }
+
 div.d1 span {
-  height: 32px;
+  height     : 32px;
   line-height: 32px;
-  display:block;
-  text-align:center;
+  display    : block;
+  text-align : center;
 }
 
 
@@ -32,7 +34,7 @@ input[type='checkbox'].switch {
   background        : #ccc;
   border-radius     : 10px;
   transition        : border-color .3s, background-color .3s;
-  margin: 4px;
+  margin            : 4px;
 }
 
 input[type='checkbox'].switch::after {
@@ -60,15 +62,16 @@ input[type='checkbox'].switch:checked::after {
   left    : 55%;
   top     : 2px;
 }
+
 .mask {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color:transparent;
+  position           : fixed;
+  top                : 0;
+  bottom             : 0;
+  left               : 0;
+  right              : 0;
+  background-color   : transparent;
   /* background-color: rgba(55,55,55,.6); */
-  height: 100%;
+  height             : 100%;
 }
 
 .left {
@@ -82,7 +85,26 @@ input[type='checkbox'].switch:checked::after {
 
 
 
-.docsify-highlighter{
+.docsify-highlighter {
   font-style: normal;
 }
 
+.doclist .ivu-tree ul {
+  padding-left: 2px;
+}
+
+.doclist {
+  overflow           : auto;
+  height             : 200px;
+  /* background-color: white; */
+}
+
+@media screen and (max-width: 640px) {
+  .doclist .ivu-tree ul {
+    font-size: medium;
+  }
+}
+
+.doclist::-webkit-scrollbar {
+  border-width: 1px;
+}

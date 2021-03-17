@@ -91,6 +91,7 @@ export default NoteMenu;
   /* line-height: 18px; */
   overflow: visible;
   padding: 4px;
+  padding-bottom:1px;
 }
 
 .my-remove-tip .ivu-col {

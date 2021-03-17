@@ -109,22 +109,7 @@ export default {
 };
 </script>
 <style >
-.doclist .ivu-tree ul{
-  padding-left: 2px;
-}
-.doclist {
-  overflow: auto;
-  height: 200px;
-  /* background-color: white; */
-}
-@media screen and (max-width: 640px) {
-  .doclist .ivu-tree ul{
-    font-size:medium;
-  }
-}
-.doclist::-webkit-scrollbar {
-  border-width: 1px;
-}
+
 </style>
 
 
