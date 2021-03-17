@@ -2,26 +2,51 @@ import { colorClassList } from "./colorSelector";
 const md5 = require('md5');
 export class UserLogin {
   constructor() {
-    let stateChange = () => {
-
-    }
-    this.stateChange = stateChange
+    this.stateChange = []
     this.userid = 'userid'
     let userid = localStorage.getItem('userid')
     if (userid) {
       this.userid = userid
     }
   }
+  register(fn, removce) {
+    if (removce) {
+      let a = []
+      this.stateChange.forEach((b) => {
+        if (fn == b) return;
+        a.push(b)
+      })
+      this.stateChange = a
+      return
+    }
+    this.stateChange.push(fn)
+  }
+  save(username) {
+    localStorage.setItem('userid', username)
+  }
   // eslint-disable-next-line no-unused-vars
   Login(username, password) {
-    this.userid = username
-    let { stateChange } = this
-    if (stateChange) {
-      stateChange(username, this)
-    }
+    let {userid,stateChange} = this
+    stateChange.forEach((a)=>{
+      try {
+        a(userid, username,false) 
+      // eslint-disable-next-line no-empty
+      } catch (error) {
+      }
+    })
+    this.userid = username?username:'userid'
+    stateChange.forEach((a)=>{
+      try {
+        a(userid, username,true) 
+      // eslint-disable-next-line no-empty
+      } catch (error) {
+      }
+    })
   }
   isLogin() {
-    return this.userid != 'userid'
+    if (this.userid)
+      return this.userid != 'userid'
+    return false
   }
 }
 export let User = new UserLogin()

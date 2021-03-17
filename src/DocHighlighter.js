@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-prototype-builtins */
 import Highlighter from 'web-highlighter';
-import { LocalStore } from './store';
+import { LocalStore, User } from './store';
 import { getIntersection } from './hl';
 import { log } from "./log";
 import { getConfig } from './ANoteConfig';
@@ -45,7 +45,7 @@ export class DocHighlighter {
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        // log("createNoteMenu", top, left, color)
+        // log("createNoteMenu", top, left, color)z
         let hl = this;
         try {
             document.getSelection().removeAllRanges()
@@ -163,21 +163,44 @@ export class DocHighlighter {
         return path;
     }
     constructor() {
-        this.store = new LocalStore(this.key(), document.title);
-        this.highlighter = new Highlighter({
-            wrapTag: 'i',
-            exceptSelectors: ['.my-remove-tip', '.op-panel']
-        });
+ 
+        let checkUserStatus = (old,next, changed) => {
+            if(changed==false){
+                this.enable(false)
+            }else{
+                this.createHightLigher()
+                this.enable(true)
+            }
+        }
+        checkUserStatus = checkUserStatus.bind(this)
+        User.register(checkUserStatus)
+        this.unregister=()=>{
+            User.register(checkUserStatus,true)
+        }
         // document.addEventListener("hashchange", () => {
         //     console.log(window.location)
         // });
         this.parseurlResult = parseurl();
+
+
+
+        this.createHightLigher();
+
+        if (this.on()) {
+            this.enable(true);
+        }
+    }
+    createHightLigher() {
         const onClick = (noteid) => {
             // const classname = 'docsify-highlighter'
             let { id } = noteid;
             let node = this.getElement(id)
             this.createNoteMenu(node)
         };
+        this.highlighter = new Highlighter({
+            wrapTag: 'i',
+            exceptSelectors: ['.my-remove-tip', '.op-panel']
+        });
         this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
         this.highlighter.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
         this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
@@ -212,11 +235,8 @@ export class DocHighlighter {
             log('Serialize.RecordInfo hook -', extraInfo);
             return extraInfo;
         });
-
-        if (this.on()) {
-            this.enable(true);
-        }
     }
+
     deleteId(id) {
         let { highlighter } = this;
         this.removeHighLight(id)
@@ -227,6 +247,9 @@ export class DocHighlighter {
         this.updatePanel();
     }
     enable(enable) {
+        if(enable){
+            this.store = new LocalStore(this.key(), document.title);
+        }
         getConfig().save({ on: enable })
         this.turnHighLight(enable);
     }

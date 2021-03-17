@@ -1,26 +1,14 @@
 <template>
-  <Poptip
-    confirm
-    :title="title"
-    @on-ok="onYes"
-    ok-text="yes"
-    cancel-text="no"
-    :disabled="disabled"
-  >
-    <Button
-      shape="circle"
-      :class="avatarStyle"
-      icon="ios-person"
-      @click="onClick"
-    />
+  <Poptip confirm :title="title" @on-ok="onYes" ok-text="yes" cancel-text="no">
+    <Avatar shape="square" :class="avatarStyle" icon="ios-person" />
   </Poptip>
 </template>
 <script>
-// import { Avatar } from "iview";
+import { Avatar } from "iview";
 import { User } from "../store";
 export default {
   components: {
-    // Avatar,
+    Avatar,
   },
   data() {
     return {
@@ -31,22 +19,26 @@ export default {
     };
   },
   mounted() {
-    let stateChange = () => {
-      this.login = User.isLogin();
-      this.avatarStyle = this.getAvatarStyle();
-      if(User.isLogin()){
+    let checkUserLogin = (old, next, change) => {
+      if (change) {
+        this.login = User.isLogin();
+        this.avatarStyle = this.getAvatarStyle();
+        if (User.isLogin()) {
           this.disabled = false;
+        }
+        this.disabled = User.isLogin() ? false : true;
+        this.title = this.login ? "登出" : "登入";
       }
-      this.disabled = User.isLogin() ? false : true;
-      this.title = this.login?"登出":"登入";
     };
-    User.stateChange = stateChange;
-    stateChange();
+    User.register(checkUserLogin);
+    checkUserLogin();
   },
   methods: {
-    onYes() {},
-    onClick() {
-      if (User.isLogin() != true) User.Login("xxxx");
+    onYes() {
+      if (User.isLogin() == false) User.Login("xxxx");
+      else {
+        User.Login(undefined);
+      }
     },
     getAvatarStyle() {
       let color = User.isLogin() ? "login" : "logout";
