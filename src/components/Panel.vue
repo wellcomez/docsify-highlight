@@ -5,6 +5,15 @@
     <Row class="panel-header" type="flex">
       <Col>
         <SvgButton
+          :on.sync="collapsed"
+          onOff
+          name="icon-zhankai"
+          custom
+          :click="onHideSame"
+        ></SvgButton>
+      </Col>
+      <Col>
+        <SvgButton
           v-if="checked"
           v-bind:onClick="onOpenContentList"
           name="ios-book"
@@ -12,7 +21,11 @@
         />
       </Col>
       <Col>
-        <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
+        <Bubbling
+          v-if="collapsed == false"
+          :onSelect="onSelect"
+          content="Export"
+        />
       </Col>
       <Col>
         <PopSvgButton
@@ -35,6 +48,7 @@
 
       <Col>
         <input
+          v-if="collapsed == false"
           name="auto"
           type="checkbox"
           class="switch"
@@ -96,10 +110,10 @@
 @media screen and (max-width: 414px) {
   .op-panel {
     position: fixed;
-    right: 4px;
+    right: 20px;
     left: 4px;
     top: 10px;
-    width: 100%;
+    width: 90%;
     max-width: 100vw;
     border-radius: 3px;
     color: black;
@@ -148,7 +162,7 @@ export default {
       return a + preHighLightItems().length - this.count;
     },
     canupload() {
-      return this.checked && localidstore.on;
+      return this.collapsed != true && this.checked && localidstore.on;
     },
     bookmarkiconcolor() {
       if (this.bookmark) {
@@ -162,6 +176,7 @@ export default {
   },
   data() {
     return {
+      collapsed: false,
       closedetail: this.fnclosedetail,
       bookmark: false,
       bookmarkey: new Date() * 1,

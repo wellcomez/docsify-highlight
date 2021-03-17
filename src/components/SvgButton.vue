@@ -1,6 +1,6 @@
 <template>
   <Tooltip :content="tips" :disabled="tipsDisabled">
-    <Button v-on:click="onClick" size="small" style="height: 32px">
+    <Button v-on:click="onClickMe" size="small" style="height: 32px">
       <Icon
         v-if="custom"
         :custom="btnClass"
@@ -49,10 +49,15 @@ export default {
   },
   data() {
     return {
-      tipsDisabled:this.tip==undefined
+      tipsDisabled:true
     };
   },
-
+  mounted(){
+    this.tipsDisabled = !this.tips
+  },
+  model: {
+    prop: "on",
+  },
   props: {
     custom: { type: Boolean, default: false },
     onClick: {
@@ -68,6 +73,7 @@ export default {
   methods: {
     onClickMe(e) {
       this.tipsDisabled = true;
+      this.$emit("update:on", this.on!=true);
       this.onClick(e);
     },
   },

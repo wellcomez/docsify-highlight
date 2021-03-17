@@ -46,6 +46,11 @@ export class DocHighlighter {
         }
         // log("createNoteMenu", top, left, color)
         let hl = this;
+        try {
+            document.getSelection().removeAllRanges()
+        // eslint-disable-next-line no-empty
+        } catch (error) {
+        }
         mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources }, document.body)
         // }
     };
