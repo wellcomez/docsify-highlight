@@ -1,6 +1,6 @@
 <template>
   <Tooltip :content="tips" :disabled="tipsDisabled">
-    <Button v-on:click="onClick" size="small" style="height: 32px;">
+    <Button v-on:click="onClick" size="small" style="height: 32px">
       <Icon
         v-if="custom"
         :custom="btnClass"
@@ -25,9 +25,6 @@ const svgcolor_off = "";
 export default {
   name: "SvgButton",
   computed: {
-    tipsDisabled() {
-      return this.tips == undefined;
-    },
     btnClass() {
       let ret = "iconfont " + this.name;
       return ret;
@@ -41,7 +38,7 @@ export default {
     },
     svgcolor() {
       let { color } = this;
-      if (color== undefined) {
+      if (color == undefined) {
         color = svgcolor_on;
       }
       if (this.onOff) {
@@ -51,7 +48,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      tipsDisabled:this.tip==undefined
+    };
   },
 
   props: {
@@ -66,7 +65,12 @@ export default {
     onOff: { type: Boolean, default: undefined },
     on: { type: Boolean, default: undefined },
   },
-  methods: {},
+  methods: {
+    onClickMe(e) {
+      this.tipsDisabled = true;
+      this.onClick(e);
+    },
+  },
 };
 </script>
 <style scoped>

@@ -4,8 +4,10 @@
   </Poptip>
 </template>
 <script>
+import SvgButton from './SvgButton'
 export default {
   name: "PopSvgButton",
+  components: {SvgButton},
   props: {
     click: { type: Function, default: undefined },
     name: { type: String, default: "" },

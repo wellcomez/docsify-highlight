@@ -84,12 +84,13 @@ import { preHighLightItems } from "../DocHighlighter";
 import TocNote from "./TocNote";
 import Bubbling from "./Bubbling";
 import SvgButton from "./SvgButton";
+import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import ClickOutside from 'vue-click-outside'
 
 // import { checkClickOut } from "../mountCmp";
 export default {
-  components: { TocNote, Bubbling,SvgButton,BookMarks },
+  components: {PopSvgButton, TocNote, Bubbling,SvgButton,BookMarks },
   name: "Panel",
     directives: {
     ClickOutside
