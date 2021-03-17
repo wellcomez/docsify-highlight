@@ -6,7 +6,23 @@
   </Poptip>
 </template>
 <script>
-import { Avatar, Modal } from "iview";
+function load() {
+  let a = localStorage.getItem("avatar");
+  if (a) {
+    return JSON.parse(a);
+  }
+  return [];
+}
+function save(a) {
+  if (a && a.length) {
+    let data = load();
+    if (data.indexOf(a)>=0) return;
+    data.push(a);
+    let b = JSON.stringify(data);
+    localStorage.setItem("avatar", b);
+  }
+}
+import { Avatar, Modal, AutoComplete } from "iview";
 import { User } from "../store";
 export default {
   components: {
@@ -47,16 +63,19 @@ export default {
   methods: {
     handleRender() {
       let vvv;
+      let data = load();
       Modal.confirm({
         // eslint-disable-next-line no-unused-vars
         onOk: (a, b) => {
           User.Login(vvv);
+          save(vvv);
         },
         render: (h) => {
-          return h("Input", {
+          return h(AutoComplete, {
             props: {
               value: this.value,
               autofocus: true,
+              data: data,
               placeholder: "Please enter your name...",
             },
             on: {
