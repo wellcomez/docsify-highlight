@@ -258,16 +258,20 @@ export class DocHighlighter {
         })
         if (type == "from-store") {
             this.store.getAll()
-            sources.forEach(hs => {
+            let creatFromStore = (hs) => {
                 let { id, style, note } = this.store.geths(hs.id)
                 let a = new highlightType(this, id, style)
                 a.showHighlight()
                 if (note && note.length) {
                     this.createMarkNode(id, note);
                 }
-                if (this.parseurlResult.id == hs.id) {
+                if (this.parseurlResult.noteid == hs.id) {
                     this.scollTopID(hs.id);
                 }
+            }
+            creatFromStore = creatFromStore.bind(this);
+            sources.forEach((hs) => {
+                creatFromStore(hs)
             })
             this.updatePanel()
         } else {
@@ -397,7 +401,7 @@ export class DocHighlighter {
             window.scrollTo(0, top - 120);
             let b = document.getElementsByClassName('content')[0]
             let pp = this.getPosition(b)
-            mountCmp(ScrollMark, { id, hl: this, left:pp.left+10, top }, document.body);
+            mountCmp(ScrollMark, { id, hl: this, left: pp.left + 10, top }, document.body);
         }
     }
     // offsetHeight: 40

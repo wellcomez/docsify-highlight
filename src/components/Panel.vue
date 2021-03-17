@@ -86,7 +86,7 @@
 <style scoped >
 .op-panel {
   position: fixed;
-  right: 150px;
+  right: 20px;
   left: auto;
   top: 25px;
   border-radius: 3px;
