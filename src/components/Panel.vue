@@ -1,73 +1,120 @@
 
 <template>
   <div class="op-panel" v-click-outside="hide">
-    <Badge :count="count2">
-      <Row class="panel-header" type="flex">
-        <Col>
-          <SvgButton
-            v-if="checked"
-            v-bind:onClick="onOpenContentList"
-            name="ios-book"
-            tips="Table of Content"
-          />
-        </Col>
-        <Col>
-          <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
-        </Col>
-        <Col>
-          <PopSvgButton
-            v-if="canupload"
-            :click="onTest"
-            name="md-cloud-download"
-            title="Download data"
-            tips="Download"
-          />
-        </Col>
-        <Col>
-          <PopSvgButton
-            v-if="canupload"
-            :click="onSave2Cloud"
-            title="Update data to cloud"
-            name="md-cloud-upload"
-            tips="Upload"
-          />
-        </Col>
+    <!-- <Badge :count="count2"> -->
+    <Row class="panel-header" type="flex">
+      <Col>
+        <SvgButton
+          v-if="checked"
+          v-bind:onClick="onOpenContentList"
+          name="ios-book"
+          tips="Table of Content"
+        />
+      </Col>
+      <Col>
+        <Bubbling v-if="checked" :onSelect="onSelect" content="Export" />
+      </Col>
+      <Col>
+        <PopSvgButton
+          v-if="canupload"
+          :click="onTest"
+          name="md-cloud-download"
+          title="Download data"
+          tips="Download"
+        />
+      </Col>
+      <Col>
+        <PopSvgButton
+          v-if="canupload"
+          :click="onSave2Cloud"
+          title="Update data to cloud"
+          name="md-cloud-upload"
+          tips="Upload"
+        />
+      </Col>
 
-        <Col>
-          <input
-            name="auto"
-            type="checkbox"
-            class="switch"
-            v-bind:checked="checked"
-            v-bind:on-change="onChange"
-            v-on:click="onChange"
-          />
-        </Col>
-        <Col>
-          <SvgButton
-            v-if="checked"
-            v-bind:onClick="onBookmark"
-            :name="bookmarkicon"
-          />
-        </Col>
-      </Row>
-      <Row class="contenttable" v-if="showdetail"  style="overflow:hidden;height: 100%;">
-        <Tabs type="line" size="small" class="tabs">
-          <TabPane label="批注">
-            <TocNote
-              v-bind:close="closedetail"
-              v-bind:key="count2"
-              style="margin-left: 10px"
-            ></TocNote>
-          </TabPane>
-          <TabPane label="书签" style="margin-left: 10px">
-            <BookMarks :hl="hl" :key="bookmarkey" />
-          </TabPane>
-        </Tabs>
-      </Row>
-    </Badge>
+      <Col>
+        <input
+          name="auto"
+          type="checkbox"
+          class="switch"
+          v-bind:checked="checked"
+          v-bind:on-change="onChange"
+          v-on:click="onChange"
+        />
+      </Col>
+      <Col>
+        <SvgButton
+          v-if="checked"
+          v-bind:onClick="onBookmark"
+          :name="bookmarkicon"
+        />
+      </Col>
+    </Row>
+    <Row
+      class="contenttable"
+      v-if="showdetail"
+      style="overflow: hidden; height: 100%"
+    >
+      <Tabs type="line" size="small" class="tabs">
+        <TabPane label="批注">
+          <TocNote
+            v-bind:close="closedetail"
+            v-bind:key="count2"
+            style="margin-left: 10px"
+          ></TocNote>
+        </TabPane>
+        <TabPane label="书签" style="margin-left: 10px">
+          <BookMarks :hl="hl" :key="bookmarkey" />
+        </TabPane>
+      </Tabs>
+    </Row>
+    <!-- </Badge> -->
   </div>
 </template>
+<style scoped>
+.op-panel {
+  position: fixed;
+  right: 150px;
+  left: auto;
+  top: 25px;
+  border-radius: 3px;
+  color: black;
+  padding: 4px;
+  background: var(--theme-color, #42b983);
+}
+.contenttable {
+  width: 400px;
+  height: 640px;
+  background: white;
+  /* border: 1px solid var(--theme-color, #42b983); */
+}
+.contenttable .tabs {
+  height: inherit;
+}
+
+@media screen and (max-width: 414px) {
+  .op-panel {
+    position: fixed;
+    right: 4px;
+    left: 4px;
+    top: 10px;
+    width: 100%;
+    max-width: 100vw;
+    border-radius: 3px;
+    color: black;
+    padding: 4px;
+    background: var(--theme-color, #42b983);
+    transition: transform 0.25s ease;
+  }
+  .contenttable {
+    /* left:0px; */
+    /* right:50px; */
+    /* width:320px; */
+    width: 100%;
+  }
+}
+</style>
 
 <script>
 import { book } from "../store";
@@ -86,14 +133,14 @@ import Bubbling from "./Bubbling";
 import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
-import ClickOutside from 'vue-click-outside'
+import ClickOutside from "vue-click-outside";
 
 // import { checkClickOut } from "../mountCmp";
 export default {
-  components: {PopSvgButton, TocNote, Bubbling,SvgButton,BookMarks },
+  components: { PopSvgButton, TocNote, Bubbling, SvgButton, BookMarks },
   name: "Panel",
-    directives: {
-    ClickOutside
+  directives: {
+    ClickOutside,
   },
   computed: {
     count2() {
@@ -152,7 +199,7 @@ export default {
     },
   },
   methods: {
-    hide(){
+    hide() {
       this.showdetail = false;
     },
     onBookmark() {
@@ -173,9 +220,6 @@ export default {
     onTest() {
       testPost();
     },
-    // hideDetails() {
-    //   this.showdetail = false;
-    // },
     onOpenContentList() {
       this.showdetail = this.showdetail == false;
     },
@@ -200,46 +244,9 @@ export default {
 };
 </script>
 <style >
-   .alpha {
-     height: 100%;
-     overflow: hidden;
-    }
-</style>
-<style scoped>
-.op-panel {
-  position: fixed;
-  right: 150px;
-  left: auto;
-  top: 25px;
-  border-radius: 3px;
-  color: black;
-  padding: 4px;
-  background: var(--theme-color, #42b983);
-}
-.contenttable {
-  width: 400px;
-  height: 640px;
-  background: white;
-  /* border: 1px solid var(--theme-color, #42b983); */
-}
-.contenttable .tabs{
-  height:inherit
-}
-
-
-
-
-@media screen and (max-width: 640px) {
-  .contenttable {
-    width: 240px;
-  }
-}
-@media screen and (max-width: 640px) {
-  .contenttable {
-    height: 240px;
-  }
-}
-@media screen and (max-width: 1150px) {
+.alpha {
+  height: 100%;
+  overflow: hidden;
 }
 </style>
 

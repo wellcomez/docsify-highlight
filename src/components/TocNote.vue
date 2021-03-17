@@ -117,7 +117,11 @@ export default {
   height: 200px;
   /* background-color: white; */
 }
-
+@media screen and (max-width: 640px) {
+  .xxxx .ivu-tree ul{
+    font-size:medium;
+  }
+}
 .xxxx::-webkit-scrollbar {
   border-width: 1px;
 }
