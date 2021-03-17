@@ -1,6 +1,6 @@
 
 <template>
-  <div class="op-panel" v-click-outside="hide">
+  <div class="op-panel" v-click-outside="hide" :style="styclePanel">
     <!-- <Badge :count="count2"> -->
     <Row class="panel-header" type="flex">
       <Col>
@@ -22,7 +22,7 @@
       </Col>
       <Col>
         <Bubbling
-          v-if="collapsed == false"
+          v-if="!collapsed && checked"
           :onSelect="onSelect"
           content="Export"
         />
@@ -95,19 +95,22 @@
   border-radius: 3px;
   color: black;
   padding: 4px;
-  background: var(--theme-color, #42b983);
+  /* background: var(--theme-color, #42b983); */
 }
 .contenttable {
   width: 400px;
   height: 640px;
   background: white;
-  /* border: 1px solid var(--theme-color, #42b983); */
+  border: 1px solid var(--theme-color, #42b983);
 }
 .contenttable .tabs {
   height: inherit;
 }
-
-@media screen and (max-width: 414px) {
+.panel-header {
+  padding: 4px;
+  background: var(--theme-color, #42b983);
+}
+@media screen and (max-width: 480px) {
   .op-panel {
     position: fixed;
     right: 20px;
@@ -118,8 +121,10 @@
     border-radius: 3px;
     color: black;
     padding: 4px;
-    background: var(--theme-color, #42b983);
     transition: transform 0.25s ease;
+  }
+  .panel-header {
+    width: fit-content;
   }
   .contenttable {
     /* left:0px; */
@@ -157,6 +162,12 @@ export default {
     ClickOutside,
   },
   computed: {
+    styclePanel() {
+      let backgroundColor = "";
+      if (this.showdetail) backgroundColor = "var(--theme-color, #42b983)";
+      let style = { "background-color": backgroundColor };
+      return style;
+    },
     count2() {
       let a = new book().count() + this.count;
       return a + preHighLightItems().length - this.count;
