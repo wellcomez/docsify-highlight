@@ -74,20 +74,21 @@
     >
       <Tabs type="line" size="small" class="tabs">
         <TabPane label="批注">
-          <TocNote
-            v-bind:close="closedetail"
-            v-bind:key="count2"
-            style="margin-left: 10px"
-          ></TocNote>
+          <TocNote v-bind:close="closedetail" v-bind:key="count2"></TocNote>
         </TabPane>
-        <TabPane label="书签" style="margin-left: 10px">
+        <TabPane label="书签">
           <BookMarks :hl="hl" :key="bookmarkey" />
         </TabPane>
       </Tabs>
     </Row>
   </div>
 </template>
-<style scoped>
+<style >
+.op-panel div.ivu-tabs-bar {
+  margin-bottom: 2px;
+}
+</style>
+<style scoped >
 .op-panel {
   position: fixed;
   right: 150px;
@@ -98,16 +99,18 @@
   padding: 4px;
   /* background: var(--theme-color, #42b983); */
 }
-.contenttable {
+
+.op-panel .contenttable {
   width: 400px;
   height: 640px;
   background: white;
   border: 1px solid var(--theme-color, #42b983);
 }
-.contenttable .tabs {
+.op-panel .contenttable .tabs {
   height: inherit;
 }
-.panel-header {
+.op-panel .panel-header {
+  width: fit-content;
   padding: 4px;
   background: var(--theme-color, #42b983);
 }
@@ -123,15 +126,6 @@
     color: black;
     padding: 4px;
     transition: transform 0.25s ease;
-  }
-  .panel-header {
-    width: fit-content;
-  }
-  .contenttable {
-    /* left:0px; */
-    /* right:50px; */
-    /* width:320px; */
-    width: 100%;
   }
 }
 </style>
@@ -197,7 +191,7 @@ export default {
   },
   mounted: function () {
     this.bookmark = this.hl.store.isBookMarked();
-    this.bookmarkCount = this.getBookmarkCount()
+    this.bookmarkCount = this.getBookmarkCount();
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
@@ -238,7 +232,7 @@ export default {
       this.hl.store.setBookMark(this.bookmark != true);
       this.bookmark = this.bookmark != true;
       this.bookmarkey = new Date() * 1;
-      this.bookmarkCount = this.getBookmarkCount()
+      this.bookmarkCount = this.getBookmarkCount();
     },
     onSave2Cloud() {
       let b = new book();
@@ -282,7 +276,6 @@ export default {
   overflow: hidden;
 }
 </style>
-
 <style>
 @import "../styles/iview.css";
 @import "../assets/web.css";
