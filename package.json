@@ -14,7 +14,7 @@
     "lint": "vue-cli-service lint",
     "rel":"npm run lib && npm publish",
     "lib": "vue-cli-service build --target lib  --name docsify-highlight  src/entry.js",
-    "build": "vue build --target lib  --name docsify-highlight  src/main.js"
+    "build": "vue-cli-service build --target lib  --name docsify-highlight  src/main.js"
   },
   "repository": {
     "type": "git",
