@@ -11,9 +11,8 @@
         ></SvgButton>
       </Col>
       <Col>
-        <Badge :count="count2">
+        <Badge v-if="checked" :count="count2">
           <SvgButton
-            v-if="checked"
             v-bind:onClick="onOpenContentList"
             name="ios-book"
             tips="Table of Content"
@@ -58,12 +57,8 @@
         />
       </Col>
       <Col>
-        <Badge :count="bookmarkCount">
-          <SvgButton
-            v-if="checked"
-            v-bind:onClick="onBookmark"
-            :name="bookmarkicon"
-          />
+        <Badge v-if="checked" :count="bookmarkCount">
+          <SvgButton v-bind:onClick="onBookmark" :name="bookmarkicon" />
         </Badge>
       </Col>
     </Row>
@@ -126,6 +121,9 @@
     color: black;
     padding: 4px;
     transition: transform 0.25s ease;
+  }
+  .op-panel .contenttable {
+    width: 100%;
   }
 }
 </style>
