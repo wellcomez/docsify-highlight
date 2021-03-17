@@ -1,7 +1,30 @@
 import { colorClassList } from "./colorSelector";
 const md5 = require('md5');
+export class UserLogin {
+  constructor() {
+    let stateChange = () => {
 
-// eslint-disable-next-line no-unused-vars
+    }
+    this.stateChange = stateChange
+    this.userid = 'userid'
+    let userid = localStorage.getItem('userid')
+    if (userid) {
+      this.userid = userid
+    }
+  }
+  // eslint-disable-next-line no-unused-vars
+  Login(username, password) {
+    this.userid = username
+    let { stateChange } = this
+    if (stateChange) {
+      stateChange(username, this)
+    }
+  }
+  isLogin() {
+    return this.userid != 'userid'
+  }
+}
+export let User = new UserLogin()
 class BookToc {
   constructor() {
     this.bookname = window.$docsify.name;
@@ -9,7 +32,7 @@ class BookToc {
       this.bookname = window.location.hostname;
     }
     let bookname = this.bookname
-    let userid = "userid"
+    let { userid } = User;
     this.userid = userid;
     this.name = JSON.stringify({ userid, bookname })
     this.data = {};

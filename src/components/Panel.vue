@@ -3,6 +3,9 @@
   <div class="op-panel" v-click-outside="hide" :style="styclePanel">
     <Row class="panel-header" type="flex">
       <Col>
+        <Account />
+      </Col>
+      <Col>
         <SvgButton
           :on.sync="collapsed"
           onOff
@@ -145,11 +148,19 @@ import Bubbling from "./Bubbling";
 import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
+import Account from "./Account";
 import ClickOutside from "vue-click-outside";
 
 // import { checkClickOut } from "../mountCmp";
 export default {
-  components: { PopSvgButton, TocNote, Bubbling, SvgButton, BookMarks },
+  components: {
+    PopSvgButton,
+    TocNote,
+    Bubbling,
+    SvgButton,
+    BookMarks,
+    Account,
+  },
   name: "Panel",
   directives: {
     ClickOutside,
@@ -180,6 +191,7 @@ export default {
   },
   data() {
     return {
+      uername: undefined,
       bookmarkCount: 0,
       collapsed: false,
       closedetail: this.fnclosedetail,
