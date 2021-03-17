@@ -1,6 +1,6 @@
 
 <template>
-  <section class="xxxx doclist" >
+  <section class="xxxx doclist">
     <Tree :data="data" @on-toggle-expand="selectChange"></Tree>
   </section>
 </template>
@@ -9,16 +9,23 @@
 import { book } from "../store";
 import { parseurl, scollTopID } from "../mountCmp";
 import { preHighLightItems } from "../DocHighlighter";
-import TocOutLine from "./TocOutLine"
+import TocOutLine from "./TocOutLine";
 
+let toc = {};
 export default {
   name: "TocNote",
   // eslint-disable-next-line vue/no-unused-components
-  components:{ TocOutLine},
+  components: { TocOutLine },
   computed: {
     data() {
       let b = new book();
-      let ddd = b.Charpter().map((c) => {
+      let aaa = b.Charpter().sort((a) => {
+        if (a.label== document.title) {
+          return -1;
+        }
+        return 1;
+      });
+      let ddd = aaa.map((c) => {
         return this.createOutLine(c);
       });
       let children = preHighLightItems();
@@ -40,31 +47,30 @@ export default {
     },
   },
   data() {
-    return {
-      toc: {},
-    };
+    return {};
   },
   methods: {
     selectChange(a) {
-      // console.log("xxxx");
-      this.toc[a.title] = a.expand;
+      toc[a.title] = a.expand;
     },
     createOutLine(item) {
       let { label: title, children } = item;
       let expand = false;
       if (children) {
         children = this.mapchildren(children);
-        if (this.toc[title]) expand = true;
+        if (toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
-      let notedata = item
+      let notedata = item;
       const render = (h) => {
-        return h(
-          TocOutLine,
-          {
-            props: {notedata,onSelected:()=>{this.handleNodeClick(item)}},
-          }
-        );
+        return h(TocOutLine, {
+          props: {
+            notedata,
+            onSelected: () => {
+              this.handleNodeClick(item);
+            },
+          },
+        });
       };
       return { title, children, expand, render };
     },
@@ -75,7 +81,7 @@ export default {
         });
     },
     handleNodeClick(item) {
-      let data = item
+      let data = item;
       let { id, key, node } = data;
       if (node) {
         try {
@@ -102,14 +108,12 @@ export default {
         if (this.close) {
           this.close();
         }
-        // console.log(data);
       }
     },
   },
 };
 </script>
 <style >
-
 </style>
 
 

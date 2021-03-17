@@ -1,6 +1,6 @@
 <template>
   <Row class="doclist">
-    <Tree :data="data"></Tree>
+    <Tree :data="bookdata"></Tree>
   </Row>
 </template>
 <script>
@@ -8,17 +8,13 @@ import { book } from "../store";
 export default {
   name: "BookMarks",
   created() {
-    this.data = this.load();
+    this.bookdata= this.load();
   },
   updated() {
     console.log("updated");
   },
-  computed: function () {
-    return {
-      data() {
-        return this.load();
-      },
-    };
+  data() {
+    return { bookdata:[]}
   },
   methods: {
     // eslint-disable-next-line no-unused-vars

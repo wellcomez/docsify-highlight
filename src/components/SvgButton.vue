@@ -60,10 +60,6 @@ export default {
   },
   props: {
     custom: { type: Boolean, default: false },
-    onClick: {
-      type: Function,
-      default: undefined,
-    },
     name: { type: String, default: "" },
     tips: { type: String, default: undefined },
     color: { type: String, default: undefined },
@@ -74,7 +70,7 @@ export default {
     onClickMe(e) {
       this.tipsDisabled = true;
       this.$emit("update:on", this.on != true);
-      if (this.onClick) this.onClick(e);
+      this.$emit("click", e);
     },
   },
 };

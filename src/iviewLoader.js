@@ -6,3 +6,5 @@ const m = { Tooltip, Notice, Tree, Poptip, Button, ColorPicker, Input, Badge, Co
 for (let k in m) {
     Vue.component(k, m[k]);
 }
+import { Switch } from 'iview';
+Vue.component('i-switch', Switch);

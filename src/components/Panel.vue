@@ -1,30 +1,33 @@
 
 <template>
   <div class="op-panel" v-click-outside="hide" :style="styclePanel">
-    <Row class="panel-header" type="flex">
+    <Row class="panel-header" type="flex" align="middle">
       <Col>
         <Account />
       </Col>
       <Col>
         <SvgButton
-          :on.sync="collapsed"
+          :on="true"
           onOff
-          name="icon-zhankai"
+          :name="collapsedIcon"
           custom
+          @click="onCollapsed"
         ></SvgButton>
       </Col>
       <Col>
         <Badge v-if="checked" :count="count2">
           <SvgButton
-            v-bind:onClick="onOpenContentList"
+            @click="onOpenContentList"
             name="ios-book"
             tips="Table of Content"
+            onOff
+            :on="showdetail==false"
           />
         </Badge>
       </Col>
       <Col>
         <Bubbling
-          v-if="!collapsed && checked"
+          v-if="collapsed==false && checked"
           :onSelect="onSelect"
           content="Export"
         />
@@ -49,20 +52,12 @@
       </Col>
 
       <Col>
-        <input
-          v-if="collapsed == false"
-          name="auto"
-          type="checkbox"
-          class="switch"
-          v-bind:checked="checked"
-          v-bind:on-change="onChange"
-          v-on:click="onChange"
-        />
+        <Badge v-if="checked" :count="bookmarkCount">
+          <SvgButton @click="onBookmark" :name="bookmarkicon" />
+        </Badge>
       </Col>
       <Col>
-        <Badge v-if="checked" :count="bookmarkCount">
-          <SvgButton v-bind:onClick="onBookmark" :name="bookmarkicon" />
-        </Badge>
+        <i-switch :value="checked" @on-change="onChange" />
       </Col>
     </Row>
     <Row
@@ -89,7 +84,7 @@
 <style scoped >
 .op-panel {
   position: fixed;
-  right: 150px;
+  right: 20px;
   left: auto;
   top: 25px;
   border-radius: 3px;
@@ -97,7 +92,13 @@
   padding: 4px;
   /* background: var(--theme-color, #42b983); */
 }
-
+.op-panel .ivu-switch {
+  /* margin: top 4px; */
+}
+.op-panel .ivu-switch-checked {
+  border-color: #2df05e;
+  background-color: #2df05e;
+}
 .op-panel .contenttable {
   width: 400px;
   height: 640px;
@@ -166,6 +167,9 @@ export default {
     ClickOutside,
   },
   computed: {
+    collapsedIcon() {
+      return this.collapsed ? "icon-dotsvertical" : "icon-dotshorizontal";
+    },
     styclePanel() {
       let backgroundColor = "";
       if (this.showdetail) backgroundColor = "var(--theme-color, #42b983)";
@@ -230,13 +234,19 @@ export default {
     },
   },
   methods: {
+    onCollapsed() {
+      this.collapsed = this.collapsed == false;
+      if (this.collapsed) {
+        this.showdetail = false;
+      }
+    },
     getBookmarkCount() {
       let b = new book();
       let ddd = b.toc.bookMarkList();
       return ddd.length;
     },
     hide() {
-      this.showdetail = false;
+      // this.showdetail = false;
     },
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);
