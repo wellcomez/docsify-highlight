@@ -9,7 +9,6 @@
           onOff
           name="icon-zhankai"
           custom
-          :click="onHideSame"
         ></SvgButton>
       </Col>
       <Col>

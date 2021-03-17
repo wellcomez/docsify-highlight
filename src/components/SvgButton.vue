@@ -49,11 +49,11 @@ export default {
   },
   data() {
     return {
-      tipsDisabled:true
+      tipsDisabled: true,
     };
   },
-  mounted(){
-    this.tipsDisabled = !this.tips
+  mounted() {
+    this.tipsDisabled = !this.tips;
   },
   model: {
     prop: "on",
@@ -73,8 +73,8 @@ export default {
   methods: {
     onClickMe(e) {
       this.tipsDisabled = true;
-      this.$emit("update:on", this.on!=true);
-      this.onClick(e);
+      this.$emit("update:on", this.on != true);
+      if (this.onClick) this.onClick(e);
     },
   },
 };
