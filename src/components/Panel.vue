@@ -17,12 +17,14 @@
             @click="onOpenContentList"
             name="ios-book"
             tips="Table of Content"
+            onOff
+            :on="showdetail==false"
           />
         </Badge>
       </Col>
       <Col>
         <Bubbling
-          v-if="!collapsed && checked"
+          v-if="collapsed==false && checked"
           :onSelect="onSelect"
           content="Export"
         />
