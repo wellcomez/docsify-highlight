@@ -3,9 +3,6 @@
   <div class="op-panel" v-click-outside="hide" :style="styclePanel">
     <Row class="panel-header" type="flex" align="middle">
       <Col>
-        <Account />
-      </Col>
-      <Col>
         <SvgButton
           :on="true"
           onOff
@@ -55,6 +52,9 @@
         <Badge v-if="checked" :count="bookmarkCount">
           <SvgButton @click="onBookmark" :name="bookmarkicon" />
         </Badge>
+      </Col>
+      <Col v-if="checked&&collapsed==false">
+        <Account />
       </Col>
       <Col>
         <i-switch :value="checked" @on-change="onChange" />

@@ -1,7 +1,7 @@
 <template>
   <Poptip confirm :title="title" @on-ok="onYes" ok-text="yes" cancel-text="no">
     <Tooltip :content="name" placement="top-start">
-      <Avatar shape="square" :class="avatarStyle" icon="ios-person" />
+      <Avatar shape="square" :class="avatarStyle">{{ shortname }} </Avatar>
     </Tooltip>
   </Poptip>
 </template>
@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       name: "默认用户",
+      shortname: "默",
       inputValue: "",
       disabled: true,
       title: "",
@@ -30,13 +31,18 @@ export default {
         if (User.isLogin()) {
           this.disabled = false;
         }
-        this.name = next;
+        if (next) {
+          this.name = next;
+        } else {
+          this.name = "默认用户";
+        }
+        this.shortname = this.name[0];
         this.disabled = User.isLogin() ? false : true;
         this.title = this.login ? "登出" : "登入";
       }
     };
     User.register(checkUserLogin);
-    checkUserLogin();
+    checkUserLogin(undefined, undefined, true);
   },
   methods: {
     handleRender() {
@@ -82,6 +88,7 @@ export default {
   color: var(--theme-color, #42b983);
 }
 .logout {
-  background-color: gainsboro;
+  background-color: white;
+  color: var(--theme-color, #42b983);
 }
 </style>
