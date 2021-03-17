@@ -1,7 +1,6 @@
 
 <template>
   <div class="op-panel" v-click-outside="hide" :style="styclePanel">
-    <!-- <Badge :count="count2"> -->
     <Row class="panel-header" type="flex">
       <Col>
         <SvgButton
@@ -12,12 +11,14 @@
         ></SvgButton>
       </Col>
       <Col>
-        <SvgButton
-          v-if="checked"
-          v-bind:onClick="onOpenContentList"
-          name="ios-book"
-          tips="Table of Content"
-        />
+        <Badge :count="count2">
+          <SvgButton
+            v-if="checked"
+            v-bind:onClick="onOpenContentList"
+            name="ios-book"
+            tips="Table of Content"
+          />
+        </Badge>
       </Col>
       <Col>
         <Bubbling
@@ -57,11 +58,13 @@
         />
       </Col>
       <Col>
-        <SvgButton
-          v-if="checked"
-          v-bind:onClick="onBookmark"
-          :name="bookmarkicon"
-        />
+        <Badge :count="bookmarkCount">
+          <SvgButton
+            v-if="checked"
+            v-bind:onClick="onBookmark"
+            :name="bookmarkicon"
+          />
+        </Badge>
       </Col>
     </Row>
     <Row
@@ -82,7 +85,6 @@
         </TabPane>
       </Tabs>
     </Row>
-    <!-- </Badge> -->
   </div>
 </template>
 <style scoped>
@@ -186,6 +188,7 @@ export default {
   },
   data() {
     return {
+      bookmarkCount: 0,
       collapsed: false,
       closedetail: this.fnclosedetail,
       bookmark: false,
@@ -193,9 +196,8 @@ export default {
     };
   },
   mounted: function () {
-    // let d = document.getElementsByClassName("op-panel")[0];
-    // checkClickOut(d, this.hideDetails);
     this.bookmark = this.hl.store.isBookMarked();
+    this.bookmarkCount = this.getBookmarkCount()
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
@@ -224,6 +226,11 @@ export default {
     },
   },
   methods: {
+    getBookmarkCount() {
+      let b = new book();
+      let ddd = b.toc.bookMarkList();
+      return ddd.length;
+    },
     hide() {
       this.showdetail = false;
     },
@@ -231,6 +238,7 @@ export default {
       this.hl.store.setBookMark(this.bookmark != true);
       this.bookmark = this.bookmark != true;
       this.bookmarkey = new Date() * 1;
+      this.bookmarkCount = this.getBookmarkCount()
     },
     onSave2Cloud() {
       let b = new book();

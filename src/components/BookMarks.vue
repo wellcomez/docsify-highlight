@@ -1,5 +1,5 @@
 <template>
-  <Row>
+  <Row class="doclist">
     <Tree :data="data"></Tree>
   </Row>
 </template>

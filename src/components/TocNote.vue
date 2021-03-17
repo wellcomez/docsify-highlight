@@ -1,6 +1,6 @@
 
 <template>
-  <section class="xxxx" >
+  <section class="xxxx doclist" >
     <Tree :data="data" @on-toggle-expand="selectChange"></Tree>
   </section>
 </template>
@@ -109,20 +109,20 @@ export default {
 };
 </script>
 <style >
-.xxxx .ivu-tree ul{
+.doclist .ivu-tree ul{
   padding-left: 2px;
 }
-.xxxx {
+.doclist {
   overflow: auto;
   height: 200px;
   /* background-color: white; */
 }
 @media screen and (max-width: 640px) {
-  .xxxx .ivu-tree ul{
+  .doclist .ivu-tree ul{
     font-size:medium;
   }
 }
-.xxxx::-webkit-scrollbar {
+.doclist::-webkit-scrollbar {
   border-width: 1px;
 }
 </style>
