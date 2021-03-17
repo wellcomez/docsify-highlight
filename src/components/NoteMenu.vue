@@ -4,7 +4,7 @@
     v-on:click="onClickMask"
     @touchstart="onClickMask"
   >
-    <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex">
+    <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex" justify="space-between">
       <Col :style="col(0)">
         <SvgButton
           onOff
