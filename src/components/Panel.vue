@@ -4,9 +4,9 @@
     <Row class="panel-header" type="flex">
       <Col>
         <SvgButton
-          :on.sync="collapsed"
+          :on=true
           onOff
-          name="icon-zhankai"
+          :name="collapsedIcon"
           custom
           @click="onCollapsed"
         ></SvgButton>
@@ -156,6 +156,9 @@ export default {
     ClickOutside,
   },
   computed: {
+    collapsedIcon() {
+      return this.collapsed ? "icon-dotsvertical" : "icon-dotshorizontal";
+    },
     styclePanel() {
       let backgroundColor = "";
       if (this.showdetail) backgroundColor = "var(--theme-color, #42b983)";
@@ -220,6 +223,7 @@ export default {
   },
   methods: {
     onCollapsed() {
+      this.collapsed = this.collapsed==false;
       if (this.collapsed) {
         this.showdetail = false;
       }
