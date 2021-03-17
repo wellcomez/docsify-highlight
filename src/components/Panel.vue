@@ -1,10 +1,10 @@
 
 <template>
   <div class="op-panel" v-click-outside="hide" :style="styclePanel">
-    <Row class="panel-header" type="flex">
+    <Row class="panel-header" type="flex" align="middle">
       <Col>
         <SvgButton
-          :on=true
+          :on="true"
           onOff
           :name="collapsedIcon"
           custom
@@ -47,20 +47,12 @@
       </Col>
 
       <Col>
-        <input
-          v-if="collapsed == false"
-          name="auto"
-          type="checkbox"
-          class="switch"
-          v-bind:checked="checked"
-          v-bind:on-change="onChange"
-          v-on:click="onChange"
-        />
-      </Col>
-      <Col>
         <Badge v-if="checked" :count="bookmarkCount">
           <SvgButton @click="onBookmark" :name="bookmarkicon" />
         </Badge>
+      </Col>
+      <Col>
+        <i-switch :value="checked" @on-change="onChange" />
       </Col>
     </Row>
     <Row
@@ -95,7 +87,13 @@
   padding: 4px;
   /* background: var(--theme-color, #42b983); */
 }
-
+.op-panel .ivu-switch {
+  /* margin: top 4px; */
+}
+.op-panel .ivu-switch-checked {
+  border-color: #2df05e;
+  background-color: #2df05e;
+}
 .op-panel .contenttable {
   width: 400px;
   height: 640px;
@@ -223,7 +221,7 @@ export default {
   },
   methods: {
     onCollapsed() {
-      this.collapsed = this.collapsed==false;
+      this.collapsed = this.collapsed == false;
       if (this.collapsed) {
         this.showdetail = false;
       }
