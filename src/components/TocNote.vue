@@ -109,8 +109,8 @@ export default {
 };
 </script>
 <style >
-.xxxx .ivu-tree li ul{
-  margin-left:6px !important;
+.xxxx .ivu-tree ul{
+  padding-left: 2px;
 }
 .xxxx {
   overflow: auto;
