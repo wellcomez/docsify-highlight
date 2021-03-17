@@ -11,7 +11,7 @@
           v-bind:on="fontColorEnable"
           name="icon-ai247"
           custom
-          v-bind:onClick="onFontColor"
+          @click="onFontColor"
           :color="fontColor"
           tips="Font Color"
         ></SvgButton>
@@ -22,7 +22,7 @@
           v-bind:on="UnderlineEnable"
           name="icon-xiahuaxian"
           custom
-          v-bind:onClick="onUnderline"
+          @click="onUnderline"
           :color="underlineColor"
           tips="Underline"
         ></SvgButton>
@@ -45,15 +45,15 @@
         />
       </Col>
       <Col>
-        <SvgButton v-bind:onClick="onDelete" name="md-trash" tips="Remove" />
+        <SvgButton @click="onDelete" name="md-trash" tips="Remove" />
       </Col>
       <Col>
-        <SvgButton v-bind:onClick="onCopy" name="ios-copy" tips="Copy" />
+        <SvgButton @click="onCopy" name="ios-copy" tips="Copy" />
       </Col>
       <Col>
         <Badge dot :count="notecouter" :offset="[20, 10]">
           <SvgButton
-            v-bind:onClick="openEditor"
+            @click="openEditor"
             name="md-create"
             tips="EditTextTips"
           />

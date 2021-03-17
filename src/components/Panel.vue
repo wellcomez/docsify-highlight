@@ -8,12 +8,13 @@
           onOff
           name="icon-zhankai"
           custom
+          @click="onCollapsed"
         ></SvgButton>
       </Col>
       <Col>
         <Badge v-if="checked" :count="count2">
           <SvgButton
-            v-bind:onClick="onOpenContentList"
+            @click="onOpenContentList"
             name="ios-book"
             tips="Table of Content"
           />
@@ -58,7 +59,7 @@
       </Col>
       <Col>
         <Badge v-if="checked" :count="bookmarkCount">
-          <SvgButton v-bind:onClick="onBookmark" :name="bookmarkicon" />
+          <SvgButton @click="onBookmark" :name="bookmarkicon" />
         </Badge>
       </Col>
     </Row>
@@ -218,6 +219,11 @@ export default {
     },
   },
   methods: {
+    onCollapsed() {
+      if (this.collapsed) {
+        this.showdetail = false;
+      }
+    },
     getBookmarkCount() {
       let b = new book();
       let ddd = b.toc.bookMarkList();

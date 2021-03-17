@@ -1,6 +1,6 @@
 <template>
   <Poptip confirm  :title="title" @on-ok="click" ok-text="yes" cancel-text="no">
-    <SvgButton v-bind:onClick="voidfn" :name="name" :tips="tips" />
+    <SvgButton @click="voidfn" :name="name" :tips="tips" />
   </Poptip>
 </template>
 <script>

@@ -1,6 +1,6 @@
 <template>
   <div class="bubbing">
-    <SvgButton v-bind:onClick="onClickBtn" name="ios-download" tips="Export" />
+    <SvgButton @click="onClickBtn" name="ios-download" tips="Export" />
     <div class="wrapper" v-if="expanded">
       <ul>
         <!-- 一级列表 -->
