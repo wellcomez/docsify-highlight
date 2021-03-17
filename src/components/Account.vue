@@ -7,23 +7,23 @@
 </template>
 <script>
 function load() {
-  let a = localStorage.getItem("avatar");
-  if (a) {
-    return JSON.parse(a);
+  let {avatarcomplete} = getConfig().load()
+  if (avatarcomplete) {
+      return avatarcomplete
   }
   return [];
 }
 function save(a) {
   if (a && a.length) {
-    let data = load();
-    if (data.indexOf(a)>=0) return;
-    data.push(a);
-    let b = JSON.stringify(data);
-    localStorage.setItem("avatar", b);
+    let avatarcomplete = load();
+    if (avatarcomplete.indexOf(a)>=0) return;
+    avatarcomplete.push(a);
+    getConfig().save({avatarcomplete})
   }
 }
 import { Avatar, Modal, AutoComplete } from "iview";
 import { User } from "../store";
+import { getConfig } from '../ANoteConfig';
 export default {
   components: {
     Avatar,

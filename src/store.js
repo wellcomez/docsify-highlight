@@ -1,10 +1,11 @@
+import { getConfig } from "./ANoteConfig";
 import { colorClassList } from "./colorSelector";
 const md5 = require('md5');
 export class UserLogin {
   constructor() {
     this.stateChange = []
     this.userid = 'userid'
-    let userid = localStorage.getItem('userid')
+    let {userid} = getConfig().load()
     if (userid) {
       this.userid = userid
     }
@@ -22,7 +23,8 @@ export class UserLogin {
     this.stateChange.push(fn)
   }
   save(username) {
-    localStorage.setItem('userid', username)
+    let userid = username
+    getConfig().save({userid})
   }
   // eslint-disable-next-line no-unused-vars
   Login(username, password) {
