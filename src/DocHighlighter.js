@@ -9,7 +9,8 @@ import { mountCmp, parseurl } from './mountCmp';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import { hl_note, tUl, tfontColor } from './colorSelector';
-import {highlightType} from './highlightType'
+import { highlightType } from './highlightType'
+import ScrollMark from './components/ScrollMark'
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -48,7 +49,7 @@ export class DocHighlighter {
         let hl = this;
         try {
             document.getSelection().removeAllRanges()
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (error) {
         }
         mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources }, document.body)
@@ -128,7 +129,7 @@ export class DocHighlighter {
         this.removeHighLight(noteid);
         this.procssAllElements(noteid, (a) => {
             if (disable) {
-                colorhex ="" 
+                colorhex = ""
             }
             if (color == tUl) {
                 if (colorhex != "")
@@ -259,7 +260,7 @@ export class DocHighlighter {
             this.store.getAll()
             sources.forEach(hs => {
                 let { id, style, note } = this.store.geths(hs.id)
-                let a = new highlightType(this,id, style)
+                let a = new highlightType(this, id, style)
                 a.showHighlight()
                 if (note && note.length) {
                     this.createMarkNode(id, note);
@@ -285,8 +286,8 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
-        let { note, sources,style} = data ? data : {}
-        let change = style!= undefined || note
+        let { note, sources, style } = data ? data : {}
+        let change = style != undefined || note
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
@@ -315,7 +316,7 @@ export class DocHighlighter {
                 this.store.save(sources2);
                 this.updatePanel();
             } else {
-                this.store.update({ id: noteid, note,style })
+                this.store.update({ id: noteid, note, style })
             }
         } else {
             this.removeHighLight(noteid);
@@ -374,16 +375,32 @@ export class DocHighlighter {
     }
 
     getElementPosition(id) {
-        let a = this.getElement(id)
-        if (a) {
-            return this.getPosition(a);
-        }
-        return a;
+        let ret = {};
+        this.procssAllElements(id, (a) => {
+            let pos = this.getPosition(a);
+            if (pos) {
+                let { top } = pos;
+                if (ret.top == undefined) {
+                    ret = pos
+                } else {
+                    if (top > ret.top) {
+                        ret = pos
+                    }
+                }
+            }
+        })
+        return ret;
     }
     scollTopID(id) {
-        let { top } = this.getElementPosition(id);
-        if (top != undefined)
+        let { top, left } = this.getElementPosition(id);
+        if (top != undefined) {
             window.scrollTo(0, top - 120);
+            let top2 = top;//+window.screen.off
+            left = 100
+            let b = document.getElementsByClassName('content')[0]
+            let pp = this.getPosition(b)
+            mountCmp(ScrollMark, { id, hl: this, left:pp.left, top }, document.body);
+        }
     }
     // offsetHeight: 40
     // offsetLeft: 15
