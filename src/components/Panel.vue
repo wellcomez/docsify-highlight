@@ -224,7 +224,7 @@ export default {
       return ddd.length;
     },
     hide() {
-      this.showdetail = false;
+      // this.showdetail = false;
     },
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);

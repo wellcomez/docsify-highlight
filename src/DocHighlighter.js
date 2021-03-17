@@ -383,7 +383,7 @@ export class DocHighlighter {
     scollTopID(id) {
         let { top } = this.getElementPosition(id);
         if (top != undefined)
-            window.scrollTo(0, top - 60);
+            window.scrollTo(0, top - 120);
     }
     // offsetHeight: 40
     // offsetLeft: 15

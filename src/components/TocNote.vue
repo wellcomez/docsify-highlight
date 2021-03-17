@@ -11,6 +11,7 @@ import { parseurl, scollTopID } from "../mountCmp";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine"
 
+let toc = {}
 export default {
   name: "TocNote",
   // eslint-disable-next-line vue/no-unused-components
@@ -41,20 +42,18 @@ export default {
   },
   data() {
     return {
-      toc: {},
     };
   },
   methods: {
     selectChange(a) {
-      // console.log("xxxx");
-      this.toc[a.title] = a.expand;
+      toc[a.title] = a.expand;
     },
     createOutLine(item) {
       let { label: title, children } = item;
       let expand = false;
       if (children) {
         children = this.mapchildren(children);
-        if (this.toc[title]) expand = true;
+        if (toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
       let notedata = item
@@ -102,7 +101,6 @@ export default {
         if (this.close) {
           this.close();
         }
-        // console.log(data);
       }
     },
   },
