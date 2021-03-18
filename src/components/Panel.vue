@@ -1,6 +1,6 @@
 
 <template>
-  <div class="op-panel" v-click-outside="hide" :style="styclePanel">
+  <div class="op-panel disable-user-selection" v-click-outside="hide" :style="styclePanel">
     <Row class="panel-header" type="flex" align="middle">
       <Col>
         <SvgButton
@@ -168,7 +168,7 @@ export default {
   },
   computed: {
     collapsedIcon() {
-      return this.collapsed ? "icon-dotsvertical" : "icon-dotshorizontal";
+      return this.collapsed ==false? "icon-dotsvertical" : "icon-dotshorizontal";
     },
     styclePanel() {
       let backgroundColor = "";
