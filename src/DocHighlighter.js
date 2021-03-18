@@ -31,6 +31,14 @@ export class DocHighlighter {
         let aa = this.store.getAll();
         return aa.length;
     }
+    disableUserSelection(disable) {
+        var main = document.getElementsByClassName('content')[0]
+        if (disable == false)
+            main.classList.remove('disable-user-selection')
+        else {
+            main.classList.add('disable-user-selection')
+        }
+    }
     createNoteMenu = (node, sources) => {
         let noteid = node.dataset.highlightId;
         const position = this.getPosition(node);
@@ -44,8 +52,8 @@ export class DocHighlighter {
         }
         if (hs == undefined) hs = {}
         let { style: data, note, tags } = hs
-        if(tags==undefined) tags =[]
-        if(data==undefined) data ={}
+        if (tags == undefined) tags = []
+        if (data == undefined) data = {}
         // log("createNoteMenu", top, left, color)z
         let hl = this;
         try {
@@ -53,7 +61,11 @@ export class DocHighlighter {
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags }, document.body)
+        this.disableUserSelection()
+        let onCloseMenu = () => {
+            this.disableUserSelection(false)
+        }
+        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags, onCloseMenu }, document.body)
         // }
     };
     procssAllElements(nodeid, cb) {

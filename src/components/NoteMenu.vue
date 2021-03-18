@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mask note-menu"
+    class="mask note-menu disable-user-selection"
     v-on:click="onClickMask"
     @touchstart="onClickMask"
   >

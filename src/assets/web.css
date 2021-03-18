@@ -114,6 +114,12 @@ input[type='checkbox'].switch:checked::after {
   }
 }
 
+.disable-user-selection {
+  -moz-user-select  : none;
+  -khtml-user-select: none;
+  user-select       : none;
+}
+
 .doclist::-webkit-scrollbar {
   border-width: 1px;
 }

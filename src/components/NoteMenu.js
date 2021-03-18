@@ -267,6 +267,7 @@ export const NoteMenu = {
             this.saveNoteData()
         },
         removeMenu() {
+            this.onCloseMenu()
             var tips = document.getElementsByClassName("note-menu");
             tips.forEach((tip) => {
                 tip.parentNode.removeChild(tip);
@@ -281,6 +282,10 @@ export const NoteMenu = {
         },
     },
     props: {
+        onCloseMenu: {
+            type: Function,
+            default: function () { }
+        },
         data: { type: Object, default: {} },
         colorhex: { type: String, default: "" },
         tags: {
