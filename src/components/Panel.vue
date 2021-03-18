@@ -80,7 +80,7 @@
       </Tabs>
     </Row>
     <Drawer :closable="false" v-model="bDrawerOpen" :width="drawWidth">
-      <Account slot="header" />
+      <Account slot="header" style="width:70%" />
       <div style="background: #f8f8f9; width: 70%">
         <Card :padding="0" shadow>
           <CellGroup style="">
@@ -225,6 +225,7 @@ export default {
   },
   data() {
     return {
+      drawWidth:320,
       enableScript: false,
       bDrawerOpen: false,
       uername: undefined,
