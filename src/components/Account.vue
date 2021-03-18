@@ -1,16 +1,17 @@
 <template>
-  <Poptip confirm :title="title" @on-ok="onYes" ok-text="yes" cancel-text="no">
-    <Row align="bottom" type="flex">
-      <Col>
-        <Tooltip :content="name" placement="top-start">
-          <Avatar shape="circle" :class="avatarStyle">{{ shortname }} </Avatar>
-        </Tooltip>
-      </Col>
-      <Col>
-        <span>{{ name }}</span>
-      </Col>
-    </Row>
-  </Poptip>
+  <Row align="bottom" type="flex">
+    <Col>
+      <Tooltip :content="name" placement="top-start">
+        <Avatar shape="circle" :class="avatarStyle"></Avatar>
+      </Tooltip>
+    </Col>
+    <Col>
+      <span>{{ name }}</span>
+    </Col>
+    <Col>
+      <Button type="text" @click="onYes">{{ btnTitle }}</Button>
+    </Col>
+  </Row>
 </template>
 <script>
 function load() {
@@ -41,6 +42,7 @@ export default {
       shortname: "默",
       inputValue: "",
       disabled: true,
+      btnTitle: "",
       title: "",
       login: false,
       avatarStyle: this.getAvatarStyle(),
@@ -62,6 +64,7 @@ export default {
         this.shortname = this.name[0];
         this.disabled = User.isLogin() ? false : true;
         this.title = this.login ? this.name + "登出" : "登入";
+        this.btnTitle = this.login ? "注销" : "登入";
       }
     };
     User.register(checkUserLogin);

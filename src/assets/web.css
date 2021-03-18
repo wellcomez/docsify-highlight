@@ -114,6 +114,12 @@ input[type='checkbox'].switch:checked::after {
   }
 }
 
+@media screen and (max-width: 480px) {
+  body .ivu-modal-content {
+    width: 70%
+  }
+}
+
 .disable-user-selection {
   -moz-user-select  : none;
   -khtml-user-select: none;
