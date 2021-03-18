@@ -108,6 +108,8 @@ input[type='checkbox'].switch:checked::after {
 }
 
 
+
+
 @media screen and (max-width: 640px) {
   .doclist .ivu-tree ul {
     font-size: medium;
@@ -117,6 +119,9 @@ input[type='checkbox'].switch:checked::after {
 @media screen and (max-width: 480px) {
   body .ivu-modal-content {
     width: 70%
+  }
+  body .ivu-modal-confirm-body input {
+    font-size: 16px;
   }
 }
 
