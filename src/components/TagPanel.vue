@@ -14,23 +14,9 @@
         >{{ txt }}</Tag
       >
     </div>
-    <Row class="input-panel" type="flex" justify="space-between" align="middle">
-      <Col :span="12">
-        <Input
-          class="input"
-          clearable
-          v-model="inputText"
-          placeholder="something..."
-        />
-      </Col>
+    <Row class="input-panel" type="flex" justify="end" align="middle">
       <Col>
-        <Button
-          class="add-btn"
-          :disabled="btndiable"
-          type="primary"
-          @click="onAdd"
-          >Add</Button
-        >
+        <Button size="small" class="add-btn" type="primary" @click="onAdd">Add</Button>
       </Col>
     </Row>
   </div>
@@ -73,12 +59,12 @@
 </style>
 <script>
 import { getConfig } from "../ANoteConfig";
+import { Modal } from "iview";
 /* eslint-disable no-unused-vars */
 export default {
   //   components: { Card ,Divider},
   data() {
     return {
-      inputText: "",
       existsTag: [],
       tagSet: ["稍后", "难"],
       tagClass: "",
@@ -87,11 +73,7 @@ export default {
   model: {
     prop: "tags",
   },
-  computed: {
-    btndiable() {
-      return this.inputText == undefined || this.inputText.length == 0;
-    },
-  },
+  computed: {},
   created() {
     let { tagSet } = getConfig().load();
     if (tagSet && tagSet.length) this.tagSet = tagSet;
@@ -102,16 +84,38 @@ export default {
       this.$emit("update:tags", this.tags);
     },
     onAdd() {
-      let { inputText, tagSet, tags } = this;
-      if (tags.indexOf(inputText) >= 0) {
-        this.inputText = "";
-        return;
-      }
-      this.tags.push(inputText);
-      this.update()
-      tagSet.push(inputText);
-      this.convert(this.tags);
-      this.inputText = "";
+      let ok = (tmpdata) => {
+        let { tagSet, tags } = this;
+        let inputText = tmpdata;
+        if (tags.indexOf(inputText) >= 0) {
+          this.inputText = "";
+          return;
+        }
+        this.tags.push(inputText);
+        this.update();
+        tagSet.push(inputText);
+        this.convert(this.tags);
+      };
+
+      var tmpdata;
+      Modal.confirm({
+        onOk: () => {
+          ok(tmpdata);
+        },
+        render: (h) => {
+          return h("Input", {
+            props: {
+              autofocus: true,
+              clearable: true,
+            },
+            on: {
+              input: (val) => {
+                tmpdata = val;
+              },
+            },
+          });
+        },
+      });
     },
     removeItem(a, b) {
       let i = a.indexOf(b);
@@ -124,13 +128,13 @@ export default {
       } else {
         this.tags.push(txt);
       }
-      this.update()
+      this.update();
       this.convert(this.tags);
     },
     handleClose(index, txt) {
       this.removeItem(this.tags, txt);
       this.removeItem(this.tagSet, txt);
-      this.update()
+      this.update();
       this.convert(this.tags);
     },
     convert(tags) {
