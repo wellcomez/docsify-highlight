@@ -38,8 +38,6 @@ export const NoteMenu = {
             fontColorEnable: false,
             hlStyle: new highlightType(this.hl, this.noteid, this.data),
             style: {
-                left: this.menuLeft(),
-                top: this.top - 80 - window.pageYOffset + "px",
             },
             hlType: undefined,
             selectedSubColor: undefined,
@@ -51,6 +49,9 @@ export const NoteMenu = {
         };
     },
     watch: {
+        showtagPane() {
+            this.updatePos()
+        },
         // eslint-disable-next-line no-unused-vars
         selectedSubColor(val) {
             if (val < 0) return
@@ -81,10 +82,17 @@ export const NoteMenu = {
     mounted() {
         this.colorList = this.getColorList()
         this.updateSelection();
+        this.updatePos()
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        updatePos() {
+            this.style = {
+                left: this.menuLeft(),
+                top: this.top - (this.showtagPane ? 140 : 80) - window.pageYOffset + "px",
+            }
+        },
         menuLeft() {
             if (window.screen.availWidth < 450) return "0px";
             return Math.min(leftPos(), this.left - 20) + "px"
@@ -219,7 +227,7 @@ export const NoteMenu = {
             }
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
-            return { note, sources, style ,tags};
+            return { note, sources, style, tags };
         },
         saveNoteData() {
             this.hl.saveNoteData(this.noteid, this.notedata());
