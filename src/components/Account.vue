@@ -1,98 +1,56 @@
+/* eslint-disable no-unused-vars */
 <template>
   <Card>
-    <Avatar size="large" shape="circle" :class="avatarStyle" >{{name}}</Avatar>
+    <Avatar size="large" shape="circle" :class="avatarStyle"></Avatar>
+    <br /><span>{{ name }}</span>
     <Button type="text" @click="onYes">{{ btnTitle }}</Button>
-    <span>{{ name }}</span>
+    <Login :open.sync="open" />
+    <!-- <Button type="text" @click="onSign"> 注册</Button> -->
   </Card>
 </template>
 <script>
 /* eslint-disable vue/no-unused-components */
-function load() {
-  let { avatarcomplete } = getConfig().load();
-  if (avatarcomplete) {
-    return avatarcomplete;
-  }
-  return [];
-}
-function save(a) {
-  if (a && a.length) {
-    let avatarcomplete = load();
-    if (avatarcomplete.indexOf(a) >= 0) return;
-    avatarcomplete.push(a);
-    getConfig().save({ avatarcomplete });
-  }
-}
-import { Avatar, Modal, AutoComplete } from "iview";
-import { User } from "../store";
-import { getConfig } from "../ANoteConfig";
+// function save(a)
+import { Modal, Avatar } from "iview";
+import { User } from "../UserLogin";
+import Login from "./Login";
 export default {
-  components: {
-    Avatar,
-  },
+  components: { Modal, Avatar, Login },
   data() {
     return {
       name: "默认用户",
       shortname: "默",
       inputValue: "",
-      disabled: true,
       btnTitle: "",
       title: "",
-      login: false,
+      open: false,
+      dialogid: false,
       avatarStyle: this.getAvatarStyle(),
     };
   },
   mounted() {
     let checkUserLogin = (old, next, change) => {
       if (change) {
-        this.login = User.isLogin();
+        let yes = User.isLogin();
         this.avatarStyle = this.getAvatarStyle();
-        if (User.isLogin()) {
-          this.disabled = false;
-        }
-        if (next) {
-          this.name = next;
+        let userid = User.getUsername();
+        if (yes) {
+          this.name = userid;
         } else {
-          this.name = "默认用户";
+          this.name = "未登录";
         }
         this.shortname = this.name[0];
-        this.disabled = User.isLogin() ? false : true;
-        this.title = this.login ? this.name + "登出" : "登入";
-        this.btnTitle = this.login ? "注销" : "登入";
+        this.title = this.btnTitle = yes ? "注销" : "登入";
       }
     };
     User.register(checkUserLogin);
     checkUserLogin(undefined, undefined, true);
   },
   methods: {
-    handleRender() {
-      let vvv;
-      let data = load();
-      Modal.confirm({
-        // eslint-disable-next-line no-unused-vars
-        onOk: (a, b) => {
-          User.Login(vvv);
-          save(vvv);
-        },
-        render: (h) => {
-          return h(AutoComplete, {
-            props: {
-              value: this.value,
-              autofocus: true,
-              data: data,
-              placeholder: "Please enter your name...",
-            },
-            on: {
-              input: (val) => {
-                vvv = val;
-              },
-            },
-          });
-        },
-      });
-    },
     onYes() {
       if (User.isLogin() == false) {
-        this.handleRender();
+        // this.dialogid = new Date() * 1;
+        this.open = true;
       } else {
         User.Login(undefined);
       }

@@ -1,7 +1,7 @@
 import { book } from "./store";
 
 /* eslint-disable no-unused-vars */
-const AV = require("leancloud-storage");
+export const AV = require("leancloud-storage");
 
 class ObjectIdStore {
     constructor() {

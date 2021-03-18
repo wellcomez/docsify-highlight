@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-prototype-builtins */
 import Highlighter from 'web-highlighter';
-import { LocalStore, User } from './store';
+import { LocalStore } from './store';
+import { User } from "./UserLogin";
 import { getIntersection } from './hl';
 import { log } from "./log";
 import { getConfig } from './ANoteConfig';

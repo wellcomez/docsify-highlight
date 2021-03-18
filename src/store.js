@@ -1,57 +1,6 @@
-import { getConfig } from "./ANoteConfig";
 import { colorClassList } from "./colorSelector";
+import { User } from "./UserLogin";
 const md5 = require('md5');
-export class UserLogin {
-  constructor() {
-    this.stateChange = []
-    this.userid = 'userid'
-    let {userid} = getConfig().load()
-    if (userid) {
-      this.userid = userid
-    }
-  }
-  register(fn, removce) {
-    if (removce) {
-      let a = []
-      this.stateChange.forEach((b) => {
-        if (fn == b) return;
-        a.push(b)
-      })
-      this.stateChange = a
-      return
-    }
-    this.stateChange.push(fn)
-  }
-  save(username) {
-    let userid = username
-    getConfig().save({userid})
-  }
-  // eslint-disable-next-line no-unused-vars
-  Login(username, password) {
-    let {userid,stateChange} = this
-    stateChange.forEach((a)=>{
-      try {
-        a(userid, username,false) 
-      // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
-    })
-    this.userid = username?username:'userid'
-    stateChange.forEach((a)=>{
-      try {
-        a(userid, username,true) 
-      // eslint-disable-next-line no-empty
-      } catch (error) {
-      }
-    })
-  }
-  isLogin() {
-    if (this.userid)
-      return this.userid != 'userid'
-    return false
-  }
-}
-export let User = new UserLogin()
 class BookToc {
   constructor() {
     this.bookname = window.$docsify.name;
