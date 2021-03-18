@@ -87,6 +87,13 @@
             <Cell title="开关" style="">
               <i-switch :value="checked" @on-change="onChange" slot="extra" />
             </Cell>
+            <Cell title="执行自定义脚本" style="">
+              <i-switch
+                :value="enableScript"
+                @on-change="onEnableScript"
+                slot="extra"
+              />
+            </Cell>
           </CellGroup>
         </Card>
       </div>
@@ -170,8 +177,8 @@ import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import Account from "./Account";
-import ConfigPanel from "./ConfigPanel";
 import ClickOutside from "vue-click-outside";
+import { getConfig } from "../ANoteConfig";
 // import { checkClickOut } from "../mountCmp";
 export default {
   components: {
@@ -182,7 +189,6 @@ export default {
     BookMarks,
     Account,
     Drawer,
-    ConfigPanel,
   },
   name: "Panel",
   directives: {
@@ -219,6 +225,7 @@ export default {
   },
   data() {
     return {
+      enableScript: false,
       bDrawerOpen: false,
       uername: undefined,
       bookmarkCount: 0,
@@ -228,7 +235,9 @@ export default {
       bookmarkey: new Date() * 1,
     };
   },
-  mounted: function () {
+  mounted() {
+    let { enableScript } = getConfig().load();
+    this.enableScript = enableScript;
     let { store } = this.hl;
     if (store) {
       this.bookmark = store.isBookMarked();
@@ -309,6 +318,12 @@ export default {
         let json = b.jsonstr();
         funDownload(json, window.$docsify.name + ".json");
       }
+    },
+    onEnableScript() {
+      this.enableScript = this.enableScript == false;
+      let { enableScript } = this;
+      getConfig().save({ enableScript });
+      document.location.reload();
     },
     onChange() {
       this.checked = this.checked == false;

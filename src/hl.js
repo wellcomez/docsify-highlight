@@ -3,6 +3,7 @@ import { log } from "./log";
 import Vue from 'vue';
 import { DocHighlighter } from './DocHighlighter';
 import { mountCmp } from './mountCmp';
+import { getConfig } from './ANoteConfig';
 export function findtipid(id) {
     var tips = document.getElementsByClassName('note-menu');
     for (var i in tips) {
@@ -24,6 +25,8 @@ export function getIntersection(arrA, arrB) {
     return intersection;
 }
 function runScrip() {
+    let { enableScript } = getConfig().load();
+    if (enableScript != true) return;
     let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
     if (DocHighlighter) {
         let { script } = DocHighlighter
