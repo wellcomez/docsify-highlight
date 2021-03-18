@@ -1,8 +1,15 @@
 <template>
   <Poptip confirm :title="title" @on-ok="onYes" ok-text="yes" cancel-text="no">
-    <Tooltip :content="name" placement="top-start">
-      <Avatar shape="square" :class="avatarStyle">{{ shortname }} </Avatar>
-    </Tooltip>
+    <Row align="bottom" type="flex">
+      <Col>
+        <Tooltip :content="name" placement="top-start">
+          <Avatar shape="circle" :class="avatarStyle">{{ shortname }} </Avatar>
+        </Tooltip>
+      </Col>
+      <Col>
+        <span>{{ name }}</span>
+      </Col>
+    </Row>
   </Poptip>
 </template>
 <script>
@@ -103,11 +110,11 @@ export default {
 </script>
 <style scoped>
 .login {
-  background-color: white;
-  color: var(--theme-color, #42b983);
+  color: white;
+  background-color: var(--theme-color, #42b983);
 }
 .logout {
-  background-color: white;
-  color: var(--theme-color, #42b983);
+  color: black;
+  background-color: gainsboro;
 }
 </style>

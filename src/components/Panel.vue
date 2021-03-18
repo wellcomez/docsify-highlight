@@ -79,11 +79,11 @@
         </TabPane>
       </Tabs>
     </Row>
-    <Drawer :closable="false" v-model="bDrawerOpen" width="50%">
+    <Drawer :closable="false" v-model="bDrawerOpen" :width="drawWidth">
       <Account slot="header" />
-      <div style="background: #f8f8f9; width: 80%">
+      <div style="background: #f8f8f9; width: 70%">
         <Card :padding="0" shadow>
-          <CellGroup style="padding-right: 50px">
+          <CellGroup style="">
             <Cell title="开关" style="">
               <i-switch :value="checked" @on-change="onChange" slot="extra" />
             </Cell>
@@ -242,6 +242,7 @@ export default {
     if (store) {
       this.bookmark = store.isBookMarked();
     }
+    this.drawWidth = window.screen.width<480?"80":"320"
     this.bookmarkCount = this.getBookmarkCount();
   },
   beforeCreate: function () {
