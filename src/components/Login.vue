@@ -33,7 +33,7 @@
   </Modal>
 </template>
 <script>
-import { Modal } from "iview";
+import { Modal, Message } from "iview";
 import { User } from "../UserLogin";
 export default {
   components: { Modal },
@@ -58,6 +58,14 @@ export default {
     },
     onOk() {
       let { user, password } = this;
+      let a = ({ error }) => {
+        if (error) {
+          let { rawMessage } = error;
+          Message.error(rawMessage);
+        }
+        User.register(a, true);
+      };
+      User.register(a);
       if (this.tabname == "0") {
         User.newUser(user, password);
       } else {

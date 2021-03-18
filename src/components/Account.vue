@@ -29,7 +29,8 @@ export default {
     };
   },
   mounted() {
-    let checkUserLogin = (old, next, change) => {
+    // eslint-disable-next-line no-unused-vars
+    let checkUserLogin = ({old, next,error}, change) => {
       if (change) {
         let yes = User.isLogin();
         this.avatarStyle = this.getAvatarStyle();
@@ -44,7 +45,7 @@ export default {
       }
     };
     User.register(checkUserLogin);
-    checkUserLogin(undefined, undefined, true);
+    checkUserLogin({}, true);
   },
   methods: {
     onYes() {

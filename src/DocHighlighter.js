@@ -182,7 +182,7 @@ export class DocHighlighter {
     }
     constructor() {
 
-        let checkUserStatus = (old, next, changed) => {
+        let checkUserStatus = ({old, next}, changed) => {
             if (changed == false) {
                 this.enable(false)
             } else {

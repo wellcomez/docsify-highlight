@@ -80,7 +80,7 @@
       </Tabs>
     </Row>
     <Drawer :closable="false" v-model="bDrawerOpen" :width="drawWidth">
-      <Account slot="header" style="width:70%" />
+      <Account v-if="cloudOn" slot="header" style="width: 70%" />
       <div style="background: #f8f8f9; width: 70%">
         <Card :padding="0" shadow>
           <CellGroup style="">
@@ -211,7 +211,10 @@ export default {
       return a + preHighLightItems().length - this.count;
     },
     canupload() {
-      return this.collapsed != true && this.checked && localidstore.on;
+      return this.collapsed != true && this.checked && this.cloudOn;
+    },
+    cloudOn() {
+      return localidstore.on;
     },
     bookmarkiconcolor() {
       if (this.bookmark) {
@@ -225,7 +228,7 @@ export default {
   },
   data() {
     return {
-      drawWidth:320,
+      drawWidth: 320,
       enableScript: false,
       bDrawerOpen: false,
       uername: undefined,
@@ -243,7 +246,7 @@ export default {
     if (store) {
       this.bookmark = store.isBookMarked();
     }
-    this.drawWidth = window.screen.width<480?"80":"320"
+    this.drawWidth = window.screen.width < 480 ? "80" : "320";
     this.bookmarkCount = this.getBookmarkCount();
   },
   beforeCreate: function () {
