@@ -1,8 +1,8 @@
 <template>
   <Card align="bottom" type="flex">
-    <!-- <Avatar shape="circle" :class="avatarStyle" slot="title" /> -->
-    <span>{{ name }}</span>
+    <Avatar shape="circle" :class="avatarStyle" >{{name}}</Avatar>
     <Button type="text" @click="onYes">{{ btnTitle }}</Button>
+    <span>{{ name }}</span>
   </Card>
 </template>
 <script>
