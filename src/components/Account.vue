@@ -7,23 +7,23 @@
 </template>
 <script>
 function load() {
-  let {avatarcomplete} = getConfig().load()
+  let { avatarcomplete } = getConfig().load();
   if (avatarcomplete) {
-      return avatarcomplete
+    return avatarcomplete;
   }
   return [];
 }
 function save(a) {
   if (a && a.length) {
     let avatarcomplete = load();
-    if (avatarcomplete.indexOf(a)>=0) return;
+    if (avatarcomplete.indexOf(a) >= 0) return;
     avatarcomplete.push(a);
-    getConfig().save({avatarcomplete})
+    getConfig().save({ avatarcomplete });
   }
 }
 import { Avatar, Modal, AutoComplete } from "iview";
 import { User } from "../store";
-import { getConfig } from '../ANoteConfig';
+import { getConfig } from "../ANoteConfig";
 export default {
   components: {
     Avatar,
@@ -54,7 +54,7 @@ export default {
         }
         this.shortname = this.name[0];
         this.disabled = User.isLogin() ? false : true;
-        this.title = this.login ? "登出" : "登入";
+        this.title = this.login ? this.name + "登出" : "登入";
       }
     };
     User.register(checkUserLogin);
