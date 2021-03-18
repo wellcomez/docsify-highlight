@@ -1,19 +1,12 @@
 <template>
-  <Row align="bottom" type="flex">
-    <Col>
-      <Tooltip :content="name" placement="top-start">
-        <Avatar shape="circle" :class="avatarStyle"></Avatar>
-      </Tooltip>
-    </Col>
-    <Col>
-      <span>{{ name }}</span>
-    </Col>
-    <Col>
-      <Button type="text" @click="onYes">{{ btnTitle }}</Button>
-    </Col>
-  </Row>
+  <Card align="bottom" type="flex">
+    <!-- <Avatar shape="circle" :class="avatarStyle" slot="title" /> -->
+    <span>{{ name }}</span>
+    <Button type="text" @click="onYes">{{ btnTitle }}</Button>
+  </Card>
 </template>
 <script>
+/* eslint-disable vue/no-unused-components */
 function load() {
   let { avatarcomplete } = getConfig().load();
   if (avatarcomplete) {
