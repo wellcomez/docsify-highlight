@@ -36,15 +36,16 @@ export class DocHighlighter {
         const position = this.getPosition(node);
         let { top, left } = position;
         removeTips();
-        let note = undefined
-        let data = {}
+        let hs = {}
         try {
-            let hs = this.store.geths(noteid)
-            note = hs.note;
-            data = hs.style
+            hs = this.store.geths(noteid)
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
+        if (hs == undefined) hs = {}
+        let { style: data, note, tags } = hs
+        if(tags==undefined) tags =[]
+        if(data==undefined) data ={}
         // log("createNoteMenu", top, left, color)z
         let hl = this;
         try {
@@ -52,7 +53,7 @@ export class DocHighlighter {
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources }, document.body)
+        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags }, document.body)
         // }
     };
     procssAllElements(nodeid, cb) {
@@ -163,19 +164,19 @@ export class DocHighlighter {
         return path;
     }
     constructor() {
- 
-        let checkUserStatus = (old,next, changed) => {
-            if(changed==false){
+
+        let checkUserStatus = (old, next, changed) => {
+            if (changed == false) {
                 this.enable(false)
-            }else{
+            } else {
                 this.createHightLigher()
                 this.enable(true)
             }
         }
         checkUserStatus = checkUserStatus.bind(this)
         User.register(checkUserStatus)
-        this.unregister=()=>{
-            User.register(checkUserStatus,true)
+        this.unregister = () => {
+            User.register(checkUserStatus, true)
         }
         // document.addEventListener("hashchange", () => {
         //     console.log(window.location)
@@ -247,7 +248,7 @@ export class DocHighlighter {
         this.updatePanel();
     }
     enable(enable) {
-        if(enable){
+        if (enable) {
             this.store = new LocalStore(this.key(), document.title);
         }
         getConfig().save({ on: enable })
@@ -313,8 +314,8 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
-        let { note, sources, style } = data ? data : {}
-        let change = style != undefined || note
+        let { note, sources, style, tags } = data ? data : {}
+        let change = style != undefined || note || tags.length
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
@@ -336,6 +337,7 @@ export class DocHighlighter {
                     if (date == undefined) {
                         hs.date = new Date() * 1;
                     }
+                    hs.tags = tags
                     hs.top = this.getElementPosition(noteid)
                     return hs
                 })
@@ -343,7 +345,7 @@ export class DocHighlighter {
                 this.store.save(sources2);
                 this.updatePanel();
             } else {
-                this.store.update({ id: noteid, note, style })
+                this.store.update({ id: noteid, note, style, tags })
             }
         } else {
             this.removeHighLight(noteid);

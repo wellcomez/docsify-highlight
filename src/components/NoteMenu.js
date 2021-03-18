@@ -29,7 +29,7 @@ export const NoteMenu = {
     },
     data() {
         return {
-            showtagPane:true,
+            showtagPane: true,
             first3Colors: default_color_list,
             backgroundColorKey: 1,
             underlineColor: undefined,
@@ -208,7 +208,7 @@ export const NoteMenu = {
             this.removeMenu();
         },
         notedata() {
-            let { sources } = this;
+            let { sources, tags } = this;
             let style = undefined;
             for (let a in this.hlStyle.allTypes) {
                 let { enable, colorhex } = this.hlStyle.allTypes[a]
@@ -219,7 +219,7 @@ export const NoteMenu = {
             }
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
-            return { note, sources, style };
+            return { note, sources, style ,tags};
         },
         saveNoteData() {
             this.hl.saveNoteData(this.noteid, this.notedata());
@@ -275,6 +275,12 @@ export const NoteMenu = {
     props: {
         data: { type: Object, default: {} },
         colorhex: { type: String, default: "" },
+        tags: {
+            type: Array,
+            default: () => {
+                return []
+            }
+        },
         note: {
             type: String,
             default: undefined,

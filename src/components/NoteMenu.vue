@@ -6,7 +6,7 @@
   >
     <div v-bind:style="style" class="my-remove-tip" id="markpannel">
       <Row v-if="showtagPane">
-        <TagPanel />
+        <TagPanel :tags.sync="tags" />
       </Row>
       <Row type="flex" justify="space-between" align="top">
         <Col :style="col(0)">

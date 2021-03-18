@@ -98,6 +98,9 @@ export default {
     this.convert(this.tags);
   },
   methods: {
+    update() {
+      this.$emit("update:tags", this.tags);
+    },
     onAdd() {
       let { inputText, tagSet, tags } = this;
       if (tags.indexOf(inputText) >= 0) {
@@ -105,6 +108,7 @@ export default {
         return;
       }
       this.tags.push(inputText);
+      this.update()
       tagSet.push(inputText);
       this.convert(this.tags);
       this.inputText = "";
@@ -120,11 +124,13 @@ export default {
       } else {
         this.tags.push(txt);
       }
+      this.update()
       this.convert(this.tags);
     },
     handleClose(index, txt) {
       this.removeItem(this.tags, txt);
       this.removeItem(this.tagSet, txt);
+      this.update()
       this.convert(this.tags);
     },
     convert(tags) {
