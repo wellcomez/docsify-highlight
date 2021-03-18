@@ -1,6 +1,10 @@
 
 <template>
-  <div class="op-panel disable-user-selection" v-click-outside="hide" :style="styclePanel">
+  <div
+    class="op-panel disable-user-selection"
+    v-click-outside="hide"
+    :style="styclePanel"
+  >
     <Row class="panel-header" type="flex" align="middle">
       <Col>
         <SvgButton
@@ -18,13 +22,13 @@
             name="ios-book"
             tips="Table of Content"
             onOff
-            :on="showdetail==false"
+            :on="showdetail == false"
           />
         </Badge>
       </Col>
       <Col>
         <Bubbling
-          v-if="collapsed==false && checked"
+          v-if="collapsed == false && checked"
           :onSelect="onSelect"
           content="Export"
         />
@@ -53,11 +57,12 @@
           <SvgButton @click="onBookmark" :name="bookmarkicon" />
         </Badge>
       </Col>
-      <Col v-if="checked&&collapsed==false">
-        <Account />
-      </Col>
-      <Col>
+
+      <!-- <Col>
         <i-switch :value="checked" @on-change="onChange" />
+      </Col> -->
+      <Col>
+        <SvgButton @click="bDrawerOpen = true" name="md-settings" />
       </Col>
     </Row>
     <Row
@@ -74,6 +79,19 @@
         </TabPane>
       </Tabs>
     </Row>
+    <Drawer :closable="false" v-model="bDrawerOpen" width="50%">
+      <Account slot="header" />
+      <div style="background: #f8f8f9; width: 80%">
+        <Card :padding="0" shadow>
+          <CellGroup style="padding-right: 50px">
+            <Cell title="开关" style="">
+              <i-switch :value="checked" @on-change="onChange" slot="extra" />
+            </Cell>
+          </CellGroup>
+        </Card>
+      </div>
+      <!-- <ConfigPanel /> -->
+    </Drawer>
   </div>
 </template>
 <style >
@@ -133,11 +151,13 @@
 </style>
 
 <script>
+/* eslint-disable vue/no-unused-components */
 import { book } from "../store";
 // import { Notification } from "element-ui";
 import { localidstore, testPost, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
 import { msg } from "./msgbox";
+import { Drawer } from "iview";
 function funDownload(content, filename) {
   const blob = new Blob([content]);
   FileSaver.saveAs(blob, filename);
@@ -150,8 +170,8 @@ import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import Account from "./Account";
+import ConfigPanel from "./ConfigPanel";
 import ClickOutside from "vue-click-outside";
-
 // import { checkClickOut } from "../mountCmp";
 export default {
   components: {
@@ -161,6 +181,8 @@ export default {
     SvgButton,
     BookMarks,
     Account,
+    Drawer,
+    ConfigPanel,
   },
   name: "Panel",
   directives: {
@@ -168,7 +190,9 @@ export default {
   },
   computed: {
     collapsedIcon() {
-      return this.collapsed ==false? "icon-dotsvertical" : "icon-dotshorizontal";
+      return this.collapsed == false
+        ? "icon-dotsvertical"
+        : "icon-dotshorizontal";
     },
     styclePanel() {
       let backgroundColor = "";
@@ -195,6 +219,7 @@ export default {
   },
   data() {
     return {
+      bDrawerOpen: false,
       uername: undefined,
       bookmarkCount: 0,
       collapsed: false,
@@ -204,7 +229,10 @@ export default {
     };
   },
   mounted: function () {
-    this.bookmark = this.hl.store.isBookMarked();
+    let { store } = this.hl;
+    if (store) {
+      this.bookmark = store.isBookMarked();
+    }
     this.bookmarkCount = this.getBookmarkCount();
   },
   beforeCreate: function () {

@@ -28,8 +28,12 @@ export class DocHighlighter {
         ].filter(i => i);
     }
     count() {
-        let aa = this.store.getAll();
-        return aa.length;
+        let { store } = this;
+        if (store) {
+            let aa = store.getAll();
+            return aa.length;
+        }
+        return 0
     }
     disableUserSelection(disable) {
         var main = document.getElementsByClassName('content')[0]
