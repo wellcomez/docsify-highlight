@@ -4,62 +4,70 @@
     v-on:click="onClickMask"
     @touchstart="onClickMask"
   >
-    <Row v-bind:style="style" class="my-remove-tip" id="markpannel" type="flex" justify="space-between" align="top">
-      <Col :style="col(0)">
-        <SvgButton
-          onOff
-          v-bind:on="fontColorEnable"
-          name="icon-ai247"
-          custom
-          @click="onFontColor"
-          :color="fontColor"
-          tips="Font Color"
-        ></SvgButton>
-      </Col>
-      <Col :style="col(1)">
-        <SvgButton
-          onOff
-          v-bind:on="UnderlineEnable"
-          name="icon-xiahuaxian"
-          custom
-          @click="onUnderline"
-          :color="underlineColor"
-          tips="Underline"
-        ></SvgButton>
-      </Col>
-      <Col :style="col(2)">
-        <BackgroudSelector
-          :colorList="colorList"
-          :selectedIndex.sync="selectedSubColor"
-          :key="backgroundColorKey"
-      /></Col>
-      <Col>
-        <ColorPicker
-          offset="[-1,1]"
-          v-model="color1"
-          alpha
-          :colors="recommendedColor"
-          @on-change="onChangeColorPicker"
-          :class="classColorPicker"
-          :key="hlType"
-        />
-      </Col>
-      <Col>
-        <SvgButton @click="onDelete" name="md-trash" tips="Remove" />
-      </Col>
-      <Col>
-        <SvgButton @click="onCopy" name="ios-copy" tips="Copy" />
-      </Col>
-      <Col>
-        <Badge dot :count="notecouter" :offset="[20, 10]">
+    <div v-bind:style="style" class="my-remove-tip" id="markpannel">
+      <Row v-if="showtagPane">
+        <TagPanel />
+      </Row>
+      <Row type="flex" justify="space-between" align="top">
+        <Col :style="col(0)">
           <SvgButton
-            @click="openEditor"
-            name="md-create"
-            tips="EditTextTips"
+            onOff
+            v-bind:on="fontColorEnable"
+            name="icon-ai247"
+            custom
+            @click="onFontColor"
+            :color="fontColor"
+            tips="Font Color"
+          ></SvgButton>
+        </Col>
+        <Col :style="col(1)">
+          <SvgButton
+            onOff
+            v-bind:on="UnderlineEnable"
+            name="icon-xiahuaxian"
+            custom
+            @click="onUnderline"
+            :color="underlineColor"
+            tips="Underline"
+          ></SvgButton>
+        </Col>
+        <Col :style="col(2)">
+          <BackgroudSelector
+            :colorList="colorList"
+            :selectedIndex.sync="selectedSubColor"
+            :key="backgroundColorKey"
+        /></Col>
+        <Col>
+          <ColorPicker
+            offset="[-1,1]"
+            v-model="color1"
+            alpha
+            :colors="recommendedColor"
+            @on-change="onChangeColorPicker"
+            :class="classColorPicker"
+            :key="hlType"
           />
-        </Badge>
-      </Col>
-    </Row>
+        </Col>
+        <Col>
+          <SvgButton name="md-pricetag" :on.sync="showtagPane"></SvgButton>
+        </Col>
+        <Col>
+          <SvgButton @click="onDelete" name="md-trash" tips="Remove" />
+        </Col>
+        <Col>
+          <SvgButton @click="onCopy" name="ios-copy" tips="Copy" />
+        </Col>
+        <Col>
+          <Badge dot :count="notecouter" :offset="[20, 10]">
+            <SvgButton
+              @click="openEditor"
+              name="md-create"
+              tips="EditTextTips"
+            />
+          </Badge>
+        </Col>
+      </Row>
+    </div>
   </div>
 </template>
 
@@ -83,7 +91,7 @@ export default NoteMenu;
   position: absolute;
   border: 1px solid #fff;
   border-radius: 3px;
-  width: 360px;
+  width: 400px;
   height: fit-content;
   background: var(--theme-color, #42b983);
   font-size: 12px;
@@ -91,15 +99,15 @@ export default NoteMenu;
   /* line-height: 18px; */
   overflow: visible;
   padding: 4px;
-  padding-bottom:1px;
+  padding-bottom: 1px;
 }
 
 .my-remove-tip .ivu-col {
   padding-bottom: 2px;
 }
 @media screen and (max-width: 640px) {
-  .my-remove-tip{
-    width:360px
+  .my-remove-tip {
+    /* width:360px */
   }
 }
 </style>

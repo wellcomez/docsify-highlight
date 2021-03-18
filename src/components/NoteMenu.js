@@ -18,16 +18,18 @@ if (default_color_list == undefined) {
     default_color_list = [default_red, default_green, default_yellow];
 }
 import SvgButton from './SvgButton'
+import TagPanel from './TagPanel'
 import BackgroudSelector from './BackgroudSelector'
 import { highlightType } from "../highlightType";
 import { getConfig } from "../ANoteConfig";
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
-        SvgButton, BackgroudSelector
+        SvgButton, BackgroudSelector, TagPanel
     },
     data() {
         return {
+            showtagPane:true,
             first3Colors: default_color_list,
             backgroundColorKey: 1,
             underlineColor: undefined,
@@ -91,7 +93,7 @@ export const NoteMenu = {
             let ret = []
             for (let i = 0; i < 3; i++) {
                 let colorhex = this.first3Colors[i]
-                colorhex =  α(colorhex, .8);
+                colorhex = α(colorhex, .8);
                 let style = `background-color: ${colorhex}`
                 ret.push({ style })
             }
