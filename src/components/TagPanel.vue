@@ -100,27 +100,31 @@ export default {
   methods: {
     onAdd() {
       let { inputText, tagSet, tags } = this;
-      if (tags.indexOf(inputText) >= 0) return;
+      if (tags.indexOf(inputText) >= 0) {
+        this.inputText = "";
+        return;
+      }
       this.tags.push(inputText);
       tagSet.push(inputText);
-
       this.convert(this.tags);
+      this.inputText = "";
+    },
+    removeItem(a, b) {
+      let i = a.indexOf(b);
+      if (i >= 0) a.splice(i, 1);
     },
     handleChange(index, txt) {
       let i = this.tags.indexOf(txt);
       if (i >= 0) {
-        delete this.tags[i];
+        this.removeItem(this.tags, txt);
       } else {
         this.tags.push(txt);
       }
       this.convert(this.tags);
     },
     handleClose(index, txt) {
-      let i = this.tagSet.indexOf(txt);
-      if (i >= 0) delete this.tagSet[i];
-      i = this.tags.indexOf(txt);
-      if (i >= 0) delete this.tags[i];
-
+      this.removeItem(this.tags, txt);
+      this.removeItem(this.tagSet, txt);
       this.convert(this.tags);
     },
     convert(tags) {
