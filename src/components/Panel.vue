@@ -328,7 +328,7 @@ export default {
       this.enableScript = this.enableScript == false;
       let { enableScript } = this;
       getConfig().save({ enableScript });
-      document.location.reload();
+      // document.location.reload();
     },
     onChange() {
       this.checked = this.checked == false;
