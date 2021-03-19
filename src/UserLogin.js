@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-debugger */
 /* eslint-disable no-empty */
 import { getConfig } from "./ANoteConfig";
@@ -38,6 +39,9 @@ export class UserLogin {
     this.stateChange = [];
     this.userid = this.getUsername()
   }
+  requestcode = async (phone) => {
+    AV.User.requestLoginSmsCode(phone);
+  }
   register(fn, removce) {
     if (removce) {
       let a = [];
@@ -55,9 +59,11 @@ export class UserLogin {
     let userid = username;
     getConfig().save({ userid });
   }
-  // eslint-disable-next-line no-unused-vars
 
-  Login(username, password) {
+  Login({ username, password, phone }) {
+    if (phone) {
+      return
+    }
     let { userid, stateChange } = this;
     let old = userid
     let next = username

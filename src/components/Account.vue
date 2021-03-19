@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 <template>
-  <Card>
+  <Card v-if="open==false">
     <Avatar size="large" shape="circle" :class="avatarStyle"></Avatar>
     <br /><span>{{ name }}</span>
     <Button type="text" @click="onYes">{{ btnTitle }}</Button>
-    <Login :open.sync="open" />
     <!-- <Button type="text" @click="onSign"> 注册</Button> -->
   </Card>
+  <Login v-else :open.sync="open" />
 </template>
 <script>
 /* eslint-disable vue/no-unused-components */
@@ -30,7 +30,7 @@ export default {
   },
   mounted() {
     // eslint-disable-next-line no-unused-vars
-    let checkUserLogin = ({old, next,error}, change) => {
+    let checkUserLogin = ({ old, next, error }, change) => {
       if (change) {
         let yes = User.isLogin();
         this.avatarStyle = this.getAvatarStyle();
@@ -53,7 +53,7 @@ export default {
         // this.dialogid = new Date() * 1;
         this.open = true;
       } else {
-        User.Login(undefined);
+        User.Login({});
       }
     },
     getAvatarStyle() {
