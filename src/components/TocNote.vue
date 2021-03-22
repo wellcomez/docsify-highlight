@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import { book } from "../store";
-import { parseurl, scollTopID } from "../mountCmp";
+import { Book } from "../store";
+import { parseurl, scollTopID } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
 
@@ -18,7 +18,7 @@ export default {
   components: { TocOutLine },
   computed: {
     data() {
-      let b = new book();
+      let b = new Book();
       let aaa = b.Charpter().sort((a) => {
         if (a.label== document.title) {
           return -1;

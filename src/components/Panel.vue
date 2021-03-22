@@ -159,7 +159,7 @@
 
 <script>
 /* eslint-disable vue/no-unused-components */
-import { book } from "../store";
+import { Book } from "../store";
 // import { Notification } from "element-ui";
 import { localidstore, testPost, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
@@ -207,7 +207,7 @@ export default {
       return style;
     },
     count2() {
-      let a = new book().count() + this.count;
+      let a = new Book().count() + this.count;
       return a + preHighLightItems().length - this.count;
     },
     canupload() {
@@ -283,7 +283,7 @@ export default {
       }
     },
     getBookmarkCount() {
-      let b = new book();
+      let b = new Book();
       let ddd = b.toc.bookMarkList();
       return ddd.length;
     },
@@ -297,7 +297,7 @@ export default {
       this.bookmarkCount = this.getBookmarkCount();
     },
     onSave2Cloud() {
-      let b = new book();
+      let b = new Book();
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
@@ -314,12 +314,12 @@ export default {
     },
     onSelect(name) {
       if (name == "md") {
-        let b = new book();
+        let b = new Book();
         let md = b.md();
         // console.log(md);
         funDownload(md, window.$docsify.name + ".md");
       } else if (name == "json") {
-        let b = new book();
+        let b = new Book();
         let json = b.jsonstr();
         funDownload(json, window.$docsify.name + ".json");
       }

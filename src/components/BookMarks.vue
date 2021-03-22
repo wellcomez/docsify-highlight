@@ -4,7 +4,7 @@
   </Row>
 </template>
 <script>
-import { book } from "../store";
+import { Book } from "../store";
 export default {
   name: "BookMarks",
   created() {
@@ -23,7 +23,7 @@ export default {
       document.location.hash = path;
     },
     load() {
-      let b = new book();
+      let b = new Book();
       let ddd = b.toc.bookMarkList();
       return ddd.map((a) => {
         let { title, path } = a;

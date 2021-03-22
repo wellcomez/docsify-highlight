@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-prototype-builtins */
 import Highlighter from 'web-highlighter';
-import { LocalStore } from './store';
+import { Book } from './store';
 import { User } from "./UserLogin";
 import { getIntersection } from './hl';
 import { log } from "./log";
 import { getConfig } from './ANoteConfig';
-import { mountCmp, parseurl } from './mountCmp';
+import { mountCmp, parseurl } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import { hl_note, tUl, tfontColor } from './colorSelector';
@@ -176,24 +176,31 @@ export class DocHighlighter {
     on() {
         return getConfig().on;
     }
-    key() {
-        let { path } = parseurl()
-        return path;
-    }
+
     constructor() {
 
-        let checkUserStatus = ({old, next}, changed) => {
+        let checkUserStatus = ({ old, next }, changed) => {
             if (changed == false) {
                 this.enable(false)
             } else {
-                this.createHightLigher()
-                this.enable(true)
+                let a = () => {
+                    this.createHightLigher()
+                    this.enable(true)
+                }
+                if (next) {
+                    let b = new Book()
+                    b.importFromUnNamed().then(() => {
+                        a()
+                    });
+                } else {
+                    a()
+                }
             }
         }
         checkUserStatus = checkUserStatus.bind(this)
-        User.register(checkUserStatus)
+        User.addCallback(checkUserStatus)
         this.unregister = () => {
-            User.register(checkUserStatus, true)
+            User.addCallback(checkUserStatus, true)
         }
         // document.addEventListener("hashchange", () => {
         //     console.log(window.location)
@@ -266,7 +273,7 @@ export class DocHighlighter {
     }
     enable(enable) {
         if (enable) {
-            this.store = new LocalStore(this.key(), document.title);
+            this.store = new Book().toc.CharpterStorage()
         }
         getConfig().save({ on: enable })
         this.turnHighLight(enable);

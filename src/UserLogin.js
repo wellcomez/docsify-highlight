@@ -1,20 +1,20 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-debugger */
-/* eslint-disable no-empty */
 import { getConfig } from "./ANoteConfig";
 import { AV } from "./leanweb"
 export class UserLogin {
+  static defaultUser = 'userid'
   getUsername() {
     try {
       const currentUser = AV.User.current();
-      return currentUser.getUsername()
+      let us = currentUser.getUsername()
+      if (us) return us
+      return UserLogin.defaultUser
     } catch (error) {
-      return 'userid'
+      return UserLogin.defaultUser
     }
   }
   newUser(username, password) {
-    let { userid, stateChange } = this;
-    let old = userid
+    let { stateChange } = this;
+    let old = this.getUsername()
     let next = username
     this._signUp(username, password).then(() => {
       userLoginCallbackPost(stateChange, { old, next })
@@ -24,6 +24,9 @@ export class UserLogin {
     })
   }
   constructor() {
+    this.stateChange = [];
+
+
     this._signUp = async (username, password) => {
       const user = new AV.User();
       user.setUsername(username);
@@ -35,14 +38,11 @@ export class UserLogin {
       await AV.User.logIn(username, password);
       return AV.User.current().getUsername()
     }
-
-    this.stateChange = [];
-    this.userid = this.getUsername()
   }
   requestcode = async (phone) => {
     AV.User.requestLoginSmsCode(phone);
   }
-  register(fn, removce) {
+  addCallback(fn, removce) {
     if (removce) {
       let a = [];
       this.stateChange.forEach((b) => {
@@ -56,17 +56,14 @@ export class UserLogin {
     this.stateChange.push(fn);
   }
   save(username) {
-    let userid = username;
-    getConfig().save({ userid });
+    getConfig().save({ userid: username });
   }
-
-  Login({ username, password, phone }) {
+  Login({ username: next, password, phone }) {
     if (phone) {
       return
     }
-    let { userid, stateChange } = this;
-    let old = userid
-    let next = username
+    let { stateChange } = this;
+    let old = this.getUsername()
     stateChange.forEach((a) => {
       try {
         a({ old, next }, false);
@@ -74,12 +71,12 @@ export class UserLogin {
       } catch (error) {
       }
     });
-    if (username == undefined) {
-      AV.User.logOut();
+    AV.User.logOut();
+    if (next == undefined) {
       userLoginCallbackPost(stateChange, { old, next });
       return;
     }
-    this._login(username, password).then(() => {
+    this._login(next, password).then(() => {
       userLoginCallbackPost(stateChange, { old, next });
     }).catch((error) => {
       userLoginCallbackPost(stateChange, { old, next, error });
@@ -97,8 +94,8 @@ function userLoginCallbackPost(stateChange, data) {
   stateChange.forEach((a) => {
     try {
       a(data, true);
+      // eslint-disable-next-line no-empty
     } catch (error) {
     }
   });
 }
-

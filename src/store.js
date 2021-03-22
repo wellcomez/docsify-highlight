@@ -1,14 +1,18 @@
 import { colorClassList } from "./colorSelector";
+import { parseurl } from "./utils";
 import { User } from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
-  constructor() {
+  constructor(useridArg) {
     this.bookname = window.$docsify.name;
     if (this.bookname == null || this.bookname == undefined) {
       this.bookname = window.location.hostname;
     }
     let bookname = this.bookname
-    let { userid } = User;
+    let userid  = User.getUsername();
+    if (useridArg) {
+      userid = useridArg;
+    }
     this.userid = userid;
     this.name = JSON.stringify({ userid, bookname })
     this.data = {};
@@ -19,14 +23,14 @@ class BookToc {
     return { name, bookname, userid, st, data };
   }
   findChapter(path) {
-    let aa = this.Charpters();
+    let aa = this.charpterTitles();
     for (let i in aa) {
       let c = aa[i];
       if (path == c.path) return c;
     }
   }
   bookMarkList() {
-    let aa = this.Charpters();
+    let aa = this.charpterTitles();
     let ret = []
     for (let i in aa) {
       let c = aa[i];
@@ -46,8 +50,8 @@ class BookToc {
     let ret = this.findChapter(path)
     return ret.bookmark
   }
-  addChapter(a) {
-    let aa = this.Charpters();
+  addChapterIndex(a) {
+    let aa = this.charpterTitles();
     let { path } = a;
     if (this.findChapter(path) == undefined) {
       let bookmark = false;
@@ -58,7 +62,25 @@ class BookToc {
     let { userid, bookname } = this;
     return JSON.stringify({ path, userid, bookname })
   }
-  Charpters() {
+  ChapterOjbList() {
+    let titlelist = this.charpterTitles();
+    return titlelist.map((data) => {
+      let { path, title } = data;
+      let store = this.CharpterStorage(path, title);
+      let c = new Chapter(store);
+      return c;
+    })
+  }
+  CharpterStorage({path, title}={}) {
+    let { userid } = this
+    if(path&&title){
+      return new LocalStore({ path, title, userid });
+    }else{
+      return new LocalStore({ userid });
+    }
+  }
+
+  charpterTitles() {
     if (this.data.Charpters) {
       return this.data.Charpters;
     } else {
@@ -87,17 +109,27 @@ class BookToc {
   }
 }
 
-export class LocalStore {
-  constructor(path, title) {
-    let bbb = new BookToc();
-    this.key = bbb.addChapter({ path, title });
+class LocalStore {
+  key() {
+    let { path } = parseurl()
+    return path;
+  }
+  constructor({ path, userid, title } = {}) {
+    this.userid = userid
+    if (path == undefined && title == undefined) {
+      path = this.key()
+      title = document.title
+    }
+    this.userid = userid
+    let bbb = this.getBookToc();
+    this.key = bbb.addChapterIndex({ path, title });
     this.toc = bbb
     this.isBookMarked = () => {
-      let bbb = new BookToc();
+      let bbb = this.getBookToc();
       return bbb._isbookMarked({ path })
     }
     this.setBookMark = (yes) => {
-      let bbb = new BookToc();
+      let bbb = this.getBookToc();
       return bbb._setbookmark({ path }, yes)
     }
     this.path = path;
@@ -117,8 +149,12 @@ export class LocalStore {
 
   jsonToStore(stores) {
     localStorage.setItem(this.key, JSON.stringify(stores));
-    let bbb = new BookToc();
+    let bbb = this.getBookToc();
     bbb.save();
+  }
+
+  getBookToc() {
+    return new BookToc(this.userid);
   }
 
   save(data) {
@@ -196,10 +232,10 @@ class Chapter {
       this.label = store.title;
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
-        let { id, text: label, top, style, note,tags } = hs;
+        let { id, text: label, top, style, note, tags } = hs;
         top = top.top;
         let textOffset = hs.startMeta.textOffset;
-        return { idx, id, label, key, textOffset, top, style, note,tags };
+        return { idx, id, label, key, textOffset, top, style, note, tags };
       });
       let aa = this.children.sort((a, b) => {
         if (a.top == b.top) return 0;
@@ -211,7 +247,8 @@ class Chapter {
   }
   syn2Local(json) {
     let { title, notes, path } = json;
-    let l = new LocalStore(path, title)
+    let {toc} = this
+    let l = toc.CharpterStorage({ path, title })
     l.save(notes);
   }
   count() {
@@ -252,32 +289,29 @@ class Chapter {
     return title.concat(items).join("\n\n");
   }
 }
-// String.prototype.hashCode = function () {
-//   let hash =  md5(this)
-//   // var hash = 0, i, chr;
-//   // if (this.length === 0) return hash;
-//   // for (i = 0; i < this.length; i++) {
-//   //   chr = this.charCodeAt(i);
-//   //   hash = ((hash << 5) - hash) + chr;
-//   //   hash |= 0; // Convert to 32bit integer
-//   // }
-//   return hash;
-// };
-export class book {
-  constructor() {
-    this.toc = new BookToc();
+export class Book {
+  constructor(useridArg) {
+    this.toc = new BookToc(useridArg);
     this.name = this.toc.bookname;
     let aa = this.toc.name
     this.bookid = md5(aa)
   }
-  Charpter() {
-    let titlelist = this.toc.Charpters();
-    return titlelist.map((data) => {
-      let { path, title } = data;
-      let store = new LocalStore(path, title);
-      let c = new Chapter(store);
-      return c;
+  async importFromUnNamed() {
+    let old = this.toc.charpterTitles()
+    if(old.length)return
+    let src = new Book('userid')
+    let json = src.json()
+    let { charpter, toc } = json;
+    let tt = new BookToc();
+    let { name, bookname, userid, st, data } = toc
+    userid = this.userid = User.getUsername()
+    charpter.forEach(element => {
+      new Chapter().syn2Local(element)
     });
+    tt.syn2Local(name, bookname, userid, st, data);
+  }
+  Charpter() {
+    return this.toc.ChapterOjbList();
   }
   syn2Local(json) {
     let { charpter, toc } = json;

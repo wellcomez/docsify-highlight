@@ -1,4 +1,4 @@
-import { book } from "./store";
+import { Book } from "./store";
 
 /* eslint-disable no-unused-vars */
 export const AV = require("leancloud-storage");
@@ -74,8 +74,8 @@ async function newFunction() {
 //     }
 // );
 export async function testAsync() {
-    var b = new book()
-    var ret = await loadeBookLeanCloud(new book())
+    var b = new Book()
+    var ret = await loadeBookLeanCloud(new Book())
     // console.log('test', ret)
     var content = await loadeBook(b)
     // console.log('test', content)

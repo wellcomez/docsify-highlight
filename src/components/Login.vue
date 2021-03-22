@@ -88,9 +88,9 @@ export default {
           let { rawMessage } = error;
           Message.error(rawMessage);
         }
-        User.register(a, true);
+        User.addCallback(a, true);
       };
-      User.register(a);
+      User.addCallback(a);
       if (this.tabname == "0") {
         User.newUser(user, password);
       } else {

@@ -8,7 +8,7 @@ import NoteMarker from './components/NoteMarker.vue'
 import TocOutLine from './components/TocOutLine.vue'
 import BookMarks from './components/BookMarks.vue'
 import hlinit from './hl';
-import { registComponet } from './mountCmp'
+import { registComponet } from './utils'
 
 // import "./styles/iview.css";
 // import "./assets/web.css";

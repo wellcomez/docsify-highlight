@@ -2,7 +2,7 @@ import Panel from './components/Panel.vue'
 import { log } from "./log";
 import Vue from 'vue';
 import { DocHighlighter } from './DocHighlighter';
-import { mountCmp } from './mountCmp';
+import { mountCmp } from './utils';
 import { getConfig } from './ANoteConfig';
 export function findtipid(id) {
     var tips = document.getElementsByClassName('note-menu');

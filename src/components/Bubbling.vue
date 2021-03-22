@@ -12,7 +12,7 @@
   </div>
 </template>
 <script>
-import { checkClickOut } from "../mountCmp";
+import { checkClickOut } from "../utils";
 import SvgButton from "./SvgButton";
 export default {
   name: "Bubbling",

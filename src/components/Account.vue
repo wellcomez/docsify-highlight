@@ -44,7 +44,7 @@ export default {
         this.title = this.btnTitle = yes ? "注销" : "登入";
       }
     };
-    User.register(checkUserLogin);
+    User.addCallback(checkUserLogin);
     checkUserLogin({}, true);
   },
   methods: {

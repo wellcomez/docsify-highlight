@@ -67,3 +67,13 @@ export function checkClickOut(d, cb) {
     document.removeEventListener("click",cb);
   })
 }
+
+
+import { Modal } from "iview";
+export function queryBox({ title, content, ok }) {
+  Modal.confirm({
+    onOk: ok,
+    content, 
+    title
+  });
+}
