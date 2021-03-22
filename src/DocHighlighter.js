@@ -12,6 +12,7 @@ import NoteMarker from './components/NoteMarker.vue'
 import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
+import { downloadFromCloud } from './leanweb';
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -177,8 +178,17 @@ export class DocHighlighter {
         return getConfig().on;
     }
 
+    async userDataUpdate() {
+        let b = new Book()
+        if (b.count() == 0) {
+            let data = await downloadFromCloud();
+            if (data.length) {
+                return
+            }
+            await b.importFromUnNamed()
+        }
+    }
     constructor() {
-
         let checkUserStatus = ({ old, next }, changed) => {
             if (changed == false) {
                 this.enable(false)
@@ -188,10 +198,13 @@ export class DocHighlighter {
                     this.enable(true)
                 }
                 if (next) {
-                    let b = new Book()
-                    b.importFromUnNamed().then(() => {
+                    this.userDataUpdate().then(() => {
                         a()
-                    });
+                    }).catch((e) => {
+                        a()
+                        console.log(e)
+
+                    })
                 } else {
                     a()
                 }

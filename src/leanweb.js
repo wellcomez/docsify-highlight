@@ -67,9 +67,12 @@ export async function loadeBook(book) {
         return a[0].attributes;
     }
     const query = new AV.Query(name);
-    query.equalTo("toc.userid", "userid")
+    let {toc} = book;
+    let {userid} = toc
+    query.equalTo("toc.userid", userid)
     query.descending('createdAt');
     let a = await query.find();
+    // console.log(a)
     return a[0].attributes;
 }
 async function updateBook(book, objectId) {
