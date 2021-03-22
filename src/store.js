@@ -1,6 +1,6 @@
 import { colorClassList } from "./colorSelector";
 import { parseurl } from "./utils";
-import { User } from "./UserLogin";
+import { User ,UserLogin} from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
   constructor(useridArg) {
@@ -301,7 +301,7 @@ export class Book {
   }
   async importFromUnNamed() {
     if (this.count()) return
-    let src = new Book('userid')
+    let src = new Book(UserLogin.defaultUser)
     let json = src.json()
     let { charpter, toc } = json;
     let tt = new BookToc();
