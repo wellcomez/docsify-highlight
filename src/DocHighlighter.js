@@ -195,6 +195,7 @@ export class DocHighlighter {
                         try {
                             let data = await downloadFromCloud();
                             a()
+                            return
                             // eslint-disable-next-line no-empty
                         } catch (error) {
                         }
