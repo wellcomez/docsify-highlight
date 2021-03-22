@@ -94,7 +94,7 @@
                 slot="extra"
               />
             </Cell>
-            <Cell title="" style="">
+            <Cell title="重置">
               <Button type="primary" @click="ResetAll"> 重置</Button>
             </Cell>
           </CellGroup>
