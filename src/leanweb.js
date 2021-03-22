@@ -34,61 +34,11 @@ class ObjectIdStore {
     }
 }
 export const localidstore = new ObjectIdStore()
-// import {book} from "store"
-export function testPost() {
-    testAsync().then((a) => {
-        console.log(a)
-    }).catch((b) => {
-        console.log(b)
-    })
+export async function downloadFromCloud() {
+    return await loadeBookLeanCloud(new Book())
 }
 
-async function newFunction() {
-    const number = 2018;
-    const string = `${number} 流行音乐榜单`;
-    const date = new Date();
-    const array = [string, number];
-    const object = {
-        number: number,
-        string: string,
-    };
 
-    // 构建对象
-    const TestObject = AV.Object.extend("TestObject");
-    const testObject = new TestObject({ a: { b: 1 } });
-    let a = await testObject.save();
-    let objectId = a.id;
-    let updateObject = AV.Object.createWithoutData('TestObject', objectId);
-    updateObject.set("a.b", 2)
-    a = await updateObject.save();
-    return a
-}
-// const TestObject = AV.Object.extend("TestObjectxx");
-// let aaaa = new TestObject([1]);
-// aaaa.save().then(
-//     (a) => {
-//         console.log(a);
-//     },
-//     (b) => {
-//         console.log(b);
-//     }
-// );
-export async function testAsync() {
-    var b = new Book()
-    var ret = await loadeBookLeanCloud(new Book())
-    // console.log('test', ret)
-    var content = await loadeBook(b)
-    // console.log('test', content)
-    window.location.reload()
-    return content
-    // try {
-    //     let a = await saveBook();
-    //     let b = await getBookRemoteID();
-    //     return b;
-    // } catch (error) {
-    //     console.log(error)
-    // }
-}
 function bookClassName(bookOjbect) {
     let name = "Book" + bookOjbect.bookid;
     return name

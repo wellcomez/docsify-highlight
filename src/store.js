@@ -9,7 +9,7 @@ class BookToc {
       this.bookname = window.location.hostname;
     }
     let bookname = this.bookname
-    let userid  = User.getUsername();
+    let userid = User.getUsername();
     if (useridArg) {
       userid = useridArg;
     }
@@ -71,11 +71,11 @@ class BookToc {
       return c;
     })
   }
-  CharpterStorage({path, title}={}) {
+  CharpterStorage({ path, title } = {}) {
     let { userid } = this
-    if(path&&title){
+    if (path && title) {
       return new LocalStore({ path, title, userid });
-    }else{
+    } else {
       return new LocalStore({ userid });
     }
   }
@@ -247,7 +247,7 @@ class Chapter {
   }
   syn2Local(json) {
     let { title, notes, path } = json;
-    let {toc} = this
+    let toc = new BookToc()
     let l = toc.CharpterStorage({ path, title })
     l.save(notes);
   }
@@ -296,9 +296,12 @@ export class Book {
     let aa = this.toc.name
     this.bookid = md5(aa)
   }
+  async loadBookData() {
+
+  }
   async importFromUnNamed() {
     let old = this.toc.charpterTitles()
-    if(old.length)return
+    if (old.length) return
     let src = new Book('userid')
     let json = src.json()
     let { charpter, toc } = json;

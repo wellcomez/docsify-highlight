@@ -36,7 +36,7 @@
       <Col>
         <PopSvgButton
           v-if="canupload"
-          :click="onTest"
+          :click="downloadFromCloud"
           name="md-cloud-download"
           title="Download data"
           tips="Download"
@@ -161,7 +161,7 @@
 /* eslint-disable vue/no-unused-components */
 import { Book } from "../store";
 // import { Notification } from "element-ui";
-import { localidstore, testPost, updateBookOnLean } from "../leanweb";
+import { localidstore, downloadFromCloud, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
 import { msg } from "./msgbox";
 import { Drawer } from "iview";
@@ -306,8 +306,10 @@ export default {
         // eslint-disable-next-line no-unused-vars
         .catch((e) => {});
     },
-    onTest() {
-      testPost();
+    downloadFromCloud() {
+      downloadFromCloud().then(()=>{
+        window.location.reload()
+      });
     },
     onOpenContentList() {
       this.showdetail = this.showdetail == false;
