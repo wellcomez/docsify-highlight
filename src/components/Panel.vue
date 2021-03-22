@@ -94,6 +94,9 @@
                 slot="extra"
               />
             </Cell>
+            <Cell title="" style="">
+              <Button type="primary" @click="ResetAll"> 重置</Button>
+            </Cell>
           </CellGroup>
         </Card>
       </div>
@@ -276,6 +279,10 @@ export default {
     },
   },
   methods: {
+    ResetAll() {
+      window.localStorage.clear();
+      window.location.reload();
+    },
     onCollapsed() {
       this.collapsed = this.collapsed == false;
       if (this.collapsed) {
@@ -307,8 +314,8 @@ export default {
         .catch((e) => {});
     },
     downloadFromCloud() {
-      downloadFromCloud().then(()=>{
-        window.location.reload()
+      downloadFromCloud().then(() => {
+        window.location.reload();
       });
     },
     onOpenContentList() {
