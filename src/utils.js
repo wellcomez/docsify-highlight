@@ -53,27 +53,28 @@ export function parseurl(url) {
     path = path.substring(0, index)
   }
   let { noteid } = obj;
-  return { path, noteid}
+  return { path, noteid }
 }
 export function checkClickOut(d, cb) {
-  if(d==undefined){
-    document.removeEventListener("click",cb);
+  if (d == undefined) {
+    document.removeEventListener("click", cb);
     return;
   }
   d.addEventListener("mouseout", () => {
-    document.addEventListener("click",cb);
+    document.addEventListener("click", cb);
   })
   d.addEventListener("mouseover", () => {
-    document.removeEventListener("click",cb);
+    document.removeEventListener("click", cb);
   })
 }
 
 
 import { Modal } from "iview";
-export function queryBox({ title, content, ok }) {
+export function queryBox({ title, content, onCancel, onOk }) {
   Modal.confirm({
-    onOk: ok,
-    content, 
-    title
+    onCancel,
+    content,
+    title,
+    onOk
   });
 }

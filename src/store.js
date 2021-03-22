@@ -300,8 +300,7 @@ export class Book {
 
   }
   async importFromUnNamed() {
-    let old = this.toc.charpterTitles()
-    if (old.length) return
+    if (this.count()) return
     let src = new Book('userid')
     let json = src.json()
     let { charpter, toc } = json;

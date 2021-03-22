@@ -6,7 +6,7 @@ import { User } from "./UserLogin";
 import { getIntersection } from './hl';
 import { log } from "./log";
 import { getConfig } from './ANoteConfig';
-import { mountCmp, parseurl } from './utils';
+import { mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import { hl_note, tUl, tfontColor } from './colorSelector';
@@ -178,16 +178,7 @@ export class DocHighlighter {
         return getConfig().on;
     }
 
-    async userDataUpdate() {
-        let b = new Book()
-        if (b.count() == 0) {
-            let data = await downloadFromCloud();
-            if (data.length) {
-                return
-            }
-            await b.importFromUnNamed()
-        }
-    }
+
     constructor() {
         let checkUserStatus = ({ old, next }, changed) => {
             if (changed == false) {
@@ -198,13 +189,37 @@ export class DocHighlighter {
                     this.enable(true)
                     this.updatePanel()
                 }
+                let userDataUpdate = async () => {
+                    let b = new Book()
+                    if (b.count() == 0) {
+                        try {
+                            let data = await downloadFromCloud();
+                            a()
+                            // eslint-disable-next-line no-empty
+                        } catch (error) {
+                        }
+                        let title = ""
+                        let content = "登录是否导入当前记录?"
+                        let onOk = () => {
+                            b.importFromUnNamed().then(() => {
+                                a();
+                            }).catch(() => {
+                                a();
+                            })
+                        }
+                        let onCancel = () => {
+                            a();
+                        }
+                        queryBox({ title, content, onOk, onCancel })
+                    } else {
+                        a()
+                    }
+                }
                 if (next) {
-                    this.userDataUpdate().then(() => {
-                        a()
-                    }).catch((e) => {
-                        a()
-                        console.log(e)
+                    userDataUpdate().then(() => {
 
+                    }).catch((e) => {
+                        console.log(e)
                     })
                 } else {
                     a()
