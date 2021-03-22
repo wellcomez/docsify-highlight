@@ -196,6 +196,7 @@ export class DocHighlighter {
                 let a = () => {
                     this.createHightLigher()
                     this.enable(true)
+                    this.updatePanel()
                 }
                 if (next) {
                     this.userDataUpdate().then(() => {
