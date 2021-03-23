@@ -12,7 +12,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
-    "rel":"npm run lib && npm publish",
+    "rel": "npm run lib && npm publish",
     "lib": "vue-cli-service build --target lib  --name docsify-highlight  src/entry.js",
     "build": "vue-cli-service build --target lib  --name docsify-highlight  src/main.js"
   },
@@ -38,11 +38,13 @@
     "color-alpha": "^1.1.2",
     "core-js": "^3.6.5",
     "file-saver": "^2.0.5",
+    "is-mobile": "^3.0.0",
     "iview": "^3.5.4",
     "leancloud-storage": "^4.10.0",
     "md5": "^2.3.0",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
+    "vue2-touch-events": "^3.2.1",
     "web-highlighter": "^0.7.1"
   },
   "devDependencies": {

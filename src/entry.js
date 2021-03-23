@@ -9,15 +9,14 @@ import TocOutLine from './components/TocOutLine.vue'
 import BookMarks from './components/BookMarks.vue'
 import hlinit from './hl';
 import { registComponet } from './utils'
+import Vue from 'vue';
+import Vue2TouchEvents from 'vue2-touch-events'
+Vue.use(Vue2TouchEvents)
 
-// import "./styles/iview.css";
-// import "./assets/web.css";
-// import "./assets/iconfont.css";
 import './iviewLoader'
 let component = { NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)
 
-// elementLoader()
 // eslint-disable-next-line no-unused-vars
 export function install(hook, vm) {
   hook.doneEach(function () {

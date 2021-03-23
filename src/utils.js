@@ -78,3 +78,4 @@ export function queryBox({ title, content, onCancel, onOk }) {
     onOk
   });
 }
+export var mobile = require('is-mobile');

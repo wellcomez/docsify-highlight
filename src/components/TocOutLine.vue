@@ -5,12 +5,18 @@
     theme="light"
     :disabled="disabled"
     transfer
-    placement="bottom-start"
+    :placement="placement"
+    :always="always"
   >
     <Icon v-if="icon" :type="icon"></Icon>
-    <span :style="style" @click="onSelected">{{
-      title2
-    }}</span>
+    <span
+      :style="style"
+      @click="onClick"
+      v-touch:touchhold="touchHoldHandler"
+      v-touch:start="startHandler"
+      v-touch:end="endHandler"
+      >{{ title2 }}</span
+    >
     <div slot="content">
       <div v-if="note" class="outline-title">
         <p>{{ note }}</p>
@@ -23,6 +29,7 @@
   </Tooltip>
 </template>
 <script>
+import isMobile from "_is-mobile@3.0.0@is-mobile";
 import { tBackgroundColor, tUl } from "../colorSelector";
 export default {
   name: "TocOutLine",
@@ -37,7 +44,7 @@ export default {
     this.note = note && note.length ? `"${note}"` : undefined;
     let style = {};
     for (let color in styleDefine) {
-      color = parseInt(color)
+      color = parseInt(color);
       let a = styleDefine[color];
       let { colorhex, enable } = a;
       if (enable == false) continue;
@@ -70,6 +77,7 @@ export default {
       style: {},
       icon: undefined,
       classOfSpan: "",
+      always: false,
     };
   },
   props: {
@@ -77,6 +85,9 @@ export default {
     onSelected: { type: Function, default: undefined },
   },
   computed: {
+    placement() {
+      return isMobile() ? "top-start" : "bottom-start";
+    },
     maxWidth() {
       if (window.screen < 320) {
         return 200;
@@ -85,18 +96,15 @@ export default {
     },
   },
   methods: {
-    // spanclass(data) {
-    //   let { id, color, className } = data;
-    //   if (className != undefined) {
-    //     return className;
-    //   }
-    //   if (id == undefined) {
-    //     return "chartper";
-    //   } else {
-    //     let ret = "chartper-note " + classNameFromColor(color);
-    //     return ret;
-    //   }
-    // },
+    touchHoldHandler() {
+      if (isMobile()) this.always = true;
+    },
+    endHandler() {
+      if (isMobile()) this.always = false;
+    },
+    onClick(e) {
+      this.onSelected(e);
+    },
   },
 };
 </script>
