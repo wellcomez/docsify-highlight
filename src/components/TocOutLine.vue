@@ -16,7 +16,7 @@
         span="3"
         style="display: inline-block; text-align: center"
       >
-        <Icon :type="icon" size="16" :color="iconColor"></Icon>
+        <Icon :type="icon" size="18" :color="iconColor"></Icon>
       </Col>
       <Col span="21">
         <div>
@@ -38,7 +38,7 @@
         <!-- style="display: flex; justify-content: center" -->
         <Icon
           :type="mainicon"
-          size="16"
+          size="18"
           class="mainicon"
           @click="onClickExpanded1"
         ></Icon>
@@ -59,8 +59,9 @@
 </template>
 <script>
 import isMobile from "_is-mobile@3.0.0@is-mobile";
-import α from "color-alpha";
+const rgba = require("color-rgba");
 import { tBackgroundColor, tUl } from "../colorSelector";
+var Colr = require("Colr");
 export default {
   name: "TocOutLine",
   created() {
@@ -85,7 +86,15 @@ export default {
       } else {
         style.color = colorhex;
       }
-      if (this.iconColor.length == 0) this.iconColor = α(colorhex, 0.8);
+      if (this.iconColor.length == 0) {
+        let array = rgba(colorhex);
+        a[3] = 1;
+        let colr = Colr.fromRgbArray(array);
+        let { h, s, v } = colr.toHsvObject();
+        v = Math.min(70, v);
+        s = Math.max(90, s);
+        this.iconColor = Colr.fromHsvObject({ h, s, v }).toHex();
+      }
     }
     let icon = "ios-brush-outline";
     if (note) {
