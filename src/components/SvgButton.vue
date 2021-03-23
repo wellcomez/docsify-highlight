@@ -1,6 +1,17 @@
 <template>
-  <Tooltip :content="tips" :disabled="tipsDisabled">
-    <Button v-on:click="onClickMe" size="small" style="height: 32px">
+  <Tooltip
+    :content="tips"
+    :disabled="tipsDisabled"
+    :always="always"
+    :placement="placement"
+  >
+    <Button
+      v-on:click="onClickMe"
+      size="small"
+      style="height: 32px"
+      v-touch:touchhold="touchHoldHandler"
+      v-touch:end="endHandler"
+    >
       <Icon
         v-if="custom"
         :custom="btnClass"
@@ -20,11 +31,15 @@
   </Tooltip>
 </template>
 <script>
+import isMobile from "_is-mobile@3.0.0@is-mobile";
 const svgcolor_on = "#42b983";
 const svgcolor_off = "";
 export default {
   name: "SvgButton",
   computed: {
+    placement() {
+      return isMobile() ? "top-start" : "bottom-start";
+    },
     btnClass() {
       let ret = "iconfont " + this.name;
       return ret;
@@ -49,6 +64,7 @@ export default {
   },
   data() {
     return {
+      always: false,
       tipsDisabled: true,
     };
   },
@@ -67,6 +83,13 @@ export default {
     on: { type: Boolean, default: undefined },
   },
   methods: {
+    touchHoldHandler() {
+      if (isMobile()) this.always = true;
+    },
+
+    endHandler() {
+      if (isMobile()) this.always = false;
+    },
     onClickMe(e) {
       this.tipsDisabled = true;
       this.$emit("update:on", this.on != true);
