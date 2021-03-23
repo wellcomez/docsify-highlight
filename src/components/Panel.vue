@@ -26,7 +26,7 @@
           />
         </Badge>
       </Col>
-      <Col>
+      <Col v-if="showexport">
         <Bubbling
           v-if="collapsed == false && checked"
           :onSelect="onSelect"
@@ -182,6 +182,7 @@ import BookMarks from "./BookMarks";
 import Account from "./Account";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
+import isMobile from "_is-mobile@3.0.0@is-mobile";
 // import { checkClickOut } from "../mountCmp";
 export default {
   components: {
@@ -231,6 +232,7 @@ export default {
   },
   data() {
     return {
+      showexport: true,
       drawWidth: 320,
       enableScript: false,
       bDrawerOpen: false,
@@ -244,6 +246,7 @@ export default {
   },
   mounted() {
     let { enableScript } = getConfig().load();
+    this.showexport = isMobile() ? false : true;
     this.enableScript = enableScript;
     let { store } = this.hl;
     if (store) {
