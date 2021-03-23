@@ -138,6 +138,9 @@ export default {
   line-height: 50px;
   border-top: 1px solid #eee;
 }
+.xxxx .ivu-tree > ul.ivu-tree-children > li {
+  margin-top: 0px;
+}
 .xxxx ul.ivu-tree-children ul.ivu-tree-children li {
   margin-top: 0px;
 }
