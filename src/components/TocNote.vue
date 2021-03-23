@@ -16,8 +16,26 @@ export default {
   name: "TocNote",
   // eslint-disable-next-line vue/no-unused-components
   components: { TocOutLine },
-  computed: {
-    data() {
+  computed: {},
+  props: {
+    close: {
+      type: Function,
+      default: undefined,
+    },
+  },
+  data() {
+    return {
+      data: [],
+    };
+  },
+  mounted() {
+    this.data = this.getDataOfTable();
+  },
+  methods: {
+    selectChange(a) {
+      toc[a.title] = a.expand;
+    },
+    getDataOfTable() {
       let b = new Book();
       let aaa = b.Charpter().sort((a) => {
         if (a.label == document.title) {
@@ -39,20 +57,6 @@ export default {
       });
       return ret;
     },
-  },
-  props: {
-    close: {
-      type: Function,
-      default: undefined,
-    },
-  },
-  data() {
-    return {};
-  },
-  methods: {
-    selectChange(a) {
-      toc[a.title] = a.expand;
-    },
     createOutLine(item) {
       let { label: title, children } = item;
       let expand = false;
@@ -65,9 +69,15 @@ export default {
       const render = (h) => {
         return h(TocOutLine, {
           props: {
+            expand,
             notedata,
             onSelected: () => {
               this.handleNodeClick(item);
+            },
+            onClickExpanded: () => {
+              let e = toc[title];
+              toc[title] = e != true;
+              this.data = this.getDataOfTable();
             },
           },
         });

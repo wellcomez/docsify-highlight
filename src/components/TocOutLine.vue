@@ -9,20 +9,43 @@
     :placement="placement"
     :always="always"
   >
-    <Icon
-      v-if="icon"
-      :type="icon"
-      size="16"
-      class="outline-icon"
-      :color="iconColor"
-    ></Icon>
-    <span
-      :style="style"
-      @click="onClick"
-      v-touch:touchhold="touchHoldHandler"
-      v-touch:end="endHandler"
-      >{{ title2 }}</span
-    >
+    <!-- style="width: 100%; margin-left: 10px; padding-right: 10px" -->
+    <Row type="flex">
+      <Col
+        v-if="icon"
+        span="3"
+        style="display: inline-block; text-align: center"
+      >
+        <Icon :type="icon" size="16" :color="iconColor"></Icon>
+      </Col>
+      <Col span="21">
+        <div>
+          <p
+            :style="style"
+            @click="onClick"
+            v-touch:touchhold="touchHoldHandler"
+            v-touch:end="endHandler"
+          >
+            {{ title2 }}
+          </p>
+        </div>
+      </Col>
+      <Col
+        v-if="mainicon"
+        span="3"
+        style="display: inline-block; text-align: center"
+      >
+        <!-- style="display: flex; justify-content: center" -->
+        <Icon
+          :type="mainicon"
+          size="16"
+          class="mainicon"
+          @click="onClickExpanded1"
+        ></Icon>
+        <!-- style="float: right; margin-right: 10px" -->
+      </Col>
+    </Row>
+
     <div slot="content">
       <div v-if="note" class="outline-title">
         <p>{{ note }}</p>
@@ -49,7 +72,7 @@ export default {
     }
     this.title = title;
     this.note = note && note.length ? `"${note}"` : undefined;
-    let style = {};
+    let style = { "padding-left": "5%" };
     for (let color in styleDefine) {
       color = parseInt(color);
       let a = styleDefine[color];
@@ -70,6 +93,9 @@ export default {
     }
     if (children && children.length) {
       icon = undefined;
+      this.mainicon = this.expand
+        ? "ios-arrow-dropdown"
+        : "ios-arrow-dropright";
     }
     this.icon = icon;
     this.style = style;
@@ -83,6 +109,7 @@ export default {
   data() {
     return {
       style: {},
+      mainicon: undefined,
       iconColor: "",
       icon: undefined,
       classOfSpan: "",
@@ -90,8 +117,13 @@ export default {
     };
   },
   props: {
+    expand: {
+      type: Boolean,
+      default: false,
+    },
     notedata: { type: Object, default: undefined },
     onSelected: { type: Function, default: undefined },
+    onClickExpanded: { type: Function, default: undefined },
   },
   computed: {
     placement() {
@@ -111,6 +143,12 @@ export default {
     endHandler() {
       if (isMobile()) this.always = false;
     },
+    onClickExpanded1(e) {
+      let drop = "ios-arrow-dropdown" == this.mainicon;
+      this.mainicon =
+        drop == false ? "ios-arrow-dropdown" : "ios-arrow-dropright";
+      this.onClickExpanded(e);
+    },
     onClick(e) {
       this.onSelected(e);
     },
@@ -119,22 +157,19 @@ export default {
 </script>
 
 <style>
-.outline-icon {
-  padding: 8px;
-}
-.chartper {
-  font-weight: bold;
-}
-.chartper-note {
-  font-weight: normal;
-}
-.outline-note {
-  background: #80808026 !important;
-  border-left-color: red !important;
-  border-left-width: 2px !important;
-  border-left-style: solid !important;
+.xxxx .ivu-tree-arrow {
+  display: none;
+  width: 1px;
 }
 .doclist .outline .ivu-tree-arrow {
   width: 0px;
+}
+.outline {
+  width: 390px;
+}
+@media screen and (max-width: 480px) {
+  .outline {
+    width: 95%;
+  }
 }
 </style>
