@@ -66,7 +66,7 @@ class BookToc {
     let titlelist = this.charpterTitles();
     return titlelist.map((data) => {
       let { path, title } = data;
-      let store = this.CharpterStorage(path, title);
+      let store = this.CharpterStorage({path, title});
       let c = new Chapter(store);
       return c;
     })
