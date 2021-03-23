@@ -1,5 +1,6 @@
 <template>
   <Tooltip
+    class="outline"
     :delay="300"
     :max-width="maxWidth"
     theme="light"
@@ -8,12 +9,17 @@
     :placement="placement"
     :always="always"
   >
-    <Icon v-if="icon" :type="icon"></Icon>
+    <Icon
+      v-if="icon"
+      :type="icon"
+      size="16"
+      class="outline-icon"
+      :color="iconColor"
+    ></Icon>
     <span
       :style="style"
       @click="onClick"
       v-touch:touchhold="touchHoldHandler"
-      v-touch:start="startHandler"
       v-touch:end="endHandler"
       >{{ title2 }}</span
     >
@@ -30,6 +36,7 @@
 </template>
 <script>
 import isMobile from "_is-mobile@3.0.0@is-mobile";
+import α from "color-alpha";
 import { tBackgroundColor, tUl } from "../colorSelector";
 export default {
   name: "TocOutLine",
@@ -55,6 +62,7 @@ export default {
       } else {
         style.color = colorhex;
       }
+      if (this.iconColor.length == 0) this.iconColor = α(colorhex, 0.8);
     }
     let icon = "ios-brush-outline";
     if (note) {
@@ -75,6 +83,7 @@ export default {
   data() {
     return {
       style: {},
+      iconColor: "",
       icon: undefined,
       classOfSpan: "",
       always: false,
@@ -110,6 +119,9 @@ export default {
 </script>
 
 <style>
+.outline-icon {
+  padding: 8px;
+}
 .chartper {
   font-weight: bold;
 }
@@ -121,5 +133,8 @@ export default {
   border-left-color: red !important;
   border-left-width: 2px !important;
   border-left-style: solid !important;
+}
+.doclist .outline .ivu-tree-arrow {
+  width: 0px;
 }
 </style>

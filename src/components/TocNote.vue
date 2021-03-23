@@ -20,7 +20,7 @@ export default {
     data() {
       let b = new Book();
       let aaa = b.Charpter().sort((a) => {
-        if (a.label== document.title) {
+        if (a.label == document.title) {
           return -1;
         }
         return 1;
@@ -114,6 +114,26 @@ export default {
 };
 </script>
 <style >
+.xxxx ul.ivu-tree-children ul.ivu-tree-children {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  font-size: 14px;
+  font-family: Helvetica Neue, Helvetica, STHeiTi, Arial, sans-serif;
+  user-select: none;
+  list-style: none outside none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  height: 50px;
+  line-height: 50px;
+  border-top: 1px solid #eee;
+}
+.xxxx ul.ivu-tree-children ul.ivu-tree-children li {
+  margin-top: 0px;
+}
+.xxxx ul.ivu-tree-children ul.ivu-tree-children:last-child {
+  border-bottom: 1px solid #eee;
+}
 </style>
 
 
