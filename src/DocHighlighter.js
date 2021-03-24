@@ -407,10 +407,10 @@ export class DocHighlighter {
         }
     };
     findhs(hs) {
-        let { startMeta, endMeta, text, extra } = hs;
+        let { startMeta, endMeta, text, } = hs;
         let getInnerTxt = (startMeta) => {
             try {
-                let { parentTagName, parentIndex, textOffset } = startMeta;
+                let { parentTagName, parentIndex, } = startMeta;
                 let node = document.querySelectorAll(parentTagName)[parentIndex];
                 return node.innerText;
             }
@@ -442,17 +442,19 @@ export class DocHighlighter {
                             let node = nodes[i];
                             let { innerText } = node
                             if (innerText) {
-                                let index = text.indexOf(innerText)
                                 let find = false
-                                if (index < 0) continue;
                                 if (begin != undefined && end != undefined) {
-                                    find = true
+                                    let a = innerText.substring(begin, end)
+                                    if(text.indexOf(a)>=0)find = true
                                 } else if (begin != undefined) {
-                                    if (index == 0)
-                                        find = true
+                                    let a = innerText.substring(begin)
+                                    if(text.indexOf(a)==0)find = true
+
                                 } else if (end != undefined) {
-                                    if (index+end >=text.length)
-                                        find = true
+                                    let index = text.indexOf(innerText)
+                                    if(index>=0){
+                                        if(index+end>=text.length)find = true
+                                    }
                                 }
                                 if (find) {
                                     ret.push({ node, index: i })
