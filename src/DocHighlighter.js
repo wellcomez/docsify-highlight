@@ -422,8 +422,12 @@ export class DocHighlighter {
         b = b.substring(startMeta.textOffset)
         let e = getInnerTxt(endMeta)
         e = e.substring(0, endMeta.textOffset)
-        if (text.indexOf(b) >= 0 && text.indexOf(e) >= 0) {
-            return true;
+        if (text.indexOf(b) >= 0) {
+            let index = text.indexOf(e)
+            if (index >= 0) {
+                if (index + e.length >= text.length)
+                    return true;
+            }
         }
         return false;
     }
@@ -445,15 +449,19 @@ export class DocHighlighter {
                                 let find = false
                                 if (begin != undefined && end != undefined) {
                                     let a = innerText.substring(begin, end)
-                                    if(text.indexOf(a)>=0)find = true
+                                    if (a.length&&text.indexOf(a) >= 0) {
+                                        find = true
+                                    }
                                 } else if (begin != undefined) {
                                     let a = innerText.substring(begin)
-                                    if(text.indexOf(a)==0)find = true
+                                    if (a.length&&text.indexOf(a) == 0) {
+                                        find = true
+                                    }
 
                                 } else if (end != undefined) {
                                     let index = text.indexOf(innerText)
-                                    if(index>=0){
-                                        if(index+end>=text.length)find = true
+                                    if (index >= 0) {
+                                        if (index + end >= text.length) find = true
                                     }
                                 }
                                 if (find) {
