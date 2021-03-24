@@ -439,15 +439,32 @@ export class DocHighlighter {
             }
         };
         let b = getInnerTxt(startMeta)
+        function skipSpace(b) {
+            let begin = 0
+            for (let i = 0; i < b.length; i++) {
+                let bb = b[i]
+                if (b != ' ') {
+                    begin = i;
+                    break;
+                }
+            }
+            if (begin) {
+                return b.substring(begin)
+            }
+
+            return b
+        }
         b = b.substring(startMeta.textOffset)
+        b = skipSpace(b)
+        let ttt = skipSpace(text)
         let e = getInnerTxt(endMeta)
         e = e.substring(0, endMeta.textOffset)
-        if (text.indexOf(b) >= 0) {
-            let index = text.indexOf(e)
-            if (index >= 0) {
-                if (index + e.length >= text.length)
-                    return true;
-            }
+        let index = ttt.indexOf(b)
+        if (index != 0) return false
+        index = text.indexOf(e)
+        if (index >= 0) {
+            if (index + e.length >= text.length)
+                return true;
         }
         return false;
     }
@@ -486,12 +503,16 @@ export class DocHighlighter {
                                 }
                                 if (find) {
                                     let nn = document.querySelectorAll(tag)
-                                    for (let i = 0; i < nn.length; i++) {
-                                        let x = nn[i]
-                                        if (node == x) {
-                                            ret.push({ node, index: i })
-                                            continue
+                                    if (tag != css) {
+                                        for (let i = 0; i < nn.length; i++) {
+                                            let x = nn[i]
+                                            if (node == x) {
+                                                ret.push({ node, index: i })
+                                                continue
+                                            }
                                         }
+                                    } else {
+                                        ret.push({ node, index: i })
                                     }
                                 }
                             }
