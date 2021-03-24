@@ -418,30 +418,45 @@ export class DocHighlighter {
                 return '';
             }
         };
-        let html = getInnerTxt(startMeta) + getInnerTxt(endMeta);
-        return html.indexOf(text) >= 0;
+        let b = getInnerTxt(startMeta)
+        b = b.substring(startMeta.textOffset)
+        let e = getInnerTxt(endMeta)
+        e = e.substring(0, endMeta.textOffset)
+        if (text.indexOf(b) >= 0 && text.indexOf(e) >= 0) {
+            return true;
+        }
+        return false;
     }
     checkHS(hs) {
         if (this.findhs(hs)) {
             return hs
         } else {
-            let { startMeta, endMeta, text, extra } = hs;
-            let search = (startMeta, text, begin, end) => {
+            let { startMeta, endMeta, text, } = hs;
+            let search = (startMeta, text, { begin, end }) => {
                 let ret = []
                 try {
-                    let { parentTagName, parentIndex, textOffset } = startMeta;
+                    let { parentTagName, } = startMeta;
                     let nodes = document.querySelectorAll(parentTagName)
                     for (let i = 0; i < nodes.length; i++) {
                         try {
                             let node = nodes[i];
                             let { innerText } = node
                             if (innerText) {
-                                if (end == undefined) {
-                                    end = begin + Math.min(innerText.length, text.length);
+                                let index = text.indexOf(innerText)
+                                let find = false
+                                if (index < 0) continue;
+                                if (begin != undefined && end != undefined) {
+                                    find = true
+                                } else if (begin != undefined) {
+                                    if (index == 0)
+                                        find = true
+                                } else if (end != undefined) {
+                                    if (index+end >=text.length)
+                                        find = true
                                 }
-                                innerText = innerText.substring(begin, end)
-                                if (innerText.length && ((text.indexOf(innerText) >= 0) || innerText.indexOf(text) >= 0))
-                                    ret.push({ node, index: i });
+                                if (find) {
+                                    ret.push({ node, index: i })
+                                }
                             }
                             // eslint-disable-next-line no-empty
                         } catch (error) { }
@@ -451,13 +466,20 @@ export class DocHighlighter {
                 catch (e) { }
                 return ret
             };
-            let n1 = search(startMeta, text, startMeta.textOffset)
-            let begin = 0;
+            let begin = startMeta.textOffset;
             let end = endMeta.textOffset;
-            let n2 = search(endMeta, text, begin, end)
+            let same = (startMeta.parentTagName == endMeta.parentTagName && startMeta.parentIndex == endMeta.parentIndex)
+            let n1 = search(startMeta, text, { begin, end: same ? end : undefined })
+            let n2 = search(endMeta, text, { begin: same ? begin : undefined, end })
             if (n1.length && n2.length) {
-                let start = n1[0]
-                let end = n2[0]
+                let findStartEnd = () => {
+                    if (n1.length == 1 && n1.length) {
+                        let start = n1[0]
+                        let end = n2[0]
+                        return { start, end }
+                    }
+                    return {}
+                }
                 const newhs = (start, end) => {
                     let parentIndex = start.index
                     startMeta = { ...startMeta, ...{ parentIndex } }
@@ -466,7 +488,8 @@ export class DocHighlighter {
                     hs = { ...hs, ...{ startMeta, endMeta } }
                     return hs
                 }
-                if(start==end){
+                let { start, end } = findStartEnd()
+                if (start && end) {
                     return newhs(start, end)
                 }
             }
