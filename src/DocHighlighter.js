@@ -425,39 +425,8 @@ export class DocHighlighter {
         if (this.findhs(hs)) {
             return hs
         } else {
-          this.findhs(hs)
-            const FindIntersectionFromStart = (a, b) => {
-                for (var i = a.length; i > 0; i--) {
-                    let d = a.substring(0, i);
-                    let j = b.indexOf(d);
-                    if (j >= 0) {
-                        return ({ position: j, length: i });
-                    }
-                }
-
-                return null;
-            }
-
-            const FindIntersection = (a, b) => {
-                var bestResult = null;
-                for (var i = 0; i < a.length - 1; i++) {
-                    var result = FindIntersectionFromStart(a.substring(i), b);
-                    if (result) {
-                        if (!bestResult) {
-                            bestResult = result;
-                        } else {
-                            if (result.length > bestResult.length) {
-                                bestResult = result;
-                            }
-                        }
-                    }
-                    if (bestResult && bestResult.length >= a.length - i)
-                        break;
-                }
-                return bestResult;
-            }
             let { startMeta, endMeta, text, extra } = hs;
-            let search = (startMeta, text,start) => {
+            let search = (startMeta, text, begin, end) => {
                 let ret = []
                 try {
                     let { parentTagName, parentIndex, textOffset } = startMeta;
@@ -467,13 +436,12 @@ export class DocHighlighter {
                             let node = nodes[i];
                             let { innerText } = node
                             if (innerText) {
-                                if(start){
-                                    innerText = innerText.substring(textOffset,Math.min(textOffset+text.length,innerText.length))
-                                }else{
-                                    innerText = innerText.substring(0,textOffset)
+                                if (end == undefined) {
+                                    end = begin + Math.min(innerText.length, text.length);
                                 }
-                                if (innerText.length&&(text.indexOf(innerText) >= 0))
-                                    ret.push(node);
+                                innerText = innerText.substring(begin, end)
+                                if (innerText.length && ((text.indexOf(innerText) >= 0) || innerText.indexOf(text) >= 0))
+                                    ret.push({ node, index: i });
                             }
                             // eslint-disable-next-line no-empty
                         } catch (error) { }
@@ -483,8 +451,25 @@ export class DocHighlighter {
                 catch (e) { }
                 return ret
             };
-            let n1 = search(startMeta, text,true)
-            let n2 = search(endMeta, text,false)
+            let n1 = search(startMeta, text, startMeta.textOffset)
+            let begin = 0;
+            let end = endMeta.textOffset;
+            let n2 = search(endMeta, text, begin, end)
+            if (n1.length && n2.length) {
+                let start = n1[0]
+                let end = n2[0]
+                const newhs = (start, end) => {
+                    let parentIndex = start.index
+                    startMeta = { ...startMeta, ...{ parentIndex } }
+                    parentIndex = end.index
+                    endMeta = { ...endMeta, ...{ parentIndex } }
+                    hs = { ...hs, ...{ startMeta, endMeta } }
+                    return hs
+                }
+                if(start==end){
+                    return newhs(start, end)
+                }
+            }
             return hs
         }
         //        "parentTagName": "LI",
@@ -507,7 +492,7 @@ export class DocHighlighter {
                         // eslint-disable-next-line no-empty
                     } catch (error) {
                     }
-                    this.checkHS(hs)
+                    hs = this.checkHS(hs)
                     highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                 }
             );
