@@ -13,11 +13,30 @@ import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { downloadFromCloud } from './leanweb';
+import {UTILS} from './css_path'
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
         element.parentNode.removeChild(element);
     });
+}
+// function getXPathForElement(element) {
+//     const idx = (sib, name) => sib
+//         ? idx(sib.previousElementSibling, name || sib.localName) + (sib.localName == name)
+//         : 1;
+//     const segs = elm => !elm || elm.nodeType !== 1
+//         ? ['']
+//         : elm.id && document.getElementById(elm.id) === elm
+//             ? [`id("${elm.id}")`]
+//             : [...segs(elm.parentNode), `${elm.localName.toLowerCase()}[${idx(elm)}]`];
+//     return segs(element).join('/');
+// }
+
+function getElementByXPath(path) {
+    return (new XPathEvaluator())
+        .evaluate(path, document.documentElement, null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+        .singleNodeValue;
 }
 export class DocHighlighter {
     getIds(selected) {
@@ -393,6 +412,7 @@ export class DocHighlighter {
                     }
                     hs.tags = tags
                     hs.top = this.getElementPosition(noteid)
+                    hs.csspath = this.getElementCssPath(hs)
                     return hs
                 })
                 sources2 = sources2.map(hs => ({ hs }));
@@ -449,12 +469,12 @@ export class DocHighlighter {
                                 let find = false
                                 if (begin != undefined && end != undefined) {
                                     let a = innerText.substring(begin, end)
-                                    if (a.length&&text.indexOf(a) >= 0) {
+                                    if (a.length && text.indexOf(a) >= 0) {
                                         find = true
                                     }
                                 } else if (begin != undefined) {
                                     let a = innerText.substring(begin)
-                                    if (a.length&&text.indexOf(a) == 0) {
+                                    if (a.length && text.indexOf(a) == 0) {
                                         find = true
                                     }
 
@@ -561,7 +581,26 @@ export class DocHighlighter {
             }
         });
     }
-
+    getElementCssPath(hs) {
+        function fullPath(el) {
+            if (el==undefined||el==null) return undefined
+            return UTILS.cssPath(el)
+        }
+        let { startMeta, endMeta } = hs
+        function getEle(startMeta) {
+            try {
+                let { parentIndex, parentTagName } = startMeta
+                let ele = document.querySelectorAll(parentTagName)[parentIndex]
+                return ele
+            } catch (error) {
+                return
+            }
+        }
+        let start = fullPath(getEle(startMeta))
+        let end = fullPath(getEle(endMeta))
+        let csspath = { start, end }
+        return csspath
+    }
     getElementPosition(id) {
         let ret = {};
         this.procssAllElements(id, (a) => {
