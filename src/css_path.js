@@ -31,13 +31,13 @@
  */
 
 export var UTILS = {};
-UTILS.cssPath = function (node, optimized) {
+UTILS.cssPath = function (node, nochild, optimized) {
     if (node.nodeType !== Node.ELEMENT_NODE)
         return "";
     var steps = [];
     var contextNode = node;
     while (contextNode) {
-        var step = UTILS._cssPathStep(contextNode, !!optimized, contextNode === node);
+        var step = UTILS._cssPathStep(contextNode, nochild, !!optimized, contextNode === node);
         if (!step)
             break; // Error - bail out early.
         steps.push(step);
@@ -48,7 +48,7 @@ UTILS.cssPath = function (node, optimized) {
     steps.reverse();
     return steps.join(" > ");
 }
-UTILS._cssPathStep = function (node, optimized, isTargetNode) {
+UTILS._cssPathStep = function (node, nochild, optimized, isTargetNode) {
     if (node.nodeType !== Node.ELEMENT_NODE)
         return null;
 
@@ -186,7 +186,11 @@ UTILS._cssPathStep = function (node, optimized, isTargetNode) {
     if (isTargetNode && nodeName.toLowerCase() === "input" && node.getAttribute("type") && !node.getAttribute("id") && !node.getAttribute("class"))
         result += "[type=\"" + node.getAttribute("type") + "\"]";
     if (needsNthChild) {
-        result += ":nth-child(" + (ownIndex + 1) + ")";
+        if (nochild) {
+            result += "";
+        } else {
+            result += ":nth-child(" + (ownIndex + 1) + ")";
+        }
     } else if (needsClassNames) {
         for (var prefixedName in prefixedOwnClassNamesArray)
             // for (var prefixedName in prefixedOwnClassNamesArray.keySet())

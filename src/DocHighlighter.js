@@ -13,7 +13,7 @@ import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { downloadFromCloud } from './leanweb';
-import {UTILS} from './css_path'
+import { UTILS } from './css_path'
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -455,12 +455,11 @@ export class DocHighlighter {
         if (this.findhs(hs)) {
             return hs
         } else {
-            let { startMeta, endMeta, text, } = hs;
-            let search = (startMeta, text, { begin, end }) => {
+            let search = (css, tag, text, { begin, end }) => {
                 let ret = []
                 try {
-                    let { parentTagName, } = startMeta;
-                    let nodes = document.querySelectorAll(parentTagName)
+                    let nodes = []
+                    nodes = document.querySelectorAll(css)
                     for (let i = 0; i < nodes.length; i++) {
                         try {
                             let node = nodes[i];
@@ -479,13 +478,21 @@ export class DocHighlighter {
                                     }
 
                                 } else if (end != undefined) {
-                                    let index = text.indexOf(innerText)
+                                    let a = innerText.substring(0, end)
+                                    let index = a.length ? text.indexOf(a) : -1
                                     if (index >= 0) {
                                         if (index + end >= text.length) find = true
                                     }
                                 }
                                 if (find) {
-                                    ret.push({ node, index: i })
+                                    let nn = document.querySelectorAll(tag)
+                                    for (let i = 0; i < nn.length; i++) {
+                                        let x = nn[i]
+                                        if (node == x) {
+                                            ret.push({ node, index: i })
+                                            continue
+                                        }
+                                    }
                                 }
                             }
                             // eslint-disable-next-line no-empty
@@ -496,11 +503,21 @@ export class DocHighlighter {
                 catch (e) { }
                 return ret
             };
+
+            let { startMeta, endMeta, text, csspath } = hs;
+            if (csspath == undefined) {
+                csspath = {}
+            }
+            let { start: cssstart, end: cssend } = csspath
             let begin = startMeta.textOffset;
             let end = endMeta.textOffset;
             let same = (startMeta.parentTagName == endMeta.parentTagName && startMeta.parentIndex == endMeta.parentIndex)
-            let n1 = search(startMeta, text, { begin, end: same ? end : undefined })
-            let n2 = search(endMeta, text, { begin: same ? begin : undefined, end })
+            let n1 = search(cssstart ? cssstart : startMeta.parentTagName,
+                startMeta.parentTagName,
+                text, { begin, end: same ? end : undefined })
+            let n2 = search(cssend ? cssend : endMeta.parentTagName,
+                endMeta.parentTagName,
+                text, { begin: same ? begin : undefined, end })
             if (n1.length && n2.length) {
                 let findStartEnd = () => {
                     if (n1.length == 1 && n1.length) {
@@ -583,8 +600,8 @@ export class DocHighlighter {
     }
     getElementCssPath(hs) {
         function fullPath(el) {
-            if (el==undefined||el==null) return undefined
-            return UTILS.cssPath(el)
+            if (el == undefined || el == null) return undefined
+            return UTILS.cssPath(el, true)
         }
         let { startMeta, endMeta } = hs
         function getEle(startMeta) {
