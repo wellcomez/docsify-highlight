@@ -266,7 +266,7 @@ class Chapter {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
-      let { label, style, note } = a;
+      let { label, style, note,imgsrc } = a;
       let hlyellow = ''
       for (let color in style) {
         let { enable, colorhex } = style[color];
@@ -276,15 +276,21 @@ class Chapter {
         }
       }
       if (note) {
-        note = "\n\n\t>" + note
+        note = `\n\n\t>${note}\n`
       } else {
         note = ""
       }
       let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
-      let span = `    <span class="${hlyellow}">    ${label}    </span>`;
+      let img = ''
+      if(imgsrc){
+        let {path} = parseurl(imgsrc)
+        img  = `![${path}](${imgsrc})\n`
+      }
+      let span = label? `    <span class="${hlyellow}">    ${label}    </span>\n`:"";
       return (
         `${idx + 1}. ${tile}\n
-  ${span}\n
+  ${span}
+  ${img}
   ${note}
   `);
     });

@@ -53,9 +53,7 @@
       </Col>
 
       <Col>
-        <Badge v-if="checked" :count="bookmarkCount">
-          <SvgButton @click="onBookmark" :name="bookmarkicon" />
-        </Badge>
+        <SvgButton @click="onBookmark" :name="bookmarkicon" />
       </Col>
 
       <!-- <Col>
