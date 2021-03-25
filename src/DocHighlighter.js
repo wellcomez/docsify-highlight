@@ -90,7 +90,8 @@ export class DocHighlighter {
         let onCloseMenu = () => {
             this.disableUserSelection(false)
         }
-        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags, onCloseMenu }, document.body)
+        let section = document.querySelector('section.content')
+        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags, onCloseMenu }, section)
         // }
     };
     procssAllElements(nodeid, cb) {
@@ -251,9 +252,55 @@ export class DocHighlighter {
         this.unregister = () => {
             User.addCallback(checkUserStatus, true)
         }
-        // document.addEventListener("hashchange", () => {
-        //     console.log(window.location)
-        // });
+        let handleImageClick = (e) => {
+            // console.log(window.location)
+            try {
+                let ele = e.target
+                let { tagName } = ele
+                if (tagName == 'IMG') {
+                    let yes = ele.parentElement.classList.contains("docsify-highlighter")
+                    // eslint-disable-next-line no-empty
+                    if (yes) {
+                       let {parentElement} = ele
+                       this.createNoteMenu(parentElement) 
+                    } else {
+                        const createUUID = (a) => {
+                            return a
+                                ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
+                                : ((([1e7])) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/gu, createUUID);
+                        }
+                        let id = createUUID()
+                        let parentTagName = 'img'
+                        let parentIndex
+                        let textOffset = 0
+                        let imgs = document.querySelectorAll(parentTagName)
+                        for (let i = 0; i < imgs.length; i++) {
+                            if (ele == imgs[i]) {
+                                parentIndex = i
+                                break
+                            }
+                        }
+                        let startMeta = { parentTagName, parentIndex, textOffset }
+                        let endMeta = startMeta
+                        let imgsrc = ele.src
+                        let text = ""
+                        let hs = { startMeta, endMeta, id, imgsrc, text }
+                        let sources = [hs]
+                        let wrap = document.createElement('i')
+                        wrap.classList.add('docsify-highlighter')
+                        wrap.classList.add('highlight-mengshou-wrap')
+                        wrap.dataset['highlightId'] = id
+                        ele.parentElement.replaceChild(wrap, ele)
+                        wrap.appendChild(ele)
+                        this.createNoteMenu(wrap, sources)
+                    }
+                }
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+            console.log(e)
+        }
+        document.addEventListener("click", handleImageClick);
         this.parseurlResult = parseurl();
 
 
@@ -282,11 +329,9 @@ export class DocHighlighter {
         this.highlighter.on(Highlighter.event.CLICK, onClick);
 
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
-            selectedNodes = selectedNodes.filter(n => n.$node.textContent);
             if (selectedNodes.length === 0) {
                 return [];
             }
-
             const candidates = selectedNodes.slice(1).reduce(
                 (left, selected) => getIntersection(left, this.getIds(selected)),
                 this.getIds(selectedNodes[0])
@@ -387,8 +432,8 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
-        let { note, sources, style, tags } = data ? data : {}
-        let change = style != undefined || note || tags.length
+        let { note, sources, style, tags, img } = data ? data : {}
+        let change = style != undefined || note || tags.length || img && img.length
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
@@ -440,18 +485,19 @@ export class DocHighlighter {
         };
         let b = getInnerTxt(startMeta)
         function skipSpace(b) {
-            let begin = 0
-            for (let i = 0; i < b.length; i++) {
-                let bb = b[i]
-                if (b != ' ') {
-                    begin = i;
-                    break;
+            if (b) {
+                let begin = 0
+                for (let i = 0; i < b.length; i++) {
+                    let bb = b[i]
+                    if (b != ' ') {
+                        begin = i;
+                        break;
+                    }
+                }
+                if (begin) {
+                    return b.substring(begin)
                 }
             }
-            if (begin) {
-                return b.substring(begin)
-            }
-
             return b
         }
         b = b.substring(startMeta.textOffset)
@@ -584,7 +630,19 @@ export class DocHighlighter {
                     } catch (error) {
                     }
                     hs = this.checkHS(hs)
-                    highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+                    if (hs.imgsrc) {
+                        let { startMeta, endMeta ,id} = hs;
+                        let { parentTagName, parentIndex } = startMeta
+                        let ele = document.querySelectorAll(parentTagName)[parentIndex]
+                        let wrap = document.createElement('i')
+                        wrap.classList.add('docsify-highlighter')
+                        wrap.classList.add('highlight-mengshou-wrap')
+                        wrap.dataset['highlightId'] = id
+                        ele.parentElement.replaceChild(wrap, ele)
+                        wrap.appendChild(ele)
+                    } else {
+                        highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+                    }
                 }
             );
         } else {
@@ -674,6 +732,7 @@ export class DocHighlighter {
         let offset = {
             top: 0,
             left: 0,
+            height: $node.offsetHeight
         };
         while ($node) {
             offset.top += $node.offsetTop;

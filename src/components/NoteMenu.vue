@@ -8,8 +8,8 @@
       <Row v-if="showtagPane">
         <TagPanel :tags.sync="tags" />
       </Row>
-      <Row type="flex" justify="space-between" align="top">
-        <Col :style="col(0)">
+      <Row type="flex" :justify="justify" align="top">
+        <Col :style="col(0)" v-if="showfortxt">
           <SvgButton
             onOff
             v-bind:on="fontColorEnable"
@@ -20,7 +20,7 @@
             tips="Font Color"
           ></SvgButton>
         </Col>
-        <Col :style="col(1)">
+        <Col :style="col(1)" v-if="showfortxt">
           <SvgButton
             onOff
             v-bind:on="UnderlineEnable"
@@ -31,13 +31,14 @@
             tips="Underline"
           ></SvgButton>
         </Col>
-        <Col :style="col(2)">
+
+        <Col :style="col(2)" v-if="showfortxt">
           <BackgroudSelector
             :colorList="colorList"
             :selectedIndex.sync="selectedSubColor"
             :key="backgroundColorKey"
         /></Col>
-        <Col>
+        <Col v-if="showfortxt">
           <ColorPicker
             offset="[-1,1]"
             v-model="color1"
@@ -52,7 +53,8 @@
           <SvgButton name="md-pricetag" :on.sync="showtagPane"></SvgButton>
         </Col>
         <Col>
-          <SvgButton @click="onDelete" name="md-trash" tips="Remove" />
+          <SvgButton v-if="imageNeedAdd" @click="imageNeedAdd=false" name="md-add-circle" tips="Remove" />
+          <SvgButton v-if="imageNeedAdd==false" @click="onDelete" name="md-trash" tips="Remove" />
         </Col>
         <Col>
           <SvgButton @click="onCopy" name="ios-copy" tips="Copy" />

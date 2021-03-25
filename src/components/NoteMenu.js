@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-empty */
 import {
     tBackgroundColor,
     tUl,
@@ -29,6 +31,10 @@ export const NoteMenu = {
     },
     data() {
         return {
+            imageNeedAdd: false,
+            justify: 'space-between',
+            img: undefined,
+            showfortxt: true,
             showtagPane: true,
             first3Colors: default_color_list,
             backgroundColorKey: 1,
@@ -80,6 +86,32 @@ export const NoteMenu = {
         },
     },
     mounted() {
+        let { sources, noteid, hl } = this
+        let nodes = hl.highlighter.getDoms(noteid)
+        let imsgUrl = []
+        let hasText = false
+        for (let i = 0; i < nodes.length; i++) {
+            let node = nodes[i]
+            if (node.innerText.length) {
+                hasText = true
+            }
+            let imgs = node.querySelectorAll('img')
+            for (let j = 0; j < imgs.length; j++) {
+                let img = imgs[j]
+                let { src } = img ? img : {}
+                imsgUrl.push(src)
+            }
+        }
+        if (imsgUrl.length) {
+            this.img = imsgUrl
+        }
+        if (hasText == false && this.img) {
+            this.showfortxt = false
+            this.justify = 'start'
+            if (sources) {
+                this.imageNeedAdd = true
+            }
+        }
         this.colorList = this.getColorList()
         this.updateSelection();
         this.updatePos()
@@ -216,7 +248,10 @@ export const NoteMenu = {
             this.removeMenu();
         },
         notedata() {
-            let { sources, tags } = this;
+            let { sources, tags, img } = this;
+            if (this.imageNeedAdd) {
+                img = undefined
+            }
             let style = undefined;
             for (let a in this.hlStyle.allTypes) {
                 let { enable, colorhex } = this.hlStyle.allTypes[a]
@@ -227,7 +262,7 @@ export const NoteMenu = {
             }
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
-            return { note, sources, style, tags };
+            return { note, sources, style, tags, img };
         },
         saveNoteData() {
             this.hl.saveNoteData(this.noteid, this.notedata());

@@ -1,7 +1,7 @@
 <template>
   <Tooltip
     class="outline"
-    :delay="300"
+    :delay="500"
     :max-width="maxWidth"
     theme="light"
     :disabled="disabled"
