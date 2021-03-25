@@ -127,6 +127,9 @@ input[type='checkbox'].switch:checked::after {
   body .ivu-modal-confirm-body input {
     font-size: 16px;
   }
+  .doclist{
+    height: 320px;
+  }
 }
 
 .disable-user-selection {
