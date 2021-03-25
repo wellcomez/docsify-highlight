@@ -139,6 +139,9 @@
   padding: 4px;
   background: var(--theme-color, #42b983);
 }
+.op-panel .doclist {
+  height: 600px;
+}
 @media screen and (max-width: 480px) {
   .op-panel {
     position: fixed;
@@ -154,8 +157,11 @@
   }
   .op-panel .contenttable {
     width: 100%;
+    height: 320px;
   }
-
+  .op-panel .doclist {
+    height: 280px;
+  }
   .op-panel .outline {
     width: 95%;
   }
