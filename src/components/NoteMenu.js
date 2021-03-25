@@ -31,6 +31,7 @@ export const NoteMenu = {
     },
     data() {
         return {
+            bookmark:false,
             imageNeedAdd: false,
             justify: 'space-between',
             img: undefined,
@@ -68,6 +69,15 @@ export const NoteMenu = {
         }
     },
     computed: {
+        bookmarkiconcolor() {
+            if (this.bookmark) {
+                return "var(--theme-color, #42b983)";
+            }
+            return undefined;
+        },
+        bookmarkicon() {
+            return this.bookmark ? "ios-bookmark" : "ios-bookmark-outline";
+        },
         recommendedColor() {
             if (this.hlType == tUl || this.hlStyle == tfontColor) {
                 return recommendedColorNoAlpha

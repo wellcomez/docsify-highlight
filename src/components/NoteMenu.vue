@@ -50,11 +50,28 @@
           />
         </Col>
         <Col>
-          <SvgButton name="icon-tags-fill" custom  :on.sync="showtagPane"></SvgButton>
+          <SvgButton
+            name="icon-tags-fill"
+            custom
+            :on.sync="showtagPane"
+          ></SvgButton>
         </Col>
         <Col>
-          <SvgButton v-if="imageNeedAdd" @click="imageNeedAdd=false" name="md-add-circle" tips="Remove" />
-          <SvgButton v-if="imageNeedAdd==false" @click="onDelete" name="md-trash" tips="Remove" />
+          <SvgButton @click="bookmark=bookmark!=true" :name="bookmarkicon" />
+        </Col>
+        <Col>
+          <SvgButton
+            v-if="imageNeedAdd"
+            @click="imageNeedAdd = false"
+            name="md-add-circle"
+            tips="Remove"
+          />
+          <SvgButton
+            v-if="imageNeedAdd == false"
+            @click="onDelete"
+            name="md-trash"
+            tips="Remove"
+          />
         </Col>
         <Col>
           <SvgButton @click="onCopy" name="ios-copy" tips="Copy" />
@@ -93,7 +110,7 @@ export default NoteMenu;
   position: absolute;
   border: 1px solid #fff;
   border-radius: 3px;
-  width: 400px;
+  width: 440px;
   height: fit-content;
   background: var(--theme-color, #42b983);
   font-size: 12px;
@@ -109,6 +126,7 @@ export default NoteMenu;
 }
 @media screen and (max-width: 640px) {
   .my-remove-tip {
+    width:100%;
     /* width:360px */
   }
 }

@@ -90,7 +90,8 @@ export class DocHighlighter {
         let onCloseMenu = () => {
             this.disableUserSelection(false)
         }
-        let section = document.querySelector('section.content')
+        let section = document.body
+        //  document.querySelector('section.content')
         mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags, onCloseMenu }, section)
         // }
     };
