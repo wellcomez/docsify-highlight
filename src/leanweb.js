@@ -70,7 +70,7 @@ export async function loadeBook(book) {
     let {toc} = book;
     let {userid} = toc
     query.equalTo("toc.userid", userid)
-    query.descending('createdAt');
+    query.descending('updatedAt');
     let a = await query.find();
     // console.log(a)
     return a[0].attributes;
