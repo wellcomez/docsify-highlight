@@ -65,11 +65,7 @@
         <SvgButton @click="bDrawerOpen = true" name="md-settings" />
       </Col>
     </Row>
-    <Row
-      class="contenttable"
-      v-if="showdetail"
-      style="overflow: hidden; height: 100%"
-    >
+    <Row class="contenttable" v-if="showdetail">
       <Tabs type="line" size="small" class="tabs">
         <TabPane label="批注">
           <TocNote v-bind:close="closedetail" v-bind:key="count2"></TocNote>
@@ -129,6 +125,7 @@
 }
 .op-panel .contenttable {
   width: 400px;
+  overflow: hidden;
   height: 640px;
   background: white;
   border: 1px solid var(--theme-color, #42b983);
@@ -298,7 +295,7 @@ export default {
       return ddd.length;
     },
     hide() {
-      // this.showdetail = false;
+      this.showdetail = false;
     },
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);

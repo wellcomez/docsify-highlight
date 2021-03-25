@@ -34,7 +34,7 @@
           <img
             v-if="imgsrc"
             v-bind:src="imgsrc"
-            style="width: 50%; height: 50%"
+            style="width: 80%; height: 80%"
           />
           <div v-if="note" class="outline-title">
             <p>{{ note }}</p>

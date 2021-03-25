@@ -105,7 +105,7 @@ input[type='checkbox'].switch:checked::after {
 
 .doclist {
   overflow           : auto;
-  height             : 200px;
+  height             : 95%;
   /* background-color: white; */
 }
 

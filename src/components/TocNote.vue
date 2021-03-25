@@ -98,9 +98,9 @@ export default {
           window.scrollTo(0, node.offsetTop);
           // eslint-disable-next-line no-empty
         } catch (error) {}
-        if (this.close) {
-          this.close();
-        }
+        // if (this.close) {
+        //   this.close();
+        // }
         return;
       }
       if (key && id) {
@@ -115,9 +115,9 @@ export default {
           document.location.hash = hash;
         }
         // window.location = url;
-        if (this.close) {
-          this.close();
-        }
+        // if (this.close) {
+        //   this.close();
+        // }
       }
     },
   },
