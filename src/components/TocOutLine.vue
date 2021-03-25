@@ -49,7 +49,7 @@
     <Col
       v-if="mainicon"
       span="3"
-      style="display: inline-block; text-align: center"
+      style="display: inline-block; text-align: center;background-color:white;"
     >
       <!-- style="display: flex; justify-content: center" -->
       <Icon
