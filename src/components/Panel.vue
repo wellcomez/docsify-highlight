@@ -122,11 +122,14 @@
   background-color: #2df05e;
 }
 .op-panel .contenttable {
-  width: 400px;
   overflow: hidden;
   height: 640px;
   background: white;
   border: 1px solid var(--theme-color, #42b983);
+}
+.op-panel .outline,
+.op-panel {
+  width: 268px;
 }
 .op-panel .contenttable .tabs {
   height: inherit;
@@ -151,6 +154,10 @@
   }
   .op-panel .contenttable {
     width: 100%;
+  }
+
+  .op-panel .outline {
+    width: 95%;
   }
 }
 </style>

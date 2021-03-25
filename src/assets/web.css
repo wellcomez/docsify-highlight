@@ -93,6 +93,7 @@ input[type='checkbox'].switch:checked::after {
 
 .doclist .ivu-tree ul {
   padding-left: 2px;
+  font-size: xx-small;
 }
 
 .doclist .ivu-tree {

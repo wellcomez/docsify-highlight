@@ -85,7 +85,7 @@ export default {
     }
     this.title = title;
     this.note = note && note.length ? `"${note}"` : undefined;
-    let style = { "padding-left": "5%" };
+    let style = { "padding-left": "4px" };
     for (let color in styleDefine) {
       color = parseInt(color);
       let a = styleDefine[color];
@@ -189,12 +189,8 @@ export default {
 .doclist .outline .ivu-tree-arrow {
   width: 0px;
 }
-.outline {
-  width: 390px;
-}
+
 @media screen and (max-width: 480px) {
-  .outline {
-    width: 95%;
-  }
+
 }
 </style>
