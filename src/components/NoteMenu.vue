@@ -50,7 +50,7 @@
           />
         </Col>
         <Col>
-          <SvgButton name="md-pricetag" :on.sync="showtagPane"></SvgButton>
+          <SvgButton name="icon-tags-fill" custom  :on.sync="showtagPane"></SvgButton>
         </Col>
         <Col>
           <SvgButton v-if="imageNeedAdd" @click="imageNeedAdd=false" name="md-add-circle" tips="Remove" />
