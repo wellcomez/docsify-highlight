@@ -1,24 +1,20 @@
 <template>
-  <Tooltip
-    class="outline"
-    :delay="500"
-    :max-width="maxWidth"
-    theme="light"
-    :disabled="disabled"
-    transfer
-    :placement="placement"
-    :always="always"
-  >
-    <!-- style="width: 100%; margin-left: 10px; padding-right: 10px" -->
-    <Row type="flex">
-      <Col
-        v-if="icon"
-        span="3"
-        style="display: inline-block; text-align: center"
+  <!-- style="width: 100%; margin-left: 10px; padding-right: 10px" -->
+  <Row type="flex">
+    <Col v-if="icon" span="3" style="display: inline-block; text-align: center">
+      <Icon :type="icon" size="18" :color="iconColor"></Icon>
+    </Col>
+    <Col span="21">
+      <Tooltip
+        class="outline"
+        :delay="500"
+        :max-width="maxWidth"
+        theme="light"
+        :disabled="disabled"
+        transfer
+        :placement="placement"
+        :always="always"
       >
-        <Icon :type="icon" size="18" :color="iconColor"></Icon>
-      </Col>
-      <Col span="21">
         <div>
           <p
             :style="style"
@@ -27,36 +23,44 @@
             v-touch:end="endHandler"
           >
             {{ title2 }}
-            <img v-if="imgsrc" v-bind:src="imgsrc" style="width:40px;height:40px"/>
+            <img
+              v-if="imgsrc"
+              v-bind:src="imgsrc"
+              style="width: 40px; height: 40px"
+            />
           </p>
         </div>
-      </Col>
-      <Col
-        v-if="mainicon"
-        span="3"
-        style="display: inline-block; text-align: center"
-      >
-        <!-- style="display: flex; justify-content: center" -->
-        <Icon
-          :type="mainicon"
-          size="18"
-          class="mainicon"
-          @click="onClickExpanded1"
-        ></Icon>
-        <!-- style="float: right; margin-right: 10px" -->
-      </Col>
-    </Row>
-
-    <div slot="content">
-      <div v-if="note" class="outline-title">
-        <p>{{ note }}</p>
-      </div>
-      <div v-if="note" class="outline-note">
-        <p style="padding: 10px; margin: 10px">{{ title }}</p>
-      </div>
-      <p v-else class="outline-title">{{ title }}</p>
-    </div>
-  </Tooltip>
+        <div slot="content">
+          <img
+            v-if="imgsrc"
+            v-bind:src="imgsrc"
+            style="width: 50%; height: 50%"
+          />
+          <div v-if="note" class="outline-title">
+            <p>{{ note }}</p>
+          </div>
+          <div v-if="note" class="outline-note">
+            <p style="padding: 10px; margin: 10px">{{ title }}</p>
+          </div>
+          <p v-else class="outline-title">{{ title }}</p>
+        </div>
+      </Tooltip>
+    </Col>
+    <Col
+      v-if="mainicon"
+      span="3"
+      style="display: inline-block; text-align: center"
+    >
+      <!-- style="display: flex; justify-content: center" -->
+      <Icon
+        :type="mainicon"
+        size="18"
+        class="mainicon"
+        @click="onClickExpanded1"
+      ></Icon>
+      <!-- style="float: right; margin-right: 10px" -->
+    </Col>
+  </Row>
 </template>
 <script>
 import isMobile from "_is-mobile@3.0.0@is-mobile";
@@ -66,8 +70,14 @@ var Colr = require("Colr");
 export default {
   name: "TocOutLine",
   created() {
-    let { label: title, children, note, style: styleDefine ,imgsrc} = this.notedata;
-    this.imgsrc = imgsrc
+    let {
+      label: title,
+      children,
+      note,
+      style: styleDefine,
+      imgsrc,
+    } = this.notedata;
+    this.imgsrc = imgsrc;
     // this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {
@@ -116,14 +126,14 @@ export default {
     if (children && children.length) {
       this.disabled = true;
     }
-    if(title==undefined||(title.length==0)){
-      this.disabled = true;
-    }
+    // if(title==undefined||(title.length==0)){
+    //   this.disabled = true;
+    // }
   },
   data() {
     return {
       style: {},
-      imgsrc:undefined,
+      imgsrc: undefined,
       mainicon: undefined,
       iconColor: "",
       icon: undefined,
