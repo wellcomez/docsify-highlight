@@ -27,6 +27,7 @@
             v-touch:end="endHandler"
           >
             {{ title2 }}
+            <img v-if="imgsrc" v-bind:src="imgsrc" style="width:40px;height:40px"/>
           </p>
         </div>
       </Col>
@@ -65,7 +66,8 @@ var Colr = require("Colr");
 export default {
   name: "TocOutLine",
   created() {
-    let { label: title, children, note, style: styleDefine } = this.notedata;
+    let { label: title, children, note, style: styleDefine ,imgsrc} = this.notedata;
+    this.imgsrc = imgsrc
     // this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {
@@ -114,10 +116,14 @@ export default {
     if (children && children.length) {
       this.disabled = true;
     }
+    if(title==undefined||(title.length==0)){
+      this.disabled = true;
+    }
   },
   data() {
     return {
       style: {},
+      imgsrc:undefined,
       mainicon: undefined,
       iconColor: "",
       icon: undefined,

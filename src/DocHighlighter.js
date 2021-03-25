@@ -256,13 +256,23 @@ export class DocHighlighter {
             // console.log(window.location)
             try {
                 let ele = e.target
+                let find = false
+                let ssss = document.querySelectorAll('.markdown-section img')
+                for (let i = 0; i < ssss.length; i++) {
+                    if (ele == ssss[i]) {
+                        find = true;
+                        break
+                    }
+                }
+                if (find == false) return
+
                 let { tagName } = ele
                 if (tagName == 'IMG') {
                     let yes = ele.parentElement.classList.contains("docsify-highlighter")
                     // eslint-disable-next-line no-empty
                     if (yes) {
-                       let {parentElement} = ele
-                       this.createNoteMenu(parentElement) 
+                        let { parentElement } = ele
+                        this.createNoteMenu(parentElement)
                     } else {
                         const createUUID = (a) => {
                             return a
@@ -631,7 +641,7 @@ export class DocHighlighter {
                     }
                     hs = this.checkHS(hs)
                     if (hs.imgsrc) {
-                        let { startMeta, endMeta ,id} = hs;
+                        let { startMeta, endMeta, id } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
                         let wrap = document.createElement('i')
