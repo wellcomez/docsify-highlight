@@ -269,6 +269,7 @@ export class DocHighlighter {
 
                 let { tagName } = ele
                 if (tagName == 'IMG') {
+                    e.stopPropagation()
                     let yes = ele.parentElement.classList.contains("docsify-highlighter")
                     // eslint-disable-next-line no-empty
                     if (yes) {
