@@ -1,6 +1,6 @@
 import { colorClassList } from "./colorSelector";
 import { parseurl } from "./utils";
-import { User ,UserLogin} from "./UserLogin";
+import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
   constructor(useridArg) {
@@ -66,7 +66,7 @@ class BookToc {
     let titlelist = this.charpterTitles();
     return titlelist.map((data) => {
       let { path, title } = data;
-      let store = this.CharpterStorage({path, title});
+      let store = this.CharpterStorage({ path, title });
       let c = new Chapter(store);
       return c;
     })
@@ -228,16 +228,22 @@ class LocalStore {
 }
 class Chapter {
   constructor(store) {
+    this.tags = new Set();
     if (store) {
       this.label = store.title;
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
         // let { id, text: label, top, style, note, tags } = hs;
-        let { text: label, top } = hs;
+        let { text: label, top, tags } = hs;
         top = top.top;
         let textOffset = hs.startMeta.textOffset;
         // return { idx, id, label, key, textOffset, top, style, note, tags };
-        return {...hs,...{idx,textOffset,label,key,top}}
+        if (tags) {
+          tags.forEach((a) => {
+            this.tags.add(a)
+          })
+        }
+        return { ...hs, ...{ idx, textOffset, label, key, top } }
       });
       let aa = this.children.sort((a, b) => {
         if (a.top == b.top) return 0;
@@ -266,7 +272,7 @@ class Chapter {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
-      let { label, style, note,imgsrc } = a;
+      let { label, style, note, imgsrc } = a;
       let hlyellow = ''
       for (let color in style) {
         let { enable, colorhex } = style[color];
@@ -282,11 +288,11 @@ class Chapter {
       }
       let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
       let img = ''
-      if(imgsrc){
-        let {path} = parseurl(imgsrc)
-        img  = `![${path}](${imgsrc})\n`
+      if (imgsrc) {
+        let { path } = parseurl(imgsrc)
+        img = `![${path}](${imgsrc})\n`
       }
-      let span = label? `    <span class="${hlyellow}">    ${label}    </span>\n`:"";
+      let span = label ? `    <span class="${hlyellow}">    ${label}    </span>\n` : "";
       return (
         `${idx + 1}. ${tile}\n
   ${span}
@@ -322,6 +328,16 @@ export class Book {
   }
   Charpter() {
     return this.toc.ChapterOjbList();
+  }
+  tags(){
+    let ret = new Set();
+    this.charpter.forEach((a)=>{
+      let {tags} = a;
+      tags.forEach((tag)=>{
+        ret.add(tag);
+      })
+    })
+    return ret.values()
   }
   syn2Local(json) {
     let { charpter, toc } = json;

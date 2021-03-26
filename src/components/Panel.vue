@@ -123,7 +123,7 @@
 }
 .op-panel .contenttable {
   overflow: hidden;
-  height: 640px;
+  height: 480px;
   background: white;
   border: 1px solid var(--theme-color, #42b983);
 }
@@ -140,7 +140,7 @@
   background: var(--theme-color, #42b983);
 }
 .op-panel .doclist {
-  height: 600px;
+  height: 440px;
 }
 @media screen and (max-width: 480px) {
   .op-panel {

@@ -2,10 +2,7 @@
   <!-- style="width: 100%; margin-left: 10px; padding-right: 10px" -->
   <Row type="flex">
     <Col v-if="icon" span="3" style="display: inline-block; text-align: center">
-      <Icon :type="icon" size="18" :color="iconColor"></Icon>
-    </Col>
-    <Col span="21">
-      <!-- <Tooltip
+      <Tooltip
         class="outline"
         :delay="500"
         :max-width="maxWidth"
@@ -14,7 +11,25 @@
         transfer
         :placement="placement"
         :always="always"
-      > -->
+      >
+        <Icon :type="icon" size="18" :color="iconColor"></Icon>
+        <div slot="content">
+          <img
+            v-if="imgsrc"
+            v-bind:src="imgsrc"
+            style="width: 80%; height: 80%"
+          />
+          <div v-if="note" class="outline-title">
+            <p>{{ note }}</p>
+          </div>
+          <div v-if="note" class="outline-note">
+            <p style="padding: 10px; margin: 10px">{{ title }}</p>
+          </div>
+          <p v-else class="outline-title">{{ title }}</p>
+        </div>
+      </Tooltip>
+    </Col>
+    <Col span="21">
       <div
         @click="onClick"
         v-touch:touchhold="touchHoldHandler"
@@ -29,21 +44,6 @@
           style="width: 40px; height: 40px"
         />
       </div>
-      <!-- <div slot="content">
-          <img
-            v-if="imgsrc"
-            v-bind:src="imgsrc"
-            style="width: 80%; height: 80%"
-          />
-          <div v-if="note" class="outline-title">
-            <p>{{ note }}</p>
-          </div>
-          <div v-if="note" class="outline-note">
-            <p style="padding: 10px; margin: 10px">{{ title }}</p>
-          </div>
-          <p v-else class="outline-title">{{ title }}</p>
-        </div>
-      </Tooltip> -->
     </Col>
     <Col
       v-if="mainicon"
@@ -133,7 +133,7 @@ export default {
   data() {
     return {
       style: {},
-      textStyle:{},
+      textStyle: {},
       outlineTitleClass: "outline-text",
       imgsrc: undefined,
       mainicon: undefined,
