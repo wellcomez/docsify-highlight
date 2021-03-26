@@ -12,8 +12,8 @@
         style="
           border: 1px solid #42b983;
           border-radius: 3px;
-          padding-left: 2px;
-          padding-right: 2px;
+          padding-left: 4px;
+          padding-right: 4px;
         "
         >{{ a }}</span
       >
