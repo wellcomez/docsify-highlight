@@ -33,6 +33,7 @@
     </Col>
     <Col v-if="icon" span="4" style="display: inline-block; text-align: center">
       <Tooltip
+        v-if="showiconRight"
         class="outline"
         :delay="500"
         :max-width="maxWidth"
@@ -99,6 +100,7 @@ export default {
       style: styleDefine,
       imgsrc,
     } = this.notedata;
+    this.showiconRight=isMobile()!=true;
     this.imgsrc = imgsrc;
     // this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
@@ -155,6 +157,7 @@ export default {
   },
   data() {
     return {
+      showiconRight: true,
       list: [
         {
           name: "删除",
@@ -189,7 +192,8 @@ export default {
   },
   computed: {
     placement() {
-      return isMobile() ? "top-start" : "left-start";
+      // return isMobile() ? "top-start" : 
+      return "left-start";
     },
     maxWidth() {
       if (window.screen < 320) {
@@ -233,7 +237,7 @@ export default {
 .outline-text {
   line-height: normal;
   white-space: normal;
-  height: 50px;
+  /* height: 50px; */
   width: 100%;
   overflow-y: hidden;
   overflow-x: hidden;

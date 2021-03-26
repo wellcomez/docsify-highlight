@@ -10,6 +10,7 @@ import { Book } from "../store";
 import { parseurl, scollTopID } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
+import isMobile from "_is-mobile@3.0.0@is-mobile";
 
 let toc = {};
 export default {
@@ -98,9 +99,7 @@ export default {
           window.scrollTo(0, node.offsetTop);
           // eslint-disable-next-line no-empty
         } catch (error) {}
-        // if (this.close) {
-        //   this.close();
-        // }
+
         return;
       }
       if (key && id) {
@@ -114,10 +113,9 @@ export default {
         } else {
           document.location.hash = hash;
         }
-        // window.location = url;
-        // if (this.close) {
-        //   this.close();
-        // }
+        if (this.close && isMobile()) {
+          this.close();
+        }
       }
     },
   },
