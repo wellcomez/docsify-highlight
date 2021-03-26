@@ -134,15 +134,17 @@ export default {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  height: 50px;
-  line-height: 50px;
+  /* height: 50px; */
+  /* line-height: 50px; */
   border-top: 1px solid #eee;
 }
 .xxxx .ivu-tree > ul.ivu-tree-children > li {
   margin-top: 0px;
+  margin-bottom: 0px;
 }
 .xxxx ul.ivu-tree-children ul.ivu-tree-children li {
   margin-top: 0px;
+  margin-bottom: 0px;
 }
 .xxxx ul.ivu-tree-children ul.ivu-tree-children:last-child {
   border-bottom: 1px solid #eee;
