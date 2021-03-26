@@ -339,10 +339,13 @@ export class Book {
         return getRawHtml(CharptHtml, { charpter: a });
       })
       .join("");
+      let tilte = this.name
     let ret = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>${tilte}</title>
 </head>
 <body>
 ${html}

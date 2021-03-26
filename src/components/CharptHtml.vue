@@ -1,18 +1,33 @@
 <template>
-  <div class="">
+  <div class="" style="
+      margin-left: 10%;
+    margin-right: 10%;
+  ">
     <h2>{{ title }}</h2>
     <div
       v-for="({ note, label, style, imgsrc, text, tags }, index) in list"
       :key="index"
     >
-      <h3 v-if="label">{{ index + 1 }}</h3>
-      <h3 v-else>{{ index + 1 }}</h3>
-      <div v-if="tags">
+      <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->
+      <!-- <h3 v-else>{{ index + 1 }}</h3> -->
+      <div style="margin-top: 4px;margin-bottom: 4px">
+        <a :href="url({title,label,index})" style="
+            text-decoration: none;
+            color: black;
+        " >{{index + 1}}.</a>
+        <span v-if="text" :style="style">{{ text }}</span>
+      </div>
+      <img v-if="imgsrc" :src="imgsrc" style="width: 40%;border:1px solid #42b983;margin:2px;" />
+      <div v-if="note" :style="styleNote" class="outline-title">
+        <p>{{ note }}</p>
+      </div>
+            <div v-if="tags">
         <span
           v-for="(a, index) in tags"
           :key="index"
           style="
-            border: 1px solid #42b983;
+            backgroundColor: #42b983;
+            color:white;
             border-radius: 3px;
             padding-left: 4px;
             padding-right: 4px;
@@ -21,13 +36,6 @@
           "
           >{{ a }}</span
         >
-      </div>
-      <div style="margin-top: 4px;margin-bottom: 4px">
-        <span v-if="text" :style="style">{{ text }}</span>
-      </div>
-      <img v-if="imgsrc" :src="imgsrc" style="width: 60%" />
-      <div v-if="note" :style="styleNote" class="outline-title">
-        <p>{{ note }}</p>
       </div>
     </div>
   </div>
@@ -71,6 +79,12 @@ export default {
   padding-left: 4px;\
   margin-top: 2px;",
     };
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    url({title,label,index}){
+      return `#id?${title}${index}`;
+    }
   },
   created() {
     let { charpterData, charpter } = this;
