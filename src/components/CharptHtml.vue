@@ -7,19 +7,25 @@
     >
       <h3 v-if="label">{{ index + 1 }}</h3>
       <h3 v-else>{{ index + 1 }}</h3>
-      <span
-        v-for="(a, index) in tags"
-        :key="index"
-        style="
-          border: 1px solid #42b983;
-          border-radius: 3px;
-          padding-left: 4px;
-          padding-right: 4px;
-        "
-        >{{ a }}</span
-      >
-      <span v-if="text" :style="style">{{ text }}</span>
-      <img v-if="imgsrc" :src="imgsrc" style="width:60%" />
+      <div v-if="tags">
+        <span
+          v-for="(a, index) in tags"
+          :key="index"
+          style="
+            border: 1px solid #42b983;
+            border-radius: 3px;
+            padding-left: 4px;
+            padding-right: 4px;
+            font-size: xx-small;
+            margin-left: 4px;
+          "
+          >{{ a }}</span
+        >
+      </div>
+      <div style="margin-top: 4px;margin-bottom: 4px">
+        <span v-if="text" :style="style">{{ text }}</span>
+      </div>
+      <img v-if="imgsrc" :src="imgsrc" style="width: 60%" />
       <div v-if="note" :style="styleNote" class="outline-title">
         <p>{{ note }}</p>
       </div>
@@ -31,7 +37,7 @@ import { tBackgroundColor, tUl } from "../colorSelector";
 // const rgba = require("color-rgba");
 const convert = (a) => {
   let { note, imgsrc, text, style: styleDefine, tags } = a;
-  let style = {};
+  let style = { margin: "4px" };
   let label = text.substring(0, 6);
   for (let color in styleDefine) {
     color = parseInt(color);
@@ -45,7 +51,13 @@ const convert = (a) => {
       style.color = colorhex;
     }
   }
-  let ret = { ...{ tags: [] }, ...{ imgsrc, label, text, style, note, tags } };
+  if (tags && tags.length == 0) {
+    tags = undefined;
+  }
+  let ret = {
+    ...{ tags: undefined },
+    ...{ imgsrc, label, text, style, note, tags },
+  };
   return ret;
 };
 export default {
