@@ -1,35 +1,7 @@
 <template>
   <!-- style="width: 100%; margin-left: 10px; padding-right: 10px" -->
   <Row type="flex">
-    <Col v-if="icon" span="3" style="display: inline-block; text-align: center">
-      <Tooltip
-        class="outline"
-        :delay="500"
-        :max-width="maxWidth"
-        theme="light"
-        :disabled="disabled"
-        transfer
-        :placement="placement"
-        :always="always"
-      >
-        <Icon :type="icon" size="18" :color="iconColor"></Icon>
-        <div slot="content">
-          <img
-            v-if="imgsrc"
-            v-bind:src="imgsrc"
-            style="width: 80%; height: 80%"
-          />
-          <div v-if="note" class="outline-title">
-            <p>{{ note }}</p>
-          </div>
-          <div v-if="note" class="outline-note">
-            <p style="padding: 10px; margin: 10px">{{ title }}</p>
-          </div>
-          <p v-else class="outline-title">{{ title }}</p>
-        </div>
-      </Tooltip>
-    </Col>
-    <Col span="21">
+    <Col span="20">
       <div
         @click="onClick"
         v-touch:touchhold="touchHoldHandler"
@@ -59,15 +31,66 @@
       ></Icon>
       <!-- style="float: right; margin-right: 10px" -->
     </Col>
+    <Col v-if="icon" span="4" style="display: inline-block; text-align: center">
+      <Tooltip
+        class="outline"
+        :delay="500"
+        :max-width="maxWidth"
+        theme="light"
+        :disabled="disabled"
+        transfer
+        :placement="placement"
+        :always="always"
+      >
+        <Icon :type="icon" size="18"></Icon>
+        <div slot="content">
+          <img
+            v-if="imgsrc"
+            v-bind:src="imgsrc"
+            style="width: 80%; height: 80%"
+          />
+          <div v-if="note" class="outline-title">
+            <p>{{ note }}</p>
+          </div>
+          <div v-if="note" class="outline-note">
+            <p style="padding: 10px; margin: 10px">{{ title }}</p>
+          </div>
+          <p v-else class="outline-title">{{ title }}</p>
+        </div>
+      </Tooltip>
+
+      <!-- v-model="openMore" -->
+      <!-- transfer -->
+      <Tooltip
+        theme="light"
+        width="60px"
+        placement="bottom-end"
+        :disabled="disabledPopMore"
+        class="morebtn"
+      >
+        <Icon type="ios-more-outline" @click="onClickMore" size="18"></Icon>
+        <ButtonGroup slot="content" vertical>
+          <Button
+            v-for="({ name, click }, index) in list"
+            :key="index"
+            size="small"
+            @click="click()"
+            >{{ name }}</Button
+          >
+        </ButtonGroup>
+      </Tooltip>
+    </Col>
   </Row>
 </template>
 <script>
 import isMobile from "_is-mobile@3.0.0@is-mobile";
 const rgba = require("color-rgba");
 import { tBackgroundColor, tUl } from "../colorSelector";
+// import ClickOutside from "vue-click-outside";
 var Colr = require("Colr");
 export default {
   name: "TocOutLine",
+  // directives: { ClickOutside },
   created() {
     let {
       label: title,
@@ -132,6 +155,11 @@ export default {
   },
   data() {
     return {
+      list: [
+        { name: "删除", click: () => {} },
+        { name: "查看", click: () => {} },
+      ],
+      disabledPopMore: true,
       style: {},
       textStyle: {},
       outlineTitleClass: "outline-text",
@@ -154,7 +182,7 @@ export default {
   },
   computed: {
     placement() {
-      return isMobile() ? "top-start" : "bottom-start";
+      return isMobile() ? "top-start" : "left-start";
     },
     maxWidth() {
       if (window.screen < 320) {
@@ -164,6 +192,10 @@ export default {
     },
   },
   methods: {
+    onClickMore() {
+      this.openMore = this.openMore != true;
+      this.disabledPopMore = this.disabledPopMore != true;
+    },
     touchHoldHandler() {
       if (isMobile()) this.always = true;
     },
@@ -184,6 +216,13 @@ export default {
 </script>
 
 <style>
+.morebtn .ivu-tooltip-inner {
+  padding: 0px;
+  /* padding-left:1px;
+  padding-right:1px;
+  padding-top:1px;
+  padding-bottom:1px; */
+}
 .outline-text {
   line-height: normal;
   white-space: normal;
