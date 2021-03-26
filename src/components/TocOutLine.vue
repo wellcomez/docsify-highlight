@@ -64,7 +64,7 @@
       <Tooltip
         theme="light"
         width="60px"
-        placement="bottom-end"
+        placement="left-start"
         :disabled="disabledPopMore"
         class="morebtn"
       >
@@ -156,7 +156,14 @@ export default {
   data() {
     return {
       list: [
-        { name: "删除", click: () => {} },
+        {
+          name: "删除",
+          click: () => {
+            let { hl } = window;
+            let { id } = this.notedata;
+            hl.deleteId(id);
+          },
+        },
         { name: "查看", click: () => {} },
       ],
       disabledPopMore: true,
