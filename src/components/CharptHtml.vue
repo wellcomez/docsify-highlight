@@ -18,8 +18,8 @@
         "
         >{{ a }}</span
       >
-      <p v-if="text" :style="style">{{ text }}</p>
-      <img v-if="imgsrc" :src="imgsrc" />
+      <span v-if="text" :style="style">{{ text }}</span>
+      <img v-if="imgsrc" :src="imgsrc" style="width:60%" />
       <div v-if="note" :style="styleNote" class="outline-title">
         <p>{{ note }}</p>
       </div>
@@ -38,7 +38,7 @@ const convert = (a) => {
     let a = styleDefine[color];
     let { colorhex } = a;
     if (color == tUl) {
-      style["border"] = "1px solid " + colorhex;
+      style["border-bottom"] = "1px solid " + colorhex;
     } else if (color == tBackgroundColor) {
       style.backgroundColor = colorhex;
     } else {
