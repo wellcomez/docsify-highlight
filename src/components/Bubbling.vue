@@ -1,14 +1,11 @@
 <template>
   <Poptip theme="light" v-model="visible" width="60px">
     <SvgButton name="ios-download" tips="Export" />
-        <!-- type="primary" -->
+    <!-- type="primary" -->
     <ButtonGroup slot="content">
-      <Button
-        v-for="{ name } in list"
-        :key="name"
-        @click="onOption(name)"
-        >{{ name }}</Button
-      >
+      <Button v-for="{ name } in list" :key="name" @click="onOption(name)">{{
+        name
+      }}</Button>
     </ButtonGroup>
   </Poptip>
 </template>
@@ -28,12 +25,12 @@ export default {
         {
           name: "md",
         },
+        { name: "html" },
       ],
       expanded: false,
     };
   },
-  mounted() {
-  },
+  mounted() {},
   props: {
     content: {
       type: String,

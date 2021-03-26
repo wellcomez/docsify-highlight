@@ -6,6 +6,7 @@
       :key="index"
     >
       <h3 v-if="label">{{ index + 1 }}</h3>
+      <h3 v-else>{{ index + 1 }}</h3>
       <span
         v-for="(a, index) in tags"
         :key="index"
@@ -59,7 +60,7 @@ export default {
   margin-top: 2px;",
     };
   },
-  mounted() {
+  created() {
     let { charpterData, charpter } = this;
     if (charpter) {
       this.title = charpter.label;

@@ -342,7 +342,12 @@ export default {
         let b = new Book();
         let json = b.jsonstr();
         funDownload(json, window.$docsify.name + ".json");
+      }else if (name == "html") {
+        let b = new Book();
+        let json = b.exportHtml();
+        funDownload(json, window.$docsify.name + ".html");
       }
+
     },
     onEnableScript() {
       this.enableScript = this.enableScript == false;

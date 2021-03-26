@@ -303,12 +303,52 @@ class Chapter {
     return title.concat(items).join("\n\n");
   }
 }
+import CharptHtml from './components/CharptHtml.vue'
+import Vue from 'vue';
+export function getRawHtml(cmp, props) {
+  if (cmp.default) {
+    cmp = cmp.default;
+  }
+  cmp = Vue.extend(cmp);
+  let node = document.createElement("div");
+  node.id = "CharptHtml";
+  let a = new cmp({
+    propsData: props,
+  });
+  a.$mount(node);
+  return a.$el.outerHTML;
+}
 export class Book {
   constructor(useridArg) {
     this.toc = new BookToc(useridArg);
     this.name = this.toc.bookname;
     let aa = this.toc.name
     this.bookid = md5(aa)
+  }
+  exportHtml() {
+    let b = this
+    let aaa = b.Charpter().sort((a) => {
+      if (a.label == document.title) {
+        return -1;
+      }
+      return 1;
+    });
+
+    let html = aaa
+      .map((a) => {
+        return getRawHtml(CharptHtml, { charpter: a });
+      })
+      .join("");
+    let ret =`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+${html}
+</body>
+`;
+    return ret
   }
   async loadBookData() {
 
@@ -329,11 +369,11 @@ export class Book {
   Charpter() {
     return this.toc.ChapterOjbList();
   }
-  tags(){
+  tags() {
     let ret = new Set();
-    this.charpter.forEach((a)=>{
-      let {tags} = a;
-      tags.forEach((tag)=>{
+    this.charpter.forEach((a) => {
+      let { tags } = a;
+      tags.forEach((tag) => {
         ret.add(tag);
       })
     })
@@ -381,3 +421,4 @@ export class Book {
       .join("\n\n");
   }
 }
+
