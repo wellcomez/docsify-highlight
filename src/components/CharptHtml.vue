@@ -5,16 +5,27 @@
   ">
     <h2>{{ title }}</h2>
     <div
-      v-for="({ note, label, style, imgsrc, text, tags }, index) in list"
+      v-for="({ note, style, imgsrc, text, tags,url }, index) in list"
       :key="index"
     >
       <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->
       <!-- <h3 v-else>{{ index + 1 }}</h3> -->
-      <div style="margin-top: 4px;margin-bottom: 4px">
-        <a :href="url({title,label,index})" style="
+      <div style="
+      margin-top: 4px;
+      margin-bottom: 4px;
+      font-size: 8px;
+      font-weight: normal;
+      ">
+        <a :href="href({title,label,index})" style="
             text-decoration: none;
             color: black;
         " >{{index + 1}}.</a>
+        <sup>
+        <a :href="url" style="
+            text-decoration: none;
+            color: #42b983;
+        " >~</a>
+        </sup>
         <span v-if="text" :style="style">{{ text }}</span>
       </div>
       <img v-if="imgsrc" :src="imgsrc" style="width: 40%;border:1px solid #42b983;margin:2px;" />
@@ -43,8 +54,9 @@
 <script>
 import { tBackgroundColor, tUl } from "../colorSelector";
 // const rgba = require("color-rgba");
-const convert = (a) => {
-  let { note, imgsrc, text, style: styleDefine, tags } = a;
+const convert = (a,charpter) => {
+  let { note, imgsrc, text, style: styleDefine, tags ,id} = a;
+  let url = charpter.url(id)
   let style = { margin: "4px" };
   let label = text.substring(0, 6);
   for (let color in styleDefine) {
@@ -64,7 +76,7 @@ const convert = (a) => {
   }
   let ret = {
     ...{ tags: undefined },
-    ...{ imgsrc, label, text, style, note, tags },
+    ...{ imgsrc, label, text, style, note, tags,url },
   };
   return ret;
 };
@@ -81,40 +93,29 @@ export default {
     };
   },
   methods: {
-    // eslint-disable-next-line no-unused-vars
-    url({title,label,index}){
+        // eslint-disable-next-line no-unused-vars
+    href({title,label,index}){
       return `#id?${title}${index}`;
     }
   },
   created() {
-    let { charpterData, charpter } = this;
+    let { charpter } = this;
     if (charpter) {
       this.title = charpter.label;
-      this.list = charpter.children.map(convert);
-    } else {
-      this.list = charpterData.map(convert);
-    }
+      this.list = charpter.children.map((a)=>convert(a,charpter));
+    } 
   },
   watch: {
-    charpterData(charpterData) {
-      this.list = charpterData.map(convert);
-    },
     charpter(charpter) {
-      this.list = charpter.children.map(convert);
+      this.list = charpter.children.map((a)=>convert(a,charpter));
     },
   },
   props: {
     charpter: { type: Object, default: undefined },
-    charpterData: {
-      type: Array,
-      default: () => {
-        return [];
-      },
-    },
   },
 };
 </script>
-<style scoped>
+<style >
 .outline-title {
   border-left: 2px solid #42b983;
   margin-left: 4px;

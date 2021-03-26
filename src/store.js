@@ -231,6 +231,7 @@ class Chapter {
     this.tags = new Set();
     if (store) {
       this.label = store.title;
+      this.path =  store.path;
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
         // let { id, text: label, top, style, note, tags } = hs;
@@ -267,7 +268,14 @@ class Chapter {
     let notes = this.store.storeToJson();
     return { key, title, notes, path };
   }
-
+  url(id){
+    let {path,} = this
+    let hash = path.substring(path.indexOf("#"));
+    hash = `${hash}?noteid=${id}`
+    let host = document.location.host
+    let http = document.location.protocol
+    return `${http}//${host}${hash}`
+  }
   md() {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
