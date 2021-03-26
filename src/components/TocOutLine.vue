@@ -5,7 +5,7 @@
       <Icon :type="icon" size="18" :color="iconColor"></Icon>
     </Col>
     <Col span="21">
-      <Tooltip
+      <!-- <Tooltip
         class="outline"
         :delay="500"
         :max-width="maxWidth"
@@ -14,23 +14,22 @@
         transfer
         :placement="placement"
         :always="always"
+      > -->
+      <div
+        @click="onClick"
+        v-touch:touchhold="touchHoldHandler"
+        v-touch:end="endHandler"
+        :style="style"
+        :class="outlineTitleClass"
       >
-        <div>
-          <p
-            :style="style"
-            @click="onClick"
-            v-touch:touchhold="touchHoldHandler"
-            v-touch:end="endHandler"
-          >
-            {{ title2 }}
-            <img
-              v-if="imgsrc"
-              v-bind:src="imgsrc"
-              style="width: 40px; height: 40px"
-            />
-          </p>
-        </div>
-        <div slot="content">
+        <span :style="textStyle">{{ title2 }}</span>
+        <img
+          v-if="imgsrc"
+          v-bind:src="imgsrc"
+          style="width: 40px; height: 40px"
+        />
+      </div>
+      <!-- <div slot="content">
           <img
             v-if="imgsrc"
             v-bind:src="imgsrc"
@@ -44,12 +43,12 @@
           </div>
           <p v-else class="outline-title">{{ title }}</p>
         </div>
-      </Tooltip>
+      </Tooltip> -->
     </Col>
     <Col
       v-if="mainicon"
       span="3"
-      style="display: inline-block; text-align: center;background-color:white;"
+      style="display: inline-block; text-align: center; background-color: white"
     >
       <!-- style="display: flex; justify-content: center" -->
       <Icon
@@ -92,7 +91,7 @@ export default {
       let { colorhex, enable } = a;
       if (enable == false) continue;
       if (color == tUl) {
-        style.borderBottom = "1px solid " + colorhex;
+        this.textStyle.borderBottom = "1px solid " + colorhex;
       } else if (color == tBackgroundColor) {
         style.backgroundColor = colorhex;
       } else {
@@ -117,6 +116,7 @@ export default {
       this.mainicon = this.expand
         ? "ios-arrow-dropdown"
         : "ios-arrow-dropright";
+      this.outlineTitleClass = "outline-text-parent";
     }
     this.icon = icon;
     this.style = style;
@@ -133,6 +133,8 @@ export default {
   data() {
     return {
       style: {},
+      textStyle:{},
+      outlineTitleClass: "outline-text",
       imgsrc: undefined,
       mainicon: undefined,
       iconColor: "",
@@ -182,6 +184,26 @@ export default {
 </script>
 
 <style>
+.outline-text {
+  line-height: normal;
+  white-space: normal;
+  height: 50px;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+.outline-text-parent {
+  height: 25px;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  /* font-weight:bold; */
+}
+
 .xxxx .ivu-tree-arrow {
   display: none;
   width: 1px;
@@ -191,6 +213,5 @@ export default {
 }
 
 @media screen and (max-width: 480px) {
-
 }
 </style>
