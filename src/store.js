@@ -339,7 +339,7 @@ export class Book {
         return getRawHtml(CharptHtml, { charpter: a });
       })
       .join("");
-    let ret =`<!DOCTYPE html>
+    let ret = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
