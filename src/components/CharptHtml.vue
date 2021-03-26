@@ -2,13 +2,24 @@
   <div class="">
     <h2>{{ title }}</h2>
     <div
-      v-for="({ note, label, style, imgsrc, text }, index) in list"
+      v-for="({ note, label, style, imgsrc, text, tags }, index) in list"
       :key="index"
     >
-      <h3 v-if="label">{{ label }}</h3>
+      <h3 v-if="label">{{ index + 1 }}</h3>
+      <span
+        v-for="(a, index) in tags"
+        :key="index"
+        style="
+          border: 1px solid #42b983;
+          border-radius: 3px;
+          padding-left: 2px;
+          padding-right: 2px;
+        "
+        >{{ a }}</span
+      >
       <p v-if="text" :style="style">{{ text }}</p>
       <img v-if="imgsrc" :src="imgsrc" />
-      <div v-if="note" class="outline-title">
+      <div v-if="note" :style="styleNote" class="outline-title">
         <p>{{ note }}</p>
       </div>
     </div>
@@ -18,7 +29,7 @@
 import { tBackgroundColor, tUl } from "../colorSelector";
 // const rgba = require("color-rgba");
 const convert = (a) => {
-  let { note, imgsrc, text, style: styleDefine } = a;
+  let { note, imgsrc, text, style: styleDefine, tags } = a;
   let style = {};
   let label = text.substring(0, 6);
   for (let color in styleDefine) {
@@ -33,10 +44,7 @@ const convert = (a) => {
       style.color = colorhex;
     }
   }
-  let ret = {
-    // ...{ imgsrc: false, label: false, text: false, style: {} },
-    ...{ imgsrc, label, text, style, note },
-  };
+  let ret = { ...{ tags: [] }, ...{ imgsrc, label, text, style, note, tags } };
   return ret;
 };
 export default {
@@ -44,6 +52,11 @@ export default {
     return {
       title: "",
       list: [{ name: "" }],
+      styleNote:
+        " border-left: 2px solid #42b983;\
+  margin-left: 4px;\
+  padding-left: 4px;\
+  margin-top: 2px;",
     };
   },
   mounted() {
