@@ -16,15 +16,13 @@
         ></SvgButton>
       </Col>
       <Col>
-        <Badge v-if="checked" dot :count="updated ? 1 : 0">
-          <SvgButton
-            @click="onOpenContentList"
-            name="ios-book"
-            tips="Table of Content"
-            onOff
-            :on="showdetail == false"
-          />
-        </Badge>
+        <SvgButton
+          @click="onOpenContentList"
+          name="ios-book"
+          tips="Table of Content"
+          onOff
+          :on="showdetail == false"
+        />
       </Col>
       <Col v-if="showexport">
         <Bubbling
@@ -43,13 +41,15 @@
         />
       </Col>
       <Col>
-        <PopSvgButton
-          v-if="canupload"
-          :click="onSave2Cloud"
-          title="Update data to cloud"
-          name="md-cloud-upload"
-          tips="Upload"
-        />
+        <Badge v-if="checked" dot :count="updated ? 1 : 0">
+          <PopSvgButton
+            v-if="canupload"
+            :click="onSave2Cloud"
+            title="Update data to cloud"
+            name="md-cloud-upload"
+            tips="Upload"
+          />
+        </Badge>
       </Col>
 
       <Col>
