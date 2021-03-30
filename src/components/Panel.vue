@@ -42,13 +42,12 @@
       </Col>
       <Col>
         <Badge
-          v-if="checked"
+          v-if="canupload"
           :dot="changeNumber == 0 && updated"
           :count="changeNumber ? changeNumber : updated ? 1 : 0"
         >
           <!-- <Badge v-if="checked" dot :count="updated ? 1 : 0"> -->
           <PopSvgButton
-            v-if="canupload"
             :click="onSave2Cloud"
             title="Update data to cloud"
             name="md-cloud-upload"
