@@ -132,8 +132,8 @@ export const NoteMenu = {
             this.bookmark = this.bookmark == false
         },
         updatePos() {
-            let top = this.top - (this.showtagPane ? 140 : 80) - window.pageYOffset + "px"
-            top = Math.max(0, top)
+            let top = this.top - (this.showtagPane ? 140 : 80) - window.pageYOffset
+            top = Math.max(0,top)+'px'
             this.style = {
                 left: this.menuLeft(),
                 top
