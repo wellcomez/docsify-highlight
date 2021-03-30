@@ -41,7 +41,12 @@
         />
       </Col>
       <Col>
-        <Badge v-if="checked" dot :count="updated ? 1 : 0">
+        <Badge
+          v-if="checked"
+          :dot="changeNumber == 0 && updated"
+          :count="changeNumber ? changeNumber : updated ? 1 : 0"
+        >
+          <!-- <Badge v-if="checked" dot :count="updated ? 1 : 0"> -->
           <PopSvgButton
             v-if="canupload"
             :click="onSave2Cloud"
@@ -292,6 +297,7 @@ export default {
       type: Number,
       default: 0,
     },
+    changeNumber: { type: Number, default: 0 },
   },
   methods: {
     ResetAll() {
@@ -320,12 +326,13 @@ export default {
     },
     onSave2Cloud() {
       let b = new Book();
-      let self = this;
+      let { hl } = this;
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
-          self.updated = false;
-          Book.updated = false;
+          let changeNumber, localNumber;
+          getConfig().save({ changeNumber, localNumber });
+          hl.updatePanel();
           msg("saved ", b.toc.bookname + " to cloud");
         })
         // eslint-disable-next-line no-unused-vars
@@ -333,6 +340,8 @@ export default {
     },
     downloadFromCloud() {
       downloadFromCloud().then(() => {
+        let changeNumber, localNumber;
+        getConfig().save({ changeNumber, localNumber });
         window.location.reload();
       });
     },

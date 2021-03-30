@@ -313,6 +313,7 @@ class Chapter {
 }
 import CharptHtml from './components/CharptHtml.vue'
 import Vue from 'vue';
+import { getConfig } from "./ANoteConfig";
 export function getRawHtml(cmp, props) {
   if (cmp.default) {
     cmp = cmp.default;
@@ -434,3 +435,15 @@ ${html}
   }
 }
 
+export function getChanged() {
+  let { changeNumber, localNumber } = getConfig().load()
+  if (localNumber == undefined) {
+      localNumber = new Book().count();
+      getConfig().save({ localNumber })
+  }
+  if (changeNumber == undefined) {
+      changeNumber = 0;
+      getConfig().save({ changeNumber })
+  }
+  return { changeNumber, localNumber }
+}
