@@ -8,7 +8,7 @@ import { mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
-import { hl_note, tUl, tfontColor } from './colorSelector';
+import { hl_note, tUl, tfontColor} from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { UTILS } from './css_path'
@@ -368,6 +368,7 @@ export class DocHighlighter {
         this.removeHighLight(id)
         highlighter.removeClass(hl_note, id)
         highlighter.removeClass("highlight-wrap-hover", id);
+        highlighter.removeClass("highlight-tags", id);
         highlighter.remove(id);
         this.store.remove(id);
         this.updatePanel();
@@ -417,6 +418,7 @@ export class DocHighlighter {
                 if (bookmark) {
                     this.createBookmarkNode(id)
                 }
+                this.addTagBackground(style, id);
                 if (this.parseurlResult.noteid == hs.id) {
                     this.scollTopID(hs.id);
                 }
@@ -458,6 +460,7 @@ export class DocHighlighter {
         } else {
             this.removeBookmarkNode(noteid)
         }
+        this.addTagBackground(data, noteid);
         if (change && noteid != undefined) {
             if (sources) {
                 let sources2 = sources.map(hs => {
@@ -489,6 +492,19 @@ export class DocHighlighter {
         Book.updated = true;
         this.updatePanel();
     };
+    addTagBackground(hs, noteid) {
+        let {tags,style} = hs
+        let need = (tags && tags.length);
+        if (need) {
+            if (style && Object.keys(style).length) {
+                need = false;
+            }
+        }
+        if (need) {
+            this.highlighter.addClass('highlight-tags', noteid);
+        }
+    }
+
     findhs(hs) {
         let { startMeta, endMeta, text, } = hs;
         let getInnerTxt = (startMeta) => {

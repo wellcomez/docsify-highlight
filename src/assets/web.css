@@ -1,12 +1,13 @@
 .highlight-wrap-hover {
-  background: lightcyan;
+  background: transparent;
 }
 
 .highlight-mengshou-wrap {
-  background: #42b98312;
-  /* background: transparent; */
+  background: transparent;
 }
-
+.highlight-tags{
+  background: lightcyan;
+}
 div.d1 {
   height       : 32px;
   width        : 32px;
