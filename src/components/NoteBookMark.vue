@@ -5,6 +5,7 @@
 </template>
 <script>
 export default {
+  name: "NoteBookMark",
   props: {
     noteid: { type: String, default: "" },
   },

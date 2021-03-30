@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-prototype-builtins */
 import Highlighter from 'web-highlighter';
 import { Book } from './store';
 import { User } from "./UserLogin";
@@ -13,7 +11,6 @@ import NoteBookmark from './components/NoteBookMark.vue'
 import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
-import { downloadFromCloud } from './leanweb';
 import { UTILS } from './css_path'
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
@@ -33,12 +30,12 @@ const removeTips = () => {
 //     return segs(element).join('/');
 // }
 
-function getElementByXPath(path) {
-    return (new XPathEvaluator())
-        .evaluate(path, document.documentElement, null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-        .singleNodeValue;
-}
+// function getElementByXPath(path) {
+//     return (new XPathEvaluator())
+//         .evaluate(path, document.documentElement, null,
+//             XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+//         .singleNodeValue;
+// }
 export class DocHighlighter {
     getIds(selected) {
         if (!selected || !selected.$node || !selected.$node.parentNode) {
@@ -151,11 +148,6 @@ export class DocHighlighter {
         }
     }
 
-    onRemove(a) {
-        let { ids } = a;
-        // ids.forEach(id => this.store.remove(id));
-        // this.updatePanel();
-    }
     updatePanel() {
         if (this.updatePanelCb) {
             this.updatePanelCb();
@@ -185,6 +177,7 @@ export class DocHighlighter {
         })
     }
 
+    // eslint-disable-next-line no-unused-vars
     removeHighLight(noteid) {
     }
 
@@ -202,7 +195,7 @@ export class DocHighlighter {
 
 
     constructor() {
-        let checkUserStatus = ({ old, next }, changed) => {
+        let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
             } else {
@@ -215,7 +208,6 @@ export class DocHighlighter {
                     let b = new Book()
                     if (b.count() == 0) {
                         try {
-                            let data = await downloadFromCloud();
                             a()
                             return
                             // eslint-disable-next-line no-empty
@@ -257,6 +249,9 @@ export class DocHighlighter {
         let handleImageClick = (e) => {
             // console.log(window.location)
             try {
+                let menu = document.getElementsByClassName("note-menu")
+                if (menu && menu.length) return
+
                 let ele = e.target
                 let find = false
                 let ssss = document.querySelectorAll('.markdown-section img')
@@ -272,7 +267,6 @@ export class DocHighlighter {
                 if (tagName == 'IMG') {
                     e.stopPropagation()
                     let yes = ele.parentElement.classList.contains("docsify-highlighter")
-                    // eslint-disable-next-line no-empty
                     if (yes) {
                         let { parentElement } = ele
                         this.createNoteMenu(parentElement)
@@ -337,7 +331,7 @@ export class DocHighlighter {
         });
         this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
         this.highlighter.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
-        this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
+        // this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
         this.highlighter.on(Highlighter.event.CREATE, this.onCreate.bind(this));
         this.highlighter.on(Highlighter.event.CLICK, onClick);
 
@@ -512,7 +506,6 @@ export class DocHighlighter {
             if (b) {
                 let begin = 0
                 for (let i = 0; i < b.length; i++) {
-                    let bb = b[i]
                     if (b != ' ') {
                         begin = i;
                         break;
@@ -655,7 +648,7 @@ export class DocHighlighter {
                     }
                     hs = this.checkHS(hs)
                     if (hs.imgsrc) {
-                        let { startMeta, endMeta, id } = hs;
+                        let { startMeta, id } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
                         let wrap = document.createElement('i')
@@ -692,7 +685,6 @@ export class DocHighlighter {
     createBookmarkNode(id) {
         let el = this.getElement(id);
         if (el) {
-            let hl = this;
             mountCmp(NoteBookmark, { noteid: id }, el);
         }
     }
@@ -757,7 +749,7 @@ export class DocHighlighter {
         return ret;
     }
     scollTopID(id) {
-        let { top, left } = this.getElementPosition(id);
+        let { top } = this.getElementPosition(id);
         if (top != undefined) {
             window.scrollTo(0, top - 120);
             let b = document.getElementsByClassName('content')[0]
