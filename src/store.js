@@ -327,6 +327,7 @@ export function getRawHtml(cmp, props) {
   return a.$el.outerHTML;
 }
 export class Book {
+  static updated = false;
   constructor(useridArg) {
     this.toc = new BookToc(useridArg);
     this.name = this.toc.bookname;

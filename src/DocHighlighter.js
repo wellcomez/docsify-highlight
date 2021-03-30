@@ -474,7 +474,6 @@ export class DocHighlighter {
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
-                this.updatePanel();
             } else {
                 this.store.update({ id: noteid, note, style, tags })
             }
@@ -482,6 +481,8 @@ export class DocHighlighter {
             this.removeHighLight(noteid);
             this.deleteId(noteid);
         }
+        Book.updated = true;
+        this.updatePanel();
     };
     findhs(hs) {
         let { startMeta, endMeta, text, } = hs;

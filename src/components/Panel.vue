@@ -16,7 +16,7 @@
         ></SvgButton>
       </Col>
       <Col>
-        <Badge v-if="checked" :count="count2">
+        <Badge v-if="checked" dot :count="updated ? 1 : 0">
           <SvgButton
             @click="onOpenContentList"
             name="ios-book"
@@ -271,7 +271,11 @@ export default {
   beforeDestroy: function () {
     // checkClickOut(undefined, this.hideDetails);
   },
+  model: {
+    prop: "updated",
+  },
   props: {
+    updated: { type: Boolean, default: false },
     showdetail: {
       type: Boolean,
       default: false,
@@ -316,9 +320,12 @@ export default {
     },
     onSave2Cloud() {
       let b = new Book();
+      let self = this;
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
+          self.updated = false;
+          Book.updated = false;
           msg("saved ", b.toc.bookname + " to cloud");
         })
         // eslint-disable-next-line no-unused-vars
@@ -342,12 +349,11 @@ export default {
         let b = new Book();
         let json = b.jsonstr();
         funDownload(json, window.$docsify.name + ".json");
-      }else if (name == "html") {
+      } else if (name == "html") {
         let b = new Book();
         let json = b.exportHtml();
         funDownload(json, window.$docsify.name + ".html");
       }
-
     },
     onEnableScript() {
       this.enableScript = this.enableScript == false;

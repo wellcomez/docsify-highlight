@@ -4,6 +4,7 @@ import Vue from 'vue';
 import { DocHighlighter } from './DocHighlighter';
 import { mountCmp } from './utils';
 import { getConfig } from './ANoteConfig';
+import { Book } from './store';
 export function findtipid(id) {
     var tips = document.getElementsByClassName('note-menu');
     for (var i in tips) {
@@ -70,12 +71,14 @@ function hlinit() {
         Vue.set(vm, "count", hl.count());
         Vue.set(vm, "checked", hl.on());
         Vue.set(vm, "hl", hl);
+        Vue.set(vm, "updated", Book.updated);
     } else {
         vm = window.vm = mountCmp(Panel, { checked: hl.on(), count: hl.count(), hl }, main)
     }
     hl.updatePanelCb = () => {
         // console.log("aaa",vm);
         Vue.set(vm, "count", hl.count());
+        Vue.set(vm, "updated", Book.updated);
     }
 }
 export default hlinit
