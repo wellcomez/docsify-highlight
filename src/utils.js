@@ -79,3 +79,17 @@ export function queryBox({ title, content, onCancel, onOk }) {
   });
 }
 export var mobile = require('is-mobile');
+export function gotoNote({ path, id, key }) {
+  if (path == undefined) {
+    path = JSON.parse(key).path;
+  }
+  let hash = path.substring(path.indexOf("#"));
+  hash = `${hash}?noteid=${id}`;
+  let current = parseurl();
+  if (current.path == path) {
+    document.location.hash = hash;
+    scollTopID(id);
+  } else {
+    document.location.hash = hash;
+  }
+}

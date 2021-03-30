@@ -39,6 +39,13 @@ class BookToc {
         ret.push(c)
       }
     }
+    this.ChapterOjbList().forEach((charpter) => {
+      charpter.children.forEach((hs) => {
+        if (hs.bookmark) {
+          ret.push(hs)
+        }
+      })
+    })
     return ret;
   }
   _setbookmark({ path }, bookmark) {
@@ -231,7 +238,7 @@ class Chapter {
     this.tags = new Set();
     if (store) {
       this.label = store.title;
-      this.path =  store.path;
+      this.path = store.path;
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
         // let { id, text: label, top, style, note, tags } = hs;
@@ -268,8 +275,8 @@ class Chapter {
     let notes = this.store.storeToJson();
     return { key, title, notes, path };
   }
-  url(id){
-    let {path,} = this
+  url(id) {
+    let { path, } = this
     let hash = path.substring(path.indexOf("#"));
     hash = `${hash}?noteid=${id}`
     let host = document.location.host
@@ -349,7 +356,7 @@ export class Book {
         return getRawHtml(CharptHtml, { charpter: a });
       })
       .join("");
-      let tilte = this.name
+    let tilte = this.name
     let ret = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -438,12 +445,12 @@ ${html}
 export function getChanged() {
   let { changeNumber, localNumber } = getConfig().load()
   if (localNumber == undefined) {
-      localNumber = new Book().count();
-      getConfig().save({ localNumber })
+    localNumber = new Book().count();
+    getConfig().save({ localNumber })
   }
   if (changeNumber == undefined) {
-      changeNumber = 0;
-      getConfig().save({ changeNumber })
+    changeNumber = 0;
+    getConfig().save({ changeNumber })
   }
   return { changeNumber, localNumber }
 }

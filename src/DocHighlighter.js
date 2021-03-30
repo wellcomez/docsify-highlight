@@ -414,11 +414,14 @@ export class DocHighlighter {
         if (type == "from-store") {
             this.store.getAll()
             let creatFromStore = (hs) => {
-                let { id, style, note } = this.store.geths(hs.id)
+                let { id, style, note, bookmark } = this.store.geths(hs.id)
                 let a = new highlightType(this, id, style)
                 a.showHighlight()
                 if (note && note.length) {
                     this.createMarkNode(id, note);
+                }
+                if (bookmark) {
+                    this.createBookmarkNode(id)
                 }
                 if (this.parseurlResult.noteid == hs.id) {
                     this.scollTopID(hs.id);

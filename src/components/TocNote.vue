@@ -7,7 +7,7 @@
 
 <script>
 import { Book } from "../store";
-import { parseurl, scollTopID } from "../utils";
+import { gotoNote } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
 import isMobile from "_is-mobile@3.0.0@is-mobile";
@@ -103,16 +103,7 @@ export default {
         return;
       }
       if (key && id) {
-        const { path } = JSON.parse(key);
-        let hash = path.substring(path.indexOf("#"));
-        hash = `${hash}?noteid=${id}`;
-        let current = parseurl();
-        if (current.path == path) {
-          document.location.hash = hash;
-          scollTopID(id);
-        } else {
-          document.location.hash = hash;
-        }
+        gotoNote({key,id});
         if (this.close && isMobile()) {
           this.close();
         }
