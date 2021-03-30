@@ -3,7 +3,7 @@
 }
 
 .highlight-mengshou-wrap {
-  background: lightcyan;
+  background: transparent;
 }
 
 div.d1 {
@@ -93,7 +93,7 @@ input[type='checkbox'].switch:checked::after {
 
 .doclist .ivu-tree ul {
   padding-left: 2px;
-  font-size: xx-small;
+  font-size   : xx-small;
 }
 
 .doclist .ivu-tree {
@@ -127,7 +127,8 @@ input[type='checkbox'].switch:checked::after {
   body .ivu-modal-confirm-body input {
     font-size: 16px;
   }
-  .doclist{
+
+  .doclist {
     height: 320px;
   }
 }
@@ -143,7 +144,7 @@ input[type='checkbox'].switch:checked::after {
 }
 
 i.docsify-highlighter>img {
-  border: 3px solid #ed4014;
-  margin: 2px;
+  border : 3px solid #ed4014;
+  margin : 2px;
   padding: 2px;
 }
