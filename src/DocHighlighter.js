@@ -9,6 +9,7 @@ import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
+import NoteBookmark from './components/NoteBookMark.vue'
 import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
@@ -76,7 +77,7 @@ export class DocHighlighter {
         } catch (error) {
         }
         if (hs == undefined) hs = {}
-        let { style: data, note, tags } = hs
+        let { style: data, note, tags, bookmark } = hs
         if (tags == undefined) tags = []
         if (data == undefined) data = {}
         // log("createNoteMenu", top, left, color)z
@@ -92,7 +93,7 @@ export class DocHighlighter {
         }
         let section = document.body
         //  document.querySelector('section.content')
-        mountCmp(NoteMenu, { top, left, noteid, hl, note, data, sources, tags, onCloseMenu }, section)
+        mountCmp(NoteMenu, { top, left, bookmark, noteid, hl, note, data, sources, tags, onCloseMenu }, section)
         // }
     };
     procssAllElements(nodeid, cb) {
@@ -444,8 +445,8 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
-        let { note, sources, style, tags, img } = data ? data : {}
-        let change = style != undefined || note || tags.length || img && img.length
+        let { note, sources, style, tags, img, bookmark } = data ? data : {}
+        let change = style != undefined || note || tags.length || img && img.length || bookmark
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
@@ -453,6 +454,12 @@ export class DocHighlighter {
         } else {
             this.highlighter.removeClass(hl_note, noteid)
             this.removeMarkNode(noteid);
+        }
+        if (bookmark) {
+            this.removeBookmarkNode(noteid)
+            this.createBookmarkNode(noteid)
+        } else {
+            this.removeBookmarkNode(noteid)
         }
         if (change && noteid != undefined) {
             if (sources) {
@@ -470,12 +477,13 @@ export class DocHighlighter {
                     hs.tags = tags
                     hs.top = this.getElementPosition(noteid)
                     hs.csspath = this.getElementCssPath(hs)
+                    hs.bookmark = bookmark
                     return hs
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
             } else {
-                this.store.update({ id: noteid, note, style, tags })
+                this.store.update({ id: noteid, note, style, tags, bookmark })
             }
         } else {
             this.removeHighLight(noteid);
@@ -678,11 +686,29 @@ export class DocHighlighter {
             mountCmp(NoteMarker, { noteid: id, content, hl }, el);
         }
     }
-
+    createBookmarkNode(id) {
+        let el = this.getElement(id);
+        if (el) {
+            let hl = this;
+            mountCmp(NoteBookmark, { noteid: id }, el);
+        }
+    }
     removeMarkNode(noteid) {
         this.procssAllElements(noteid, (el) => {
             if (el) {
                 let a = el.getElementsByClassName('notemarker');
+                for (let i = 0; i < a.length; i++) {
+                    let b = a[i];
+                    b.parentNode.removeChild(b);
+                }
+            }
+        });
+    }
+    removeBookmarkNode(noteid) {
+        let cls = "note-bookmark"
+        this.procssAllElements(noteid, (el) => {
+            if (el) {
+                let a = el.getElementsByClassName(cls);
                 for (let i = 0; i < a.length; i++) {
                     let b = a[i];
                     b.parentNode.removeChild(b);

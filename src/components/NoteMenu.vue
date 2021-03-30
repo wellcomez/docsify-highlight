@@ -57,7 +57,7 @@
           ></SvgButton>
         </Col>
         <Col>
-          <SvgButton @click="bookmark=bookmark!=true" :name="bookmarkicon" />
+          <SvgButton @click="onBookmark" :name="bookmarkicon" />
         </Col>
         <Col>
           <SvgButton

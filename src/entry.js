@@ -7,6 +7,7 @@ import PopSvgButton from './components/PopSvgButton.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import TocOutLine from './components/TocOutLine.vue'
 import BookMarks from './components/BookMarks.vue'
+import NoteBookmark from './components/NoteBookMark.vue'
 import hlinit from './hl';
 import { registComponet } from './utils'
 import Vue from 'vue';
@@ -14,7 +15,7 @@ import Vue2TouchEvents from 'vue2-touch-events'
 Vue.use(Vue2TouchEvents)
 
 import './iviewLoader'
-let component = { NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
+let component = { NoteBookmark, NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)
 
 // eslint-disable-next-line no-unused-vars

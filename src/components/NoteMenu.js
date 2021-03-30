@@ -31,7 +31,6 @@ export const NoteMenu = {
     },
     data() {
         return {
-            bookmark:false,
             imageNeedAdd: false,
             justify: 'space-between',
             img: undefined,
@@ -129,6 +128,9 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        onBookmark() {
+            this.bookmark = this.bookmark == false
+        },
         updatePos() {
             this.style = {
                 left: this.menuLeft(),
@@ -258,7 +260,7 @@ export const NoteMenu = {
             this.removeMenu();
         },
         notedata() {
-            let { sources, tags, img } = this;
+            let { sources, tags, img, bookmark } = this;
             if (this.imageNeedAdd) {
                 img = undefined
             }
@@ -272,7 +274,7 @@ export const NoteMenu = {
             }
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
-            return { note, sources, style, tags, img };
+            return { note, sources, style, tags, img, bookmark };
         },
         saveNoteData() {
             this.hl.saveNoteData(this.noteid, this.notedata());
@@ -326,7 +328,13 @@ export const NoteMenu = {
             this.removeMenu();
         },
     },
+    model: {
+        props: "bookmark"
+    },
     props: {
+        bookmark: {
+            type: Boolean, default: false
+        },
         onCloseMenu: {
             type: Function,
             default: function () { }

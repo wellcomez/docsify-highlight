@@ -68,7 +68,7 @@ function hlinit() {
     // eslint-disable-next-line no-unused-vars
     let { vm } = window;
     let { changeNumber } = getChanged()
-    let count = hl.count
+    let count = hl.count()
     let checked = hl.on()
     let updated = Book.updated
     if (vm) {
