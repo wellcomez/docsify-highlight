@@ -295,7 +295,7 @@ export class DocHighlighter {
                         }
                         let startMeta = { parentTagName, parentIndex, textOffset }
                         let endMeta = startMeta
-                        let imgsrc = ele.src
+                        let imgsrc = getEleSrc(ele);
                         let text = ""
                         let hs = { startMeta, endMeta, id, imgsrc, text }
                         let sources = [hs]
@@ -797,6 +797,17 @@ export class DocHighlighter {
         this.load(enable);
     }
 }
+function getEleSrc(ele) {
+    let imgsrc = ele.src;
+    let url = new URL(imgsrc);
+    let host = url.host;
+    let currenthost = new URL(document.URL).host;
+    if (host == currenthost) {
+        imgsrc = imgsrc.substring(imgsrc.indexOf(url.host) + url.host.length);
+    }
+    return imgsrc;
+}
+
 export function preHighLightItems() {
     let children = [];
     document.getElementsByClassName("hl").forEach((a) => {

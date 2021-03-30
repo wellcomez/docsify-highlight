@@ -87,6 +87,7 @@
 import isMobile from "_is-mobile@3.0.0@is-mobile";
 const rgba = require("color-rgba");
 import { tBackgroundColor, tUl } from "../colorSelector";
+import { getImgSrcUrl } from '../utils';
 // import ClickOutside from "vue-click-outside";
 var Colr = require("Colr");
 export default {
@@ -101,7 +102,7 @@ export default {
       imgsrc,
     } = this.notedata;
     this.showiconRight=isMobile()!=true;
-    this.imgsrc = imgsrc;
+    this.imgsrc = getImgSrcUrl(imgsrc);
     // this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {

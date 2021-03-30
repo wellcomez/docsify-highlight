@@ -93,3 +93,15 @@ export function gotoNote({ path, id, key }) {
     document.location.hash = hash;
   }
 }
+
+export function getImgSrcUrl(imgsrc) {
+  if (imgsrc == undefined) return undefined;
+  if (imgsrc.indexOf("http://") == 0) {
+    return imgsrc
+  }
+  let u = new URL(document.URL)
+  let path = imgsrc
+  let http = u.protocol
+  let host = u.host
+  return `${http}//${host}${path}`
+}

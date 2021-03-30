@@ -53,9 +53,11 @@
 </template>
 <script>
 import { tBackgroundColor, tUl } from "../colorSelector";
+import { getImgSrcUrl } from '../utils';
 // const rgba = require("color-rgba");
 const convert = (a,charpter) => {
   let { note, imgsrc, text, style: styleDefine, tags ,id} = a;
+  imgsrc = getImgSrcUrl(imgsrc)
   let url = charpter.url(id)
   let style = { margin: "4px" };
   let label = text.substring(0, 6);

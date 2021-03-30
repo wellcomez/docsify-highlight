@@ -1,5 +1,5 @@
 import { colorClassList } from "./colorSelector";
-import { parseurl } from "./utils";
+import { getImgSrcUrl, parseurl } from "./utils";
 import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
@@ -304,6 +304,7 @@ class Chapter {
       let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
       let img = ''
       if (imgsrc) {
+        imgsrc = getImgSrcUrl(imgsrc)
         let { path } = parseurl(imgsrc)
         img = `![${path}](${imgsrc})\n`
       }
