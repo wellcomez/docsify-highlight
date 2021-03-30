@@ -84,8 +84,8 @@ function hlinit() {
         let { changeNumber, localNumber } = getChanged()
         Vue.set(vm, "count", hl.count());
         Vue.set(vm, "updated", Book.updated);
-        changeNumber = hl.count() - localNumber
-        Vue.set(vm, "changeNumber", hl.count() - localNumber);
+        changeNumber = new Book().count() - localNumber
+        Vue.set(vm, "changeNumber", changeNumber);
         getConfig().save({ changeNumber })
     }
 }
