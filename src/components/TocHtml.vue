@@ -1,7 +1,13 @@
 <template>
   <div style="margin-left: 10px">
     <ul>
-      <li v-for="(a, index) in list" @click="clickme(a)" :key="index">
+      <li
+        class="html-toc-li"
+        v-for="(a, index) in list"
+        @click="clickme(a)"
+        :key="index"
+        style="list-style-type: decimal; list-style: decimal"
+      >
         {{ a }}
       </li>
     </ul>

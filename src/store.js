@@ -391,12 +391,12 @@ export class Book {
 <body>
 ${html}
 <script>
-var hh = document.querySelectorAll('li')
+var hh = document.querySelectorAll('li.html-toc-li')
 for(var i=0; i<hh.length; i++){
 var h2 = hh[i];
 h2.addEventListener('click',(e)=>{
   var a = e.target.innerText;
-  clickOnToc(a) 
+  clickOnToc(a)
 })
 }
 </script>
