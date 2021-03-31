@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-left: 10px">
+  <div class="" style="margin-left: 10%; margin-right: 10%">
     <ul>
       <li
         class="html-toc-li"
@@ -8,7 +8,7 @@
         :key="index"
         style="list-style-type: decimal; list-style: decimal"
       >
-        {{ a }}
+        <a style="text-decoration:none; color: #42b983">{{ a }}</a>
       </li>
     </ul>
   </div>
