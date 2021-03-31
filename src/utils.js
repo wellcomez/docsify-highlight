@@ -87,7 +87,7 @@ export function gotoNote({ path, id, key }) {
   hash = `${hash}?noteid=${id}`;
   let current = parseurl();
   if (current.path == path) {
-    document.location.hash = hash;
+    // document.location.hash = hash;
     scollTopID(id);
   } else {
     document.location.hash = hash;
