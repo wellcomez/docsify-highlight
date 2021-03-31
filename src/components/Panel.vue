@@ -92,6 +92,11 @@
                 slot="extra"
               />
             </Cell>
+            <Cell title="笔记">
+              <Button type="primary" @click="onClickOpenNote" closable="true"
+                >笔记</Button
+              >
+            </Cell>
             <Cell title="重置">
               <Button type="primary" @click="ResetAll"> 重置</Button>
             </Cell>
@@ -100,6 +105,13 @@
         </Card>
       </div>
       <!-- <ConfigPanel /> -->
+    </Drawer>
+    <Drawer title="笔记" :closable="true" v-model="openNoteBook" width="80%">
+      <CharptHtml
+        v-for="(charpter, index) in book"
+        :charpter="charpter"
+        :key="index"
+      />
     </Drawer>
   </div>
 </template>
@@ -194,6 +206,7 @@ import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import Account from "./Account";
+import CharptHtml from "./CharptHtml";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
 import isMobile from "_is-mobile@3.0.0@is-mobile";
@@ -207,6 +220,7 @@ export default {
     BookMarks,
     Account,
     Drawer,
+    CharptHtml,
   },
   name: "Panel",
   directives: {
@@ -246,6 +260,8 @@ export default {
   },
   data() {
     return {
+      book: new Book().Charpter(),
+      openNoteBook: false,
       vesion: "",
       showexport: true,
       drawWidth: 320,
@@ -269,7 +285,7 @@ export default {
     }
     // this.drawWidth = window.screen.width < 480 ? 440: 320;
     if (window.screen.width < 480) {
-      let left = window.screen.width-300
+      let left = window.screen.width - 300;
       document.getElementsByClassName(
         "ivu-drawer-right"
       )[0].style = `left:${left}px`;
@@ -309,6 +325,10 @@ export default {
     changeNumber: { type: Number, default: 0 },
   },
   methods: {
+    onClickOpenNote() {
+      this.openNoteBook = true;
+      this.book = new Book().Charpter();
+    },
     ResetAll() {
       window.localStorage.clear();
       window.location.reload();
