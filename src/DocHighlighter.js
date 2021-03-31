@@ -337,6 +337,9 @@ export class DocHighlighter {
         // this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
         this.highlighter.on(Highlighter.event.CREATE, this.onCreate.bind(this));
         this.highlighter.on(Highlighter.event.CLICK, onClick);
+        this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
+            return selectedNodes
+        });
 
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
             let last = selectedNodes[selectedNodes.length - 1]
