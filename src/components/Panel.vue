@@ -72,7 +72,7 @@
         <TabPane label="批注">
           <Row type="flex" justify="space-between">
             <Col> <span style="margin-left: 4px">全部</span> </Col>
-          <Col  span="5">
+            <Col span="5">
               <Button @click="onClickOpenNote" size="small">打开</Button>
             </Col>
           </Row>
@@ -107,10 +107,18 @@
       </div>
       <!-- <ConfigPanel /> -->
     </Drawer>
-    <Drawer title="笔记" :closable="true" v-model="openNoteBook" width="80%">
+    <Drawer
+      title="笔记"
+      :closable="true"
+      v-model="openNoteBook"
+      width="480"
+      scrollable
+      :mask="false"
+    >
       <CharptHtml
         v-for="(charpter, index) in book"
         :charpter="charpter"
+        :onClickURL="onClickURL"
         :key="index"
       />
     </Drawer>
@@ -211,6 +219,7 @@ import CharptHtml from "./CharptHtml";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
 import isMobile from "_is-mobile@3.0.0@is-mobile";
+import { gotoNote } from '../utils';
 // import { checkClickOut } from "../mountCmp";
 export default {
   components: {
@@ -326,6 +335,9 @@ export default {
     changeNumber: { type: Number, default: 0 },
   },
   methods: {
+    onClickURL(a) {
+      gotoNote(a);
+    },
     onClickOpenNote() {
       this.openNoteBook = true;
       this.book = new Book().Charpter();
