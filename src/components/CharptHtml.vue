@@ -21,7 +21,8 @@
           >{{ index + 1 }}.</a
         >
         <sup>
-          <a @click="onClick({index,url})" :href="url" style="text-decoration: none; color: #42b983">~</a>
+          <a v-if="onClick" @click="onClick({index,url})"  style="text-decoration: none; color: #42b983">~</a>
+          <a v-else :href="url" style="text-decoration: none; color: #42b983">~</a>
         </sup>
         <span v-if="text" :style="style">{{ text }}</span>
       </div>
