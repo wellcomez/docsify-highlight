@@ -21,8 +21,15 @@
           >{{ index + 1 }}.</a
         >
         <sup>
-          <a v-if="onClick" @click="onClick({index,url})"  style="text-decoration: none; color: #42b983">~</a>
-          <a v-else :href="url" style="text-decoration: none; color: #42b983">~</a>
+          <a
+            v-if="onClick"
+            @click="onClick({ index, url })"
+            style="text-decoration: none; color: #42b983"
+            >~</a
+          >
+          <a v-else :href="url" style="text-decoration: none; color: #42b983"
+            >~</a
+          >
         </sup>
         <span v-if="text" :style="style">{{ text }}</span>
       </div>
@@ -39,7 +46,7 @@
           v-for="(a, index) in tags"
           :key="index"
           style="
-            backgroundcolor: #42b983;
+            background: #42b983;
             color: white;
             border-radius: 3px;
             padding-left: 4px;
@@ -75,12 +82,8 @@ const convert = (a, charpter) => {
       style.color = colorhex;
     }
   }
-  if (tags && tags.length == 0) {
-    tags = undefined;
-  }
   let ret = {
-    ...{ tags: undefined },
-    ...{ imgsrc, label, text, style, note, tags, url },
+    ...{ imgsrc, label, text, style, note, tags: tags, url },
   };
   return ret;
 };
