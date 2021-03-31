@@ -267,7 +267,13 @@ export default {
     if (store) {
       this.bookmark = store.isBookMarked();
     }
-    this.drawWidth = window.screen.width < 480 ? 440: 320;
+    // this.drawWidth = window.screen.width < 480 ? 440: 320;
+    if (window.screen.width < 480) {
+      let left = window.screen.width-300
+      document.getElementsByClassName(
+        "ivu-drawer-right"
+      )[0].style = `left:${left}px`;
+    }
     this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
   },
