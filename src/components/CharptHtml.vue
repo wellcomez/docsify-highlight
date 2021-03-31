@@ -1,6 +1,11 @@
 <template>
   <div class="" style="margin-left: 10%; margin-right: 10%">
-    <h2>{{ title }}</h2>
+    <h2 v-if="exporthtml">
+      <a :href="hrefa" style="text-decoration: none; color: #42b983">{{
+        title
+      }}</a>
+    </h2>
+    <h2 v-else>{{ title }}</h2>
     <div
       v-for="({ note, style, label, imgsrc, text, tags, url }, index) in list"
       :key="index"
@@ -89,8 +94,12 @@ const convert = (a, charpter) => {
   return ret;
 };
 export default {
+  computed() {
+    return {};
+  },
   data() {
     return {
+      hrefa: "",
       title: "",
       list: [{ name: "" }],
       styleNote:
@@ -119,6 +128,7 @@ export default {
     let { charpter } = this;
     if (charpter) {
       this.title = charpter.label;
+      this.hrefa = "#" + this.title;
       this.list = charpter.children.map((a) => convert(a, charpter));
     }
   },
@@ -128,7 +138,7 @@ export default {
     },
   },
   props: {
-    exporthtml:{type:Boolean,default:false},
+    exporthtml: { type: Boolean, default: false },
     charpter: { type: Object, default: undefined },
     onClickURL: { type: Function, default: undefined },
   },

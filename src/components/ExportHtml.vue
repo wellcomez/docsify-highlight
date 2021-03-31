@@ -6,6 +6,7 @@
       v-for="(charpter, index) in charpter"
       :charpter="charpter"
       :key="index"
+      :exporthtml=true
     />
   </div>
 </template>
