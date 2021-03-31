@@ -392,13 +392,13 @@ ${html}
   }
   tags() {
     let ret = new Set();
-    this.charpter.forEach((a) => {
+    this.Charpter().forEach((a) => {
       let { tags } = a;
       tags.forEach((tag) => {
         ret.add(tag);
       })
     })
-    return ret.values()
+    return ret
   }
   syn2Local(json) {
     let { charpter, toc } = json;

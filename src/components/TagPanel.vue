@@ -58,15 +58,15 @@
 }
 </style>
 <script>
-import { getConfig } from "../ANoteConfig";
 import { Modal } from "iview";
+import { Book } from '../store';
 /* eslint-disable no-unused-vars */
 export default {
   //   components: { Card ,Divider},
   data() {
     return {
       existsTag: [],
-      tagSet: ["稍后", "难"],
+      tagSet: new Set(["稍后", "难"]),
       tagClass: "",
     };
   },
@@ -75,8 +75,10 @@ export default {
   },
   computed: {},
   created() {
-    let { tagSet } = getConfig().load();
-    if (tagSet && tagSet.length) this.tagSet = tagSet;
+    let tagSet =   new Book().tags()
+    tagSet.forEach((e)=>{
+      this.tagSet.add(e)
+    })
     this.convert(this.tags);
   },
   methods: {
@@ -133,20 +135,13 @@ export default {
     },
     handleClose(index, txt) {
       this.removeItem(this.tags, txt);
-      this.removeItem(this.tagSet, txt);
+      this.tagSet.delete(txt)
       this.update();
       this.convert(this.tags);
     },
     convert(tags) {
       let ret = [];
       let { tagSet } = this;
-      tags.forEach((a) => {
-        if (tagSet.indexOf(a) < 0) {
-          tagSet.push(a);
-        }
-      });
-      getConfig().save({ tagSet });
-
       tagSet.forEach((txt) => {
         let enable = false;
         if (tags.indexOf(txt) >= 0) {
