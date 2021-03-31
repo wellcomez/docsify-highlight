@@ -78,8 +78,8 @@
       </Tabs>
     </Row>
     <Drawer :closable="false" v-model="bDrawerOpen" :width="drawWidth">
-      <Account v-if="cloudOn" slot="header" style="width: 70%" />
-      <div style="background: #f8f8f9; width: 70%">
+      <Account v-if="cloudOn" slot="header" style="width: 280px" />
+      <div style="background: #f8f8f9; width: 280px">
         <Card :padding="0" shadow>
           <CellGroup style="">
             <Cell title="开关" style="">
@@ -267,7 +267,7 @@ export default {
     if (store) {
       this.bookmark = store.isBookMarked();
     }
-    this.drawWidth = window.screen.width < 480 ? "80" : "320";
+    this.drawWidth = window.screen.width < 480 ? 440: 320;
     this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
   },
