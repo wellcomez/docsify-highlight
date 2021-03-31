@@ -6,7 +6,7 @@
         v-for="(a, index) in list"
         @click="clickme(a)"
         :key="index"
-        style="list-style-type: decimal; list-style: decimal"
+        style="list-style-type: decimal; list-style: decimal;color:#42b983"
       >
         <a style="text-decoration:none; color: #42b983">{{ a }}</a>
       </li>
