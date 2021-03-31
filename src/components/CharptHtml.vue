@@ -5,7 +5,7 @@
   ">
     <h2>{{ title }}</h2>
     <div
-      v-for="({ note, style, imgsrc, text, tags,url }, index) in list"
+      v-for="({ note, style,label, imgsrc, text, tags,url }, index) in list"
       :key="index"
     >
       <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->

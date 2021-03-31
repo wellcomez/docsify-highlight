@@ -70,6 +70,12 @@
     <Row class="contenttable" v-if="showdetail">
       <Tabs type="line" size="small" class="tabs">
         <TabPane label="批注">
+          <Row type="flex" justify="space-between">
+            <Col> <span style="margin-left: 4px">全部</span> </Col>
+          <Col  span="5">
+              <Button @click="onClickOpenNote" size="small">打开</Button>
+            </Col>
+          </Row>
           <TocNote v-bind:close="closedetail" v-bind:key="count2"></TocNote>
         </TabPane>
         <TabPane label="书签">
@@ -91,11 +97,6 @@
                 @on-change="onEnableScript"
                 slot="extra"
               />
-            </Cell>
-            <Cell title="笔记">
-              <Button type="primary" @click="onClickOpenNote" closable="true"
-                >笔记</Button
-              >
             </Cell>
             <Cell title="重置">
               <Button type="primary" @click="ResetAll"> 重置</Button>
