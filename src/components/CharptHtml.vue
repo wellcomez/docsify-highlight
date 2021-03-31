@@ -99,7 +99,7 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     href({ title, label, index }) {
-      return `#id?${title}${index}`;
+      return `#titleid?${title}${index}`;
     },
     onClick({ index, url }) {
       if (this.onClickURL) {
