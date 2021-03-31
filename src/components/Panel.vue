@@ -95,6 +95,7 @@
             <Cell title="重置">
               <Button type="primary" @click="ResetAll"> 重置</Button>
             </Cell>
+            <Cell title="版本" :label="vesion"> </Cell>
           </CellGroup>
         </Card>
       </div>
@@ -173,7 +174,8 @@
 </style>
 
 <script>
-/* eslint-disable vue/no-unused-components */
+// eslint-disable-next-line no-unused-vars
+const pkg = require("../../package.json");
 import { Book } from "../store";
 // import { Notification } from "element-ui";
 import { localidstore, downloadFromCloud, updateBookOnLean } from "../leanweb";
@@ -244,6 +246,7 @@ export default {
   },
   data() {
     return {
+      vesion: "",
       showexport: true,
       drawWidth: 320,
       enableScript: false,
@@ -266,6 +269,7 @@ export default {
     }
     this.drawWidth = window.screen.width < 480 ? "80" : "320";
     this.bookmarkCount = this.getBookmarkCount();
+    this.vesion = pkg.version;
   },
   beforeCreate: function () {
     this.fnclosedetail = () => {
