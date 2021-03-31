@@ -1,5 +1,5 @@
 <template>
-  <div class="" style="margin-left: 10%; margin-right: 10%">
+  <div class="" :style="style">
     <ul>
       <li
         class="html-toc-li"
@@ -38,9 +38,14 @@ export default {
     },
   },
   data() {
-    return { list: [] };
+    return { 
+        style:"margin-left: 10%; margin-right: 10%",
+        list: [] };
   },
   created() {
+      if(this.exporthtml){
+          this.style="position: fixed;top: 0px;right: 20px;background: white;overflow-y: scroll;height:200px;font-size: small;"
+      }
     this.newFunction();
   },
   methods: {
