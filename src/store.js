@@ -319,7 +319,8 @@ class Chapter {
     return title.concat(items).join("\n\n");
   }
 }
-import CharptHtml from './components/CharptHtml.vue'
+// import CharptHtml from './components/CharptHtml.vue'
+import ExportHtml from './components/ExportHtml.vue'
 import Vue from 'vue';
 import { getConfig } from "./ANoteConfig";
 export function getRawHtml(cmp, props) {
@@ -351,12 +352,7 @@ export class Book {
       }
       return 1;
     });
-
-    let html = aaa
-      .map((a) => {
-        return getRawHtml(CharptHtml, { charpter: a });
-      })
-      .join("");
+    let html = getRawHtml(ExportHtml, { charpter: aaa });
     let tilte = this.name
     let ret = `<!DOCTYPE html>
 <html lang="en">
@@ -364,9 +360,46 @@ export class Book {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>${tilte}</title>
+  <script type="text/javascript">
+  function clickOnToc(a) {
+    const getPosition = ($node) => {
+      let offset = {
+        top: 0,
+        left: 0,
+        height: $node.offsetHeight,
+      };
+      while ($node) {
+        offset.top += $node.offsetTop;
+        offset.left += $node.offsetLeft;
+        $node = $node.offsetParent;
+      }
+      offset.bottom = offset.top + offset.height;
+      return offset;
+    };
+    h2 = document.querySelectorAll("h2");
+    for (let i = 0; i < h2.length; i++) {
+      let t = h2[i];
+      if (t.innerText == a) {
+        let { top } = getPosition(t);
+        window.scrollTo(0, top - 50);
+        return;
+      }
+    }
+  }
+</script>
 </head>
 <body>
 ${html}
+<script>
+var hh = document.querySelectorAll('li')
+for(var i=0; i<hh.length; i++){
+var h2 = hh[i];
+h2.addEventListener('click',(e)=>{
+  var a = e.target.innerText;
+  clickOnToc(a) 
+})
+}
+</script>
 </body>
 `;
     return ret
