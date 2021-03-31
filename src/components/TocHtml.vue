@@ -3,12 +3,18 @@
     <ul>
       <li
         class="html-toc-li"
-        v-for="(a, index) in list"
-        @click="clickme(a)"
+        v-for="({ href, label }, index) in list"
+        @click="clickme(label)"
         :key="index"
-        style="list-style-type: decimal; list-style: decimal;color:#42b983"
+        style="list-style-type: decimal; list-style: decimal; color: #42b983"
       >
-        <a style="text-decoration:none; color: #42b983">{{ a }}</a>
+        <a
+          v-if="exporthtml"
+          :href="href"
+          style="text-decoration: none; color: #42b983"
+          >{{ label }}</a
+        >
+        <a v-else style="text-decoration: none; color: #42b983">{{ label }}</a>
       </li>
     </ul>
   </div>
@@ -17,6 +23,7 @@
 export default {
   name: "TocHtml",
   props: {
+    exporthtml: { type: Boolean, default: false },
     charpter: {
       type: Array,
       default: () => {
@@ -39,7 +46,12 @@ export default {
   methods: {
     newFunction() {
       this.list = this.charpter.map((a) => {
-        return a.label;
+        let { label } = a;
+        let href;
+        if (this.exporthtml) {
+          href = "#" + label;
+        }
+        return { href, label };
       });
     },
     clickOnToc(a) {

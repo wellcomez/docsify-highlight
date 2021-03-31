@@ -128,6 +128,7 @@ export default {
     },
   },
   props: {
+    exporthtml:{type:Boolean,default:false},
     charpter: { type: Object, default: undefined },
     onClickURL: { type: Function, default: undefined },
   },

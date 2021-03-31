@@ -1,6 +1,6 @@
 <template>
   <div class="export-html">
-    <TocHtml :charpter="charpter" />
+    <TocHtml :charpter="charpter" :exporthtml=true />
     <CharptHtml
       class="charpterhtml"
       v-for="(charpter, index) in charpter"
