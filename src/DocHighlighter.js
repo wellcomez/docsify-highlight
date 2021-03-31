@@ -327,7 +327,7 @@ export class DocHighlighter {
         };
         this.highlighter = new Highlighter({
             wrapTag: 'i',
-            exceptSelectors: ['.my-remove-tip', '.op-panel', '.hl-ignored'],
+            exceptSelectors: ['.html-drawer','.my-remove-tip', '.op-panel', '.hl-ignored'],
             style: {
                 className: 'docsify-highlighter'
             }

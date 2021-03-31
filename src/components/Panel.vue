@@ -108,6 +108,7 @@
       <!-- <ConfigPanel /> -->
     </Drawer>
     <Drawer
+      class="html-drawer"
       title="笔记"
       :closable="true"
       v-model="openNoteBook"
@@ -115,7 +116,9 @@
       scrollable
       :mask="false"
     >
+      <TocHtml :charpter="book" :click="clickOnToc" />
       <CharptHtml
+        class="charpterhtml"
         v-for="(charpter, index) in book"
         :charpter="charpter"
         :onClickURL="onClickURL"
@@ -216,10 +219,11 @@ import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import Account from "./Account";
 import CharptHtml from "./CharptHtml";
+import TocHtml from "./TocHtml";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
 import isMobile from "_is-mobile@3.0.0@is-mobile";
-import { gotoNote } from '../utils';
+import { gotoNote } from "../utils";
 // import { checkClickOut } from "../mountCmp";
 export default {
   components: {
@@ -231,6 +235,7 @@ export default {
     Account,
     Drawer,
     CharptHtml,
+    TocHtml,
   },
   name: "Panel",
   directives: {
@@ -335,6 +340,31 @@ export default {
     changeNumber: { type: Number, default: 0 },
   },
   methods: {
+    clickOnToc(a) {
+      const getPosition = ($node) => {
+        let offset = {
+          top: 0,
+          left: 0,
+          height: $node.offsetHeight,
+        };
+        while ($node) {
+          offset.top += $node.offsetTop;
+          offset.left += $node.offsetLeft;
+          $node = $node.offsetParent;
+        }
+        offset.bottom = offset.top + offset.height;
+        return offset;
+      };
+      let h2 = document.querySelectorAll(".charpterhtml h2");
+      for (let i = 0; i < h2.length; i++) {
+        let t = h2[i];
+        if (t.innerText == a) {
+          let {top} = getPosition(t)
+          document.querySelector('.html-drawer .ivu-drawer-body').scrollTo(0,top-50)
+          return;
+        }
+      }
+    },
     onClickURL(a) {
       gotoNote(a);
     },
