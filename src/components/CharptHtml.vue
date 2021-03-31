@@ -20,6 +20,7 @@
           style="text-decoration: none; color: black"
           >{{ index + 1 }}.</a
         >
+
         <sup>
           <a
             v-if="onClick"
@@ -31,6 +32,22 @@
             >~</a
           >
         </sup>
+        <div v-if="tags" style="display: inline-block">
+          <span
+            v-for="(a, index) in tags"
+            :key="index"
+            style="
+              background: #42b983;
+              color: white;
+              border-radius: 3px;
+              padding-left: 4px;
+              padding-right: 4px;
+              font-size: xx-small;
+              margin-left: 4px;
+            "
+            >{{ a }}</span
+          >
+        </div>
         <span v-if="text" :style="style">{{ text }}</span>
       </div>
       <img
@@ -40,22 +57,6 @@
       />
       <div v-if="note" :style="styleNote" class="outline-title">
         <p>{{ note }}</p>
-      </div>
-      <div v-if="tags">
-        <span
-          v-for="(a, index) in tags"
-          :key="index"
-          style="
-            background: #42b983;
-            color: white;
-            border-radius: 3px;
-            padding-left: 4px;
-            padding-right: 4px;
-            font-size: xx-small;
-            margin-left: 4px;
-          "
-          >{{ a }}</span
-        >
       </div>
     </div>
   </div>
