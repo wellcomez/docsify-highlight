@@ -8,7 +8,7 @@ import { mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
-import { hl_note, tUl, tfontColor} from './colorSelector';
+import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { UTILS } from './css_path'
@@ -295,7 +295,7 @@ export class DocHighlighter {
                         let sources = [hs]
                         let wrap = document.createElement('i')
                         wrap.classList.add('docsify-highlighter')
-                        wrap.classList.add('highlight-mengshou-wrap')
+                        // wrap.classList.add('highlight-mengshou-wrap')
                         wrap.dataset['highlightId'] = id
                         ele.parentElement.replaceChild(wrap, ele)
                         wrap.appendChild(ele)
@@ -327,7 +327,10 @@ export class DocHighlighter {
         };
         this.highlighter = new Highlighter({
             wrapTag: 'i',
-            exceptSelectors: ['.my-remove-tip', '.op-panel']
+            exceptSelectors: ['.my-remove-tip', '.op-panel', '.hl-ignored'],
+            style: {
+                className: 'docsify-highlighter'
+            }
         });
         this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
         this.highlighter.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
@@ -336,9 +339,22 @@ export class DocHighlighter {
         this.highlighter.on(Highlighter.event.CLICK, onClick);
 
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
+            let last = selectedNodes[selectedNodes.length - 1]
+            if (last.splitType != 'tail') return []
             if (selectedNodes.length === 0) {
                 return [];
             }
+            selectedNodes = selectedNodes.filter((selected) => {
+                try {
+                    let parent = selected.$node.parentNode;
+                    if (parent.style.display == 'none' || parent.classList.contains('hl-ignored')) {
+                        return false;
+                    }
+                    // eslint-disable-next-line no-empty
+                } catch (error) {
+                }
+                return true
+            })
             const candidates = selectedNodes.slice(1).reduce(
                 (left, selected) => getIntersection(left, this.getIds(selected)),
                 this.getIds(selectedNodes[0])
@@ -474,6 +490,11 @@ export class DocHighlighter {
                     if (date == undefined) {
                         hs.date = new Date() * 1;
                     }
+                    let text = ''
+                    this.highlighter.getDoms(noteid).forEach((a) => {
+                        text = text + a.innerText
+                    })
+                    hs.text = text
                     hs.tags = tags
                     hs.top = this.getElementPosition(noteid)
                     hs.csspath = this.getElementCssPath(hs)
@@ -493,7 +514,7 @@ export class DocHighlighter {
         this.updatePanel();
     };
     addTagBackground(hs, noteid) {
-        let {tags,style} = hs
+        let { tags, style } = hs
         let need = (tags && tags.length);
         if (need) {
             if (style && Object.keys(style).length) {
@@ -669,7 +690,7 @@ export class DocHighlighter {
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
                         let wrap = document.createElement('i')
                         wrap.classList.add('docsify-highlighter')
-                        wrap.classList.add('highlight-mengshou-wrap')
+                        // wrap.classList.add('highlight-mengshou-wrap')
                         wrap.dataset['highlightId'] = id
                         ele.parentElement.replaceChild(wrap, ele)
                         wrap.appendChild(ele)

@@ -16,7 +16,9 @@
     </div>
     <Row class="input-panel" type="flex" justify="end" align="middle">
       <Col>
-        <Button size="small" class="add-btn" type="primary" @click="onAdd">Add</Button>
+        <Button size="small" class="add-btn" type="primary" @click="onAdd"
+          >Add</Button
+        >
       </Col>
     </Row>
   </div>
@@ -56,10 +58,14 @@
   padding-bottom: 2px;
   margin: 1px;
 }
+.tagpane .ivu-tag {
+  line-height: 24px;
+  height: 24px;
+}
 </style>
 <script>
 import { Modal } from "iview";
-import { Book } from '../store';
+import { Book } from "../store";
 /* eslint-disable no-unused-vars */
 export default {
   //   components: { Card ,Divider},
@@ -75,10 +81,10 @@ export default {
   },
   computed: {},
   created() {
-    let tagSet =   new Book().tags()
-    tagSet.forEach((e)=>{
-      this.tagSet.add(e)
-    })
+    let tagSet = new Book().tags();
+    tagSet.forEach((e) => {
+      this.tagSet.add(e);
+    });
     this.convert(this.tags);
   },
   methods: {
@@ -135,7 +141,7 @@ export default {
     },
     handleClose(index, txt) {
       this.removeItem(this.tags, txt);
-      this.tagSet.delete(txt)
+      this.tagSet.delete(txt);
       this.update();
       this.convert(this.tags);
     },
