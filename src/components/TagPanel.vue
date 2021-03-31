@@ -95,7 +95,7 @@ export default {
         }
         this.tags.push(inputText);
         this.update();
-        tagSet.push(inputText);
+        tagSet.add(inputText);
         this.convert(this.tags);
       };
 
