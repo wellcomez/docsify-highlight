@@ -1,3 +1,4 @@
+import { getConfig } from "./ANoteConfig";
 import { Book } from "./store";
 
 /* eslint-disable no-unused-vars */
@@ -35,7 +36,9 @@ class ObjectIdStore {
 }
 export const localidstore = new ObjectIdStore()
 export async function downloadFromCloud() {
-    return await loadeBookLeanCloud(new Book())
+    let ret = await loadeBookLeanCloud(new Book())
+    resetLoacal()
+    return ret
 }
 
 
@@ -47,11 +50,14 @@ export async function updateBookOnLean(book) {
     if (localidstore.on == false) return undefined;
     let bookName = bookClassName(book);
     let objectId = localidstore.getId(bookName)
+    let ret
     if (objectId == undefined) {
-        return saveBook(book)
+        ret = await saveBook(book)
     } else {
-        return updateBook(book, objectId)
+        ret = await updateBook(book, objectId)
     }
+    resetLoacal()
+    return ret
 }
 export async function loadeBookLeanCloud(book) {
     let data = await loadeBook(book)
@@ -67,8 +73,8 @@ export async function loadeBook(book) {
         return a[0].attributes;
     }
     const query = new AV.Query(name);
-    let {toc} = book;
-    let {userid} = toc
+    let { toc } = book;
+    let { userid } = toc
     query.equalTo("toc.userid", userid)
     query.descending('updatedAt');
     let a = await query.find();
@@ -82,6 +88,10 @@ async function updateBook(book, objectId) {
     updateObject.set("charpter", charpter)
     let ret = await updateObject.save();
     return ret;
+}
+function resetLoacal() {
+    let changeNumber, localNumber;
+    getConfig().save({ changeNumber, localNumber })
 }
 async function saveBook(book) {
     let { bookOjbect, name, BookClass } = CreateBookClass(book);

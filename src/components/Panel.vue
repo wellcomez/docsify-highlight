@@ -339,8 +339,6 @@ export default {
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
-          let changeNumber, localNumber;
-          getConfig().save({ changeNumber, localNumber });
           hl.updatePanel();
           msg("saved ", b.toc.bookname + " to cloud");
         })
