@@ -99,9 +99,10 @@ export function getImgSrcUrl(imgsrc) {
   if (imgsrc.indexOf("http://") == 0) {
     return imgsrc
   }
-  let u = new URL(document.URL)
+  let u = document.location
+  let pathname = u.pathname;
   let path = imgsrc
   let http = u.protocol
   let host = u.host
-  return `${http}//${host}${path}`
+  return `${http}//${host}${pathname}${path}`
 }

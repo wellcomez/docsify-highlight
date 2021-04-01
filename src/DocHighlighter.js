@@ -835,7 +835,9 @@ function getEleSrc(ele) {
     let host = url.host;
     let currenthost = new URL(document.URL).host;
     if (host == currenthost) {
-        imgsrc = imgsrc.substring(imgsrc.indexOf(url.host) + url.host.length);
+        let{host,pathname} =  document.location
+        let aaa = `${host}${pathname}`
+        return  imgsrc.split(aaa)[1]
     }
     return imgsrc;
 }
