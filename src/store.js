@@ -388,7 +388,7 @@ export class Book {
   }
 </script>
 </head>
-<body>
+<body style="font-family: SimSun,sans-serif;">
 ${html}
 <script>
 var hh = document.querySelectorAll('li.html-toc-li')

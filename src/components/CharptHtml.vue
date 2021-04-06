@@ -16,7 +16,7 @@
         style="
           margin-top: 4px;
           margin-bottom: 4px;
-          font-size: 8px;
+          font-size: small;
           font-weight: normal;
         "
       >

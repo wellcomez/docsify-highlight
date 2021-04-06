@@ -1,6 +1,6 @@
 <template>
   <div class="" :style="style">
-    <ul>
+    <ul style="margin: 10px; padding: 10px">
       <li
         class="html-toc-li"
         v-for="({ href, label }, index) in list"
@@ -38,14 +38,23 @@ export default {
     },
   },
   data() {
-    return { 
-        style:"margin-left: 10%; margin-right: 10%",
-        list: [] };
+    return {
+      style: "margin-left: 10%; margin-right: 10%",
+      list: [],
+    };
   },
   created() {
-      if(this.exporthtml){
-          this.style="position: fixed;top: 0px;right: 20px;background: white;overflow-y: scroll;height:200px;font-size: small;"
-      }
+    if (this.exporthtml) {
+      this.style =
+        "box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);\
+        border-color: #eee;\
+        border-radius:5px;\
+        position: fixed;top: 10px;right: 20px;\
+        background: white;\
+        overflow-y: auto;\
+        height:200px;\
+        font-size: small;";
+    }
     this.newFunction();
   },
   methods: {
