@@ -96,7 +96,13 @@ export function gotoNote({ path, id, key }) {
 
 export function getImgSrcUrl(imgsrc) {
   if (imgsrc == undefined) return undefined;
-  if (imgsrc.indexOf("http://") == 0) {
+  let url = undefined;
+  try {
+    url = new URL(imgsrc);
+    // eslint-disable-next-line no-empty
+  } catch (error) {
+  }
+  if (url) {
     return imgsrc
   }
   let u = document.location
