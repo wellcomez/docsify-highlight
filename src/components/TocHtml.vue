@@ -53,6 +53,7 @@ export default {
         background: white;\
         overflow-y: auto;\
         height:200px;\
+        width:100px;\
         font-size: small;";
     }
     this.newFunction();

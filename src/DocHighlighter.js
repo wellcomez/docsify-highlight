@@ -327,7 +327,7 @@ export class DocHighlighter {
         };
         this.highlighter = new Highlighter({
             wrapTag: 'i',
-            exceptSelectors: ['.html-drawer','.my-remove-tip', '.op-panel', '.hl-ignored'],
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.hl-ignored'],
             style: {
                 className: 'docsify-highlighter'
             }
@@ -337,9 +337,9 @@ export class DocHighlighter {
         // this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
         this.highlighter.on(Highlighter.event.CREATE, this.onCreate.bind(this));
         this.highlighter.on(Highlighter.event.CLICK, onClick);
-        this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
-            return selectedNodes
-        });
+        // this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
+        //     return selectedNodes
+        // });
 
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
             let last = selectedNodes[selectedNodes.length - 1]
@@ -463,8 +463,31 @@ export class DocHighlighter {
         }
     };
     saveNoteData = (noteid, data) => {
+        let highlightIdExtra;
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
         let change = style != undefined || note || tags.length || img && img.length || bookmark
+        try {
+            this.highlighter.getDoms(noteid).forEach((node) => {
+                if (highlightIdExtra == undefined)
+                    highlightIdExtra = node.dataset.highlightIdExtra
+                if (highlightIdExtra == undefined || highlightIdExtra.length == 0)
+                    highlightIdExtra = undefined
+            })
+            // eslint-disable-next-line no-empty
+        } catch (error) {
+        }
+        if (highlightIdExtra) {
+            let hsparent = this.store.geths(highlightIdExtra)
+            if (hsparent) {
+                let child = noteid
+                this.store.update({ id: highlightIdExtra, child })
+                let styleparent = hsparent.style
+                if (styleparent && style) {
+                    style = { ...styleparent, ...style }
+                }
+            }
+        }
+
         if (note) {
             this.highlighter.addClass(hl_note, noteid);
             this.removeMarkNode(noteid)
@@ -502,12 +525,13 @@ export class DocHighlighter {
                     hs.top = this.getElementPosition(noteid)
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
+                    hs.parent = highlightIdExtra
                     return hs
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
             } else {
-                this.store.update({ id: noteid, note, style, tags, bookmark })
+                this.store.update({ id: noteid, note, style, tags, bookmark,parent:highlightIdExtra})
             }
         } else {
             this.removeHighLight(noteid);
@@ -835,9 +859,9 @@ function getEleSrc(ele) {
     let host = url.host;
     let currenthost = new URL(document.URL).host;
     if (host == currenthost) {
-        let{host,pathname} =  document.location
+        let { host, pathname } = document.location
         let aaa = `${host}${pathname}`
-        return  imgsrc.split(aaa)[1]
+        return imgsrc.split(aaa)[1]
     }
     return imgsrc;
 }

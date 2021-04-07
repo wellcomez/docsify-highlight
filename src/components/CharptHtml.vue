@@ -7,7 +7,7 @@
     </h2>
     <h2 v-else>{{ title }}</h2>
     <div
-      v-for="({ note, style, label, imgsrc, text, tags, url }, index) in list"
+      v-for="({ note, style, label, imgsrc, text, tags, url ,t1,t2,neststyle}, index) in list"
       :key="index"
     >
       <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->
@@ -53,7 +53,10 @@
             >{{ a }}</span
           >
         </div>
-        <span v-if="text" :style="style">{{ text }}</span>
+        <span v-if="t1" :style=style>{{t1}}</span>
+        <span v-if="neststyle" :style=neststyle>{{text}}</span>
+        <span v-else-if="text" :style="style">{{ text }}</span>
+        <span v-if="t2" :style=style>{{t2}}</span>
       </div>
       <img
         v-if="imgsrc"
@@ -70,26 +73,43 @@
 import { tBackgroundColor, tUl } from "../colorSelector";
 import { getImgSrcUrl } from "../utils";
 // const rgba = require("color-rgba");
-const convert = (a, charpter) => {
-  let { note, imgsrc, text, style: styleDefine, tags, id } = a;
-  imgsrc = getImgSrcUrl(imgsrc);
-  let url = charpter.url(id);
-  let style = { margin: "4px" };
-  let label = text.substring(0, 6);
-  for (let color in styleDefine) {
-    color = parseInt(color);
-    let a = styleDefine[color];
-    let { colorhex } = a;
-    if (color == tUl) {
-      style["border-bottom"] = "1px solid " + colorhex;
-    } else if (color == tBackgroundColor) {
-      style.backgroundColor = colorhex;
+function convertStyle(styleDefine) {
+  let style={ margin: "4px" };
+  for(let color in styleDefine) {
+    color=parseInt(color);
+    let a=styleDefine[color];
+    let { colorhex }=a;
+    if(color==tUl) {
+      style["border-bottom"]="1px solid "+colorhex;
+    } else if(color==tBackgroundColor) {
+      style.backgroundColor=colorhex;
     } else {
-      style.color = colorhex;
+      style.color=colorhex;
     }
   }
+  return style;
+}
+const convert = (a, charpter) => {
+  let { note, imgsrc, text, style: styleDefine, tags, id ,nest} = a;
+  imgsrc = getImgSrcUrl(imgsrc);
+  let url = charpter.url(id);
+  let label = text.substring(0, 6);
+  
+  let style=convertStyle(styleDefine);
+  let neststyle = style
+  let t1,t2;
+  if(nest){
+    neststyle = convertStyle(nest.style)
+    let sss = text.split(nest.text);
+    t1 = t2 = ''
+    t1 = sss[0];
+    for(let j=1;j<sss.length;j++){
+      t2 = t2+sss[j]
+    }
+    text = nest.text
+  }
   let ret = {
-    ...{ imgsrc, label, text, style, note, tags: tags, url },
+    ...{ t1,t2, imgsrc, label, text, style, note, tags: tags, url,neststyle },
   };
   return ret;
 };
@@ -129,7 +149,24 @@ export default {
     if (charpter) {
       this.title = charpter.label;
       this.hrefa = "#" + this.title;
-      this.list = charpter.children.map((a) => convert(a, charpter));
+      let {children} = charpter
+      let bbb = children.filter((a)=>{
+         let {parent,child} = a
+         if(parent){
+           return false;
+         }
+         if(child){
+           children.forEach((c)=>{
+             if(c.id==child){
+              a.nest = c;
+             }
+           })
+         }
+         return true;
+         
+      }) 
+      children = bbb
+      this.list = children.map((a) => convert(a, charpter));
     }
   },
   watch: {
@@ -152,3 +189,5 @@ export default {
   margin-top: 2px;
 }
 </style>
+
+
