@@ -7,7 +7,7 @@
 
 <script>
 import { Book } from "../store";
-import { gotoNote } from "../utils";
+import { gotoNote, wrapNest } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
 import isMobile from "_is-mobile@3.0.0@is-mobile";
@@ -38,12 +38,7 @@ export default {
     },
     getDataOfTable() {
       let b = new Book();
-      let aaa = b.Charpter().sort((a) => {
-        if (a.label == document.title) {
-          return -1;
-        }
-        return 1;
-      });
+      let aaa = b.Charpter();
       let ddd = aaa.map((c) => {
         return this.createOutLine(c);
       });
@@ -62,11 +57,16 @@ export default {
       let { label: title, children } = item;
       let expand = false;
       if (children) {
+        try {
+            children = item.mergeChild() 
+        // eslint-disable-next-line no-empty
+        } catch (error) {
+        }
         children = this.mapchildren(children);
         if (toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
-      let notedata = item;
+      let notedata = {...item,...wrapNest(item)};
       const render = (h) => {
         return h(TocOutLine, {
           props: {

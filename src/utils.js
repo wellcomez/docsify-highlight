@@ -70,6 +70,7 @@ export function checkClickOut(d, cb) {
 
 
 import { Modal } from "iview";
+import { tBackgroundColor, tUl } from './colorSelector';
 export function queryBox({ title, content, onCancel, onOk }) {
   Modal.confirm({
     onCancel,
@@ -111,4 +112,36 @@ export function getImgSrcUrl(imgsrc) {
   let http = u.protocol
   let host = u.host
   return `${http}//${host}${pathname}${path}`
+}
+export function wrapNest(node)
+{
+  let {text,nest} = node
+  let neststyle,t1,t2
+  if(nest){
+    neststyle = convertStyle(nest.style)
+    let sss = text.split(nest.text);
+    t1 = t2 = ''
+    t1 = sss[0];
+    for(let j=1;j<sss.length;j++){
+      t2 = t2+sss[j]
+    }
+    text = nest.text
+  }
+  return {t1,t2,text,neststyle}
+}
+export function convertStyle(styleDefine) {
+  let style={}
+  for(let color in styleDefine) {
+    color=parseInt(color);
+    let a=styleDefine[color];
+    let { colorhex }=a;
+    if(color==tUl) {
+      style["border-bottom"]="1px solid "+colorhex;
+    } else if(color==tBackgroundColor) {
+      style.backgroundColor=colorhex;
+    } else {
+      style.color=colorhex;
+    }
+  }
+  return style;
 }

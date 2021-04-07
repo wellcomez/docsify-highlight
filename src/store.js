@@ -318,6 +318,26 @@ class Chapter {
     });
     return title.concat(items).join("\n\n");
   }
+  mergeChild() {
+    let { children } = this
+    let bbb = children.filter((a) => {
+      let { parent, child } = a
+      if (parent) {
+        return false;
+      }
+      if (child) {
+        children.forEach((c) => {
+          if (c.id == child) {
+            a.nest = c;
+          }
+        })
+      }
+      return true;
+
+    })
+    children = bbb
+    return children
+  }
 }
 // import CharptHtml from './components/CharptHtml.vue'
 import ExportHtml from './components/ExportHtml.vue'

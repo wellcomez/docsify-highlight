@@ -70,46 +70,17 @@
   </div>
 </template>
 <script>
-import { tBackgroundColor, tUl } from "../colorSelector";
-import { getImgSrcUrl } from "../utils";
-// const rgba = require("color-rgba");
-function convertStyle(styleDefine) {
-  let style={ margin: "4px" };
-  for(let color in styleDefine) {
-    color=parseInt(color);
-    let a=styleDefine[color];
-    let { colorhex }=a;
-    if(color==tUl) {
-      style["border-bottom"]="1px solid "+colorhex;
-    } else if(color==tBackgroundColor) {
-      style.backgroundColor=colorhex;
-    } else {
-      style.color=colorhex;
-    }
-  }
-  return style;
-}
+import { convertStyle, getImgSrcUrl ,wrapNest} from "../utils";
 const convert = (a, charpter) => {
-  let { note, imgsrc, text, style: styleDefine, tags, id ,nest} = a;
+  let { imgsrc, text, id } = a;
   imgsrc = getImgSrcUrl(imgsrc);
   let url = charpter.url(id);
   let label = text.substring(0, 6);
-  
-  let style=convertStyle(styleDefine);
-  let neststyle = style
-  let t1,t2;
-  if(nest){
-    neststyle = convertStyle(nest.style)
-    let sss = text.split(nest.text);
-    t1 = t2 = ''
-    t1 = sss[0];
-    for(let j=1;j<sss.length;j++){
-      t2 = t2+sss[j]
-    }
-    text = nest.text
-  }
+  let style=convertStyle(a.style);
   let ret = {
-    ...{ t1,t2, imgsrc, label, text, style, note, tags: tags, url,neststyle },
+    ...a,
+    ...{style,label,url,imgsrc},
+    ...wrapNest(a)
   };
   return ret;
 };
@@ -131,12 +102,13 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
-    href({ title, label, index }) {
+    href({ title, index }) {
       return `#titleid?${title}${index}`;
     },
     onClick({ index, url }) {
       if (this.onClickURL) {
-        let a = this.charpter.children[index];
+        let children = this.charpter.mergeChild()
+        let a = children[index];
         this.onClickURL(a);
         return;
       } else {
@@ -149,29 +121,13 @@ export default {
     if (charpter) {
       this.title = charpter.label;
       this.hrefa = "#" + this.title;
-      let {children} = charpter
-      let bbb = children.filter((a)=>{
-         let {parent,child} = a
-         if(parent){
-           return false;
-         }
-         if(child){
-           children.forEach((c)=>{
-             if(c.id==child){
-              a.nest = c;
-             }
-           })
-         }
-         return true;
-         
-      }) 
-      children = bbb
+      let children = charpter.mergeChild()
       this.list = children.map((a) => convert(a, charpter));
     }
   },
   watch: {
     charpter(charpter) {
-      this.list = charpter.children.map((a) => convert(a, charpter));
+      this.list = charpter.mergeChild().map((a) => convert(a, charpter));
     },
   },
   props: {

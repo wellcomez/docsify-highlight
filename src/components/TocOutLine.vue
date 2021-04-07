@@ -9,7 +9,10 @@
         :style="style"
         :class="outlineTitleClass"
       >
-        <span :style="textStyle">{{ title2 }}</span>
+        <span :style="style" v-if="t1">{{ t1 }}</span>
+        <span v-if="neststyle" style="backgroundColor:white;"> <span :style="neststyle" >{{ title2 }}</span></span>
+        <span v-else>{{ title2 }}</span>
+        <span :style="style" v-if="t2">{{ t2 }}</span>
         <img
           v-if="imgsrc"
           v-bind:src="imgsrc"
@@ -86,43 +89,37 @@
 <script>
 import isMobile from "_is-mobile@3.0.0@is-mobile";
 const rgba = require("color-rgba");
-import { tBackgroundColor, tUl } from "../colorSelector";
-import { getImgSrcUrl } from '../utils';
-// import ClickOutside from "vue-click-outside";
 var Colr = require("Colr");
+import { convertStyle, getImgSrcUrl } from "../utils";
 export default {
   name: "TocOutLine",
   // directives: { ClickOutside },
   created() {
     let {
       label: title,
+      text,
       children,
       note,
       style: styleDefine,
+      neststyle,
+      t1,
+      t2,
       imgsrc,
     } = this.notedata;
-    this.showiconRight=isMobile()!=true;
+    this.showiconRight = isMobile() != true;
     this.imgsrc = getImgSrcUrl(imgsrc);
     // this.classOfSpan = this.spanclass(this.notedata);
-    this.title2 = title;
+    title = neststyle?text:title;
+    this.title2 = title
     if (note && note.length) {
       this.title2 = `"${note}"-${title}`;
     }
     this.title = title;
     this.note = note && note.length ? `"${note}"` : undefined;
-    let style = { "padding-left": "4px" };
+    let style = convertStyle(styleDefine);
     for (let color in styleDefine) {
-      color = parseInt(color);
       let a = styleDefine[color];
-      let { colorhex, enable } = a;
-      if (enable == false) continue;
-      if (color == tUl) {
-        this.textStyle.borderBottom = "1px solid " + colorhex;
-      } else if (color == tBackgroundColor) {
-        style.backgroundColor = colorhex;
-      } else {
-        style.color = colorhex;
-      }
+      let { colorhex } = a;
       if (this.iconColor.length == 0) {
         let array = rgba(colorhex);
         a[3] = 1;
@@ -133,6 +130,7 @@ export default {
         this.iconColor = Colr.fromHsvObject({ h, s, v }).toHex();
       }
     }
+
     let icon = "ios-brush-outline";
     if (note) {
       icon = "md-create";
@@ -149,6 +147,9 @@ export default {
     this.title = title;
     this.tips = title;
     this.disabled = false;
+    this.t1 = t1;
+    this.t2 = t2;
+    this.neststyle = neststyle;
     if (children && children.length) {
       this.disabled = true;
     }
@@ -158,6 +159,9 @@ export default {
   },
   data() {
     return {
+      neststyle: undefined,
+      t1: undefined,
+      t2: undefined,
       showiconRight: true,
       list: [
         {
@@ -193,7 +197,7 @@ export default {
   },
   computed: {
     placement() {
-      // return isMobile() ? "top-start" : 
+      // return isMobile() ? "top-start" :
       return "left-start";
     },
     maxWidth() {
