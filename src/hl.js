@@ -27,17 +27,6 @@ export function getIntersection(arrA, arrB) {
 }
 
 function runScrip() {
-    let ysh = () => {
-        let eles = document.getElementsByTagName('span')
-        for (let i = 0; i < eles.length; i++) {
-            let el = eles[i];
-            if (el.style && el.style.color) {
-                console.log(el.style.color)
-                if (el.style.color == "#0000ff" || el.style.color == 'rgb(0, 0, 255)')
-                    el.style.display = "none"
-            }
-        }
-    }
     let { enableScript } = getConfig().load();
     if (enableScript != true) return;
     let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
@@ -45,7 +34,6 @@ function runScrip() {
         let { script } = DocHighlighter
         run(script);
     }
-    run(ysh)
     function run(script) {
         if (script) {
             try {
