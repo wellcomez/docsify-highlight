@@ -1,6 +1,6 @@
 <template>
   <div class="" :style="style">
-    <ul style="margin: 10px; padding: 10px">
+    <ul style="margin: 10px; padding: 10px; padding-left: 20px">
       <li
         class="html-toc-li"
         v-for="({ href, label }, index) in list"
