@@ -277,6 +277,9 @@ class Chapter {
     let ret = new Chapter(store)
     ret.children = notes.map(({ hs }) => {
       return hs
+    }).filter((hs) => {
+      if (hs.html) return true;
+      return false;
     })
     return ret
   }
@@ -334,8 +337,8 @@ class Chapter {
   mergeChild() {
     let { children } = this
     let bbb = children.filter((a) => {
-      let { html} = a
-      if(html)return true;
+      let { html } = a
+      if (html) return true;
       return false;
 
     })
@@ -384,7 +387,7 @@ export class Book {
     data = Base64.encode(JSON.stringify(data));
     let rootpath = rootPath()
     let tilte = this.name
-    let dev = false; 
+    let dev = false;
     let umdjs = dev ? "docsify-highlight.umd.js" :
       "https://cdn.jsdelivr.net/npm/docsify-highlight@latest/dist/docsify-highlight.umd.min.js"
     let css = dev ? 'docsify-highlight.css' :
@@ -406,71 +409,6 @@ export class Book {
 </head>
 <body style="font-family: SimSun,sans-serif;" onload="window.exporthtml()">
   <div id="docsify-highlighter-exporthtml"></div>
-</body>
-`;
-    return ret
-  }
-  exportHtml2() {
-    let b = this
-    let aaa = b.Charpter().sort((a) => {
-      if (a.label == document.title) {
-        return -1;
-      }
-      return 1;
-    });
-    let data = aaa.map((charpter) => {
-      return charpter.json()
-    });
-    data = Base64.encode(JSON.stringify(data));
-    let html = getRawHtml(ExportHtml, { charpter: aaa });
-    let tilte = this.name
-    let ret = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>${tilte}</title>
-  <script type="text/javascript">
-  var bookdata = '${data}'
-  function clickOnToc(a) {
-    const getPosition = ($node) => {
-      let offset = {
-        top: 0,
-        left: 0,
-        height: $node.offsetHeight,
-      };
-      while ($node) {
-        offset.top += $node.offsetTop;
-        offset.left += $node.offsetLeft;
-        $node = $node.offsetParent;
-      }
-      offset.bottom = offset.top + offset.height;
-      return offset;
-    };
-    h2 = document.querySelectorAll("h2");
-    for (let i = 0; i < h2.length; i++) {
-      let t = h2[i];
-      if (t.innerText == a) {
-        let { top } = getPosition(t);
-        window.scrollTo(0, top - 50);
-        return;
-      }
-    }
-  }
-</script>
-</head>
-<body style="font-family: SimSun,sans-serif;">
-${html}
-<script>
-var hh = document.querySelectorAll('li.html-toc-li')
-for(var i=0; i<hh.length; i++){
-var h2 = hh[i];
-h2.addEventListener('click',(e)=>{
-  var a = e.target.innerText;
-  clickOnToc(a)
-})
-}
-</script>
 </body>
 `;
     return ret

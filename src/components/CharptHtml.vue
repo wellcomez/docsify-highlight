@@ -1,5 +1,5 @@
 <template>
-  <div class="" style="margin-left: 10%; margin-right: 10%">
+  <div class="charpterhtml" style="margin-left: 10%; margin-right: 10%">
     <h2 v-if="exporthtml">
       <a :href="hrefa" style="text-decoration: none; color: #42b983">{{
         title
@@ -140,6 +140,9 @@ export default {
 };
 </script>
 <style >
+.charpterhtml i{
+  font-style: normal;
+}
 .outline-title {
   border-left: 2px solid #42b983;
   margin-left: 4px;
