@@ -475,16 +475,28 @@ export class DocHighlighter {
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        if (highlightIdExtra) {
-            let hsparent = this.store.geths(highlightIdExtra)
-            if (hsparent) {
-                let child = noteid
-                this.store.update({ id: highlightIdExtra, child })
-                let styleparent = hsparent.style
-                if (styleparent && style) {
-                    style = { ...styleparent, ...style }
+        let html
+        const getHtml = (noteid) => {
+            let parent = new Set();
+            let html = ""
+            this.highlighter.getDoms(noteid).forEach((node) => {
+                parent.add(node.parentElement)
+            });
+            parent.forEach((node) => {
+                let ii = node.querySelectorAll('i');
+                for (let i = 0; i < ii.length; i++) {
+                    html = html + ii[i].outerHTML
                 }
-            }
+            })
+            if (html.length)
+                return html
+            return
+        }
+        if (highlightIdExtra == undefined) {
+            html = getHtml(noteid)
+        } else {
+            let html = getHtml(highlightIdExtra)
+            this.store.update({ id: highlightIdExtra, html })
         }
 
         if (note) {
@@ -524,13 +536,13 @@ export class DocHighlighter {
                     hs.top = this.getElementPosition(noteid)
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
-                    hs.parent = highlightIdExtra
+                    hs.html = html
                     return hs
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
             } else {
-                this.store.update({ id: noteid, note, style, tags, bookmark,parent:highlightIdExtra})
+                this.store.update({ id: noteid, note, style, tags, bookmark, html })
             }
         } else {
             this.removeHighLight(noteid);

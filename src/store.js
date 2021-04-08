@@ -334,18 +334,9 @@ class Chapter {
   mergeChild() {
     let { children } = this
     let bbb = children.filter((a) => {
-      let { parent, child } = a
-      if (parent) {
-        return false;
-      }
-      if (child) {
-        children.forEach((c) => {
-          if (c.id == child) {
-            a.nest = c;
-          }
-        })
-      }
-      return true;
+      let { html} = a
+      if(html)return true;
+      return false;
 
     })
     children = bbb
