@@ -1,7 +1,6 @@
 import Highlighter from 'web-highlighter';
 import { Book } from './store';
 import { User } from "./UserLogin";
-import { getIntersection } from './hl';
 import { log } from "./log";
 import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl, queryBox } from './utils';
@@ -341,45 +340,45 @@ export class DocHighlighter {
         //     return selectedNodes
         // });
 
-        this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
-            let last = selectedNodes[selectedNodes.length - 1]
-            if (last.splitType != 'tail') return []
-            if (selectedNodes.length === 0) {
-                return [];
-            }
-            selectedNodes = selectedNodes.filter((selected) => {
-                try {
-                    let parent = selected.$node.parentNode;
-                    if (parent.style.display == 'none' || parent.classList.contains('hl-ignored')) {
-                        return false;
-                    }
-                    // eslint-disable-next-line no-empty
-                } catch (error) {
-                }
-                return true
-            })
-            const candidates = selectedNodes.slice(1).reduce(
-                (left, selected) => getIntersection(left, this.getIds(selected)),
-                this.getIds(selectedNodes[0])
-            );
-            for (let i = 0; i < candidates.length; i++) {
-                if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
-                    return [];
-                }
-            }
+        // this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
+        //     let last = selectedNodes[selectedNodes.length - 1]
+        //     if (last.splitType != 'tail') return []
+        //     if (selectedNodes.length === 0) {
+        //         return [];
+        //     }
+        //     selectedNodes = selectedNodes.filter((selected) => {
+        //         try {
+        //             let parent = selected.$node.parentNode;
+        //             if (parent.style.display == 'none' || parent.classList.contains('hl-ignored')) {
+        //                 return false;
+        //             }
+        //             // eslint-disable-next-line no-empty
+        //         } catch (error) {
+        //         }
+        //         return true
+        //     })
+        //     const candidates = selectedNodes.slice(1).reduce(
+        //         (left, selected) => getIntersection(left, this.getIds(selected)),
+        //         this.getIds(selectedNodes[0])
+        //     );
+        //     for (let i = 0; i < candidates.length; i++) {
+        //         if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
+        //             return [];
+        //         }
+        //     }
 
-            return selectedNodes;
-        });
+        //     return selectedNodes;
+        // });
 
-        this.highlighter.hooks.Serialize.Restore.tap(
-            source => log('Serialize.Restore hook -', source)
-        );
+        // this.highlighter.hooks.Serialize.Restore.tap(
+        //     source => log('Serialize.Restore hook -', source)
+        // );
 
-        this.highlighter.hooks.Serialize.RecordInfo.tap(() => {
-            const extraInfo = Math.random().toFixed(4);
-            log('Serialize.RecordInfo hook -', extraInfo);
-            return extraInfo;
-        });
+        // this.highlighter.hooks.Serialize.RecordInfo.tap(() => {
+        //     const extraInfo = Math.random().toFixed(4);
+        //     log('Serialize.RecordInfo hook -', extraInfo);
+        //     return extraInfo;
+        // });
     }
 
     deleteId(id) {
