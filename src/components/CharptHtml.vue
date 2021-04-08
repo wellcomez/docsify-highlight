@@ -7,7 +7,10 @@
     </h2>
     <h2 v-else>{{ title }}</h2>
     <div
-      v-for="({ note, style, label, imgsrc, text, tags, url ,t1,t2,neststyle}, index) in list"
+      v-for="(
+        { note, style, label, imgsrc, text, tags, url, t1, t2, neststyle },
+        index
+      ) in list"
       :key="index"
     >
       <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->
@@ -53,10 +56,10 @@
             >{{ a }}</span
           >
         </div>
-        <span v-if="t1" :style=style>{{t1}}</span>
-        <span v-if="neststyle" :style=neststyle>{{text}}</span>
+        <span v-if="t1" :style="style">{{ t1 }}</span>
+        <span v-if="neststyle" :style="neststyle">{{ text }}</span>
         <span v-else-if="text" :style="style">{{ text }}</span>
-        <span v-if="t2" :style=style>{{t2}}</span>
+        <span v-if="t2" :style="style">{{ t2 }}</span>
       </div>
       <img
         v-if="imgsrc"
@@ -70,20 +73,8 @@
   </div>
 </template>
 <script>
-import { convertStyle, getImgSrcUrl ,wrapNest} from "../utils";
-const convert = (a, charpter) => {
-  let { imgsrc, text, id } = a;
-  imgsrc = getImgSrcUrl(imgsrc);
-  let url = charpter.url(id);
-  let label = text.substring(0, 6);
-  let style=convertStyle(a.style);
-  let ret = {
-    ...a,
-    ...{style,label,url,imgsrc},
-    ...wrapNest(a)
-  };
-  return ret;
-};
+import { convertStyle, getImgSrcUrl, wrapNest } from "../utils";
+
 export default {
   computed() {
     return {};
@@ -101,13 +92,26 @@ export default {
     };
   },
   methods: {
+    convert(a, charpter) {
+      let { imgsrc, text, id } = a;
+      imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
+      let url = charpter.url(id,this.rootpath);
+      let label = text.substring(0, 6);
+      let style = convertStyle(a.style);
+      let ret = {
+        ...a,
+        ...{ style, label, url, imgsrc },
+        ...wrapNest(a),
+      };
+      return ret;
+    },
     // eslint-disable-next-line no-unused-vars
     href({ title, index }) {
       return `#titleid?${title}${index}`;
     },
     onClick({ index, url }) {
       if (this.onClickURL) {
-        let children = this.charpter.mergeChild()
+        let children = this.charpter.mergeChild();
         let a = children[index];
         this.onClickURL(a);
         return;
@@ -116,21 +120,23 @@ export default {
       }
     },
   },
+
   created() {
     let { charpter } = this;
     if (charpter) {
       this.title = charpter.label;
       this.hrefa = "#" + this.title;
-      let children = charpter.mergeChild()
-      this.list = children.map((a) => convert(a, charpter));
+      let children = charpter.mergeChild();
+      this.list = children.map((a) => this.convert(a, charpter));
     }
   },
   watch: {
     charpter(charpter) {
-      this.list = charpter.mergeChild().map((a) => convert(a, charpter));
+      this.list = charpter.mergeChild().map((a) => this.convert(a, charpter));
     },
   },
   props: {
+    rootpath: { type: String, default: undefined },
     exporthtml: { type: Boolean, default: false },
     charpter: { type: Object, default: undefined },
     onClickURL: { type: Function, default: undefined },

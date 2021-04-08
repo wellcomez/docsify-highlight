@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "0.21.2",
+  "version": "0.22.1",
   "jsdelivr": [
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
@@ -42,6 +42,7 @@
     "file-saver": "^2.0.5",
     "is-mobile": "^3.0.0",
     "iview": "^3.5.4",
+    "js-base64": "^3.6.0",
     "leancloud-storage": "^4.10.0",
     "md5": "^2.3.0",
     "vue": "^2.6.11",

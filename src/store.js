@@ -1,10 +1,11 @@
 import { colorClassList } from "./colorSelector";
-import { getImgSrcUrl, parseurl } from "./utils";
+import { getImgSrcUrl, parseurl, rootPath } from "./utils";
 import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
   constructor(useridArg) {
-    this.bookname = window.$docsify.name;
+    if (window.$docsify)
+      this.bookname = window.$docsify.name;
     if (this.bookname == null || this.bookname == undefined) {
       this.bookname = window.location.hostname;
     }
@@ -270,18 +271,30 @@ class Chapter {
   count() {
     return this.store.getAll().length
   }
-  json() {
-    let { key, path, title } = this.store;
-    let notes = this.store.storeToJson();
-    return { key, title, notes, path };
+  static createByJson({ title, userid, notes, path }) {
+    let store = new LocalStore({ path, userid, title })
+    // store.forceSave(notes)
+    let ret = new Chapter(store)
+    ret.children = notes.map(({ hs }) => {
+      return hs
+    })
+    return ret
   }
-  url(id) {
+  json() {
+    let { key, path, title, userid } = this.store;
+    let notes = this.store.storeToJson();
+    return { key, title, notes, path, userid };
+  }
+  url(id, rootpath) {
     let { path, } = this
     let hash = path.substring(path.indexOf("#"));
     hash = `${hash}?noteid=${id}`
-    let host = document.location.host
-    let http = document.location.protocol
-    return `${http}//${host}${hash}`
+    if (rootpath == undefined) {
+      let host = document.location.host
+      let http = document.location.protocol
+      rootpath = `${http}//${host}`
+    }
+    return `${rootpath}${hash}`
   }
   md() {
     let title = ["## " + this.label];
@@ -356,6 +369,8 @@ export function getRawHtml(cmp, props) {
   a.$mount(node);
   return a.$el.outerHTML;
 }
+import { Base64 } from 'js-base64';
+
 export class Book {
   static updated = false;
   constructor(useridArg) {
@@ -372,6 +387,50 @@ export class Book {
       }
       return 1;
     });
+    let data = aaa.map((charpter) => {
+      return charpter.json()
+    });
+    data = Base64.encode(JSON.stringify(data));
+    let rootpath = rootPath()
+    let tilte = this.name
+    let dev = false; 
+    let umdjs = dev ? "docsify-highlight.umd.js" :
+      "https://cdn.jsdelivr.net/npm/docsify-highlight@latest/dist/docsify-highlight.umd.min.js"
+    let css = dev ? 'docsify-highlight.css' :
+      "https://cdn.jsdelivr.net/npm/docsify-highlight@latest/dist/docsify-highlight.min.css"
+    let ret = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <link rel="stylesheet" href="${css}" />
+  <script type="text/javascript" src="${umdjs}"></script>
+  <title>${tilte}</title>
+  <script type="text/javascript">
+  var bookdata = '${data}';
+  var rootpath = "${rootpath}";
+  window.bookdata = {bookdata,rootpath};
+  </script>
+</head>
+<body style="font-family: SimSun,sans-serif;" onload="window.exporthtml()">
+  <div id="docsify-highlighter-exporthtml"></div>
+</body>
+`;
+    return ret
+  }
+  exportHtml2() {
+    let b = this
+    let aaa = b.Charpter().sort((a) => {
+      if (a.label == document.title) {
+        return -1;
+      }
+      return 1;
+    });
+    let data = aaa.map((charpter) => {
+      return charpter.json()
+    });
+    data = Base64.encode(JSON.stringify(data));
     let html = getRawHtml(ExportHtml, { charpter: aaa });
     let tilte = this.name
     let ret = `<!DOCTYPE html>
@@ -381,6 +440,7 @@ export class Book {
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>${tilte}</title>
   <script type="text/javascript">
+  var bookdata = '${data}'
   function clickOnToc(a) {
     const getPosition = ($node) => {
       let offset = {
@@ -495,7 +555,30 @@ h2.addEventListener('click',(e)=>{
       .join("\n\n");
   }
 }
-
+export function createExportHtmlEntry() {
+  let ele = document.querySelector("#docsify-highlighter-exporthtml")
+  if (ele == undefined) {
+    return
+  }
+  let { bookdata, rootpath } = window.bookdata ? window.bookdata : {};
+  if (bookdata == undefined) return;
+  let data = Base64.decode(bookdata)
+  data = JSON.parse(data)
+  let charpter = data.map((a) => {
+    if (a) {
+      return Chapter.createByJson(a)
+    }
+  })
+  // let charpter = book.Charpter()
+  let props = { charpter, rootpath }
+  let cmp = ExportHtml
+  cmp = Vue.extend(cmp);
+  let a = new cmp({
+    propsData: props,
+  });
+  a.$mount("#docsify-highlighter-exporthtml");
+}
+window.exporthtml = createExportHtmlEntry
 export function getChanged() {
   let { changeNumber, localNumber } = getConfig().load()
   if (localNumber == undefined) {

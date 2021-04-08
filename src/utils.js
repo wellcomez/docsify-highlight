@@ -95,7 +95,7 @@ export function gotoNote({ path, id, key }) {
   }
 }
 
-export function getImgSrcUrl(imgsrc) {
+export function getImgSrcUrl(imgsrc,rootpath) {
   if (imgsrc == undefined) return undefined;
   let url = undefined;
   try {
@@ -106,12 +106,18 @@ export function getImgSrcUrl(imgsrc) {
   if (url) {
     return imgsrc
   }
+  let path = imgsrc
+  if(rootpath==undefined) {
+    rootpath = rootPath()
+  }
+  return `${rootpath}${path}`
+}
+export function rootPath() {
   let u = document.location
   let pathname = u.pathname;
-  let path = imgsrc
   let http = u.protocol
   let host = u.host
-  return `${http}//${host}${pathname}${path}`
+  return `${http}//${host}${pathname}`
 }
 export function wrapNest(node)
 {

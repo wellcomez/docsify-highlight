@@ -7,6 +7,7 @@
       :charpter="charpter"
       :key="index"
       :exporthtml=true
+      :rootpath=rootpath 
     />
   </div>
 </template>
@@ -17,6 +18,7 @@ export default {
   name: "ExportHtml",
   components: { TocHtml, CharptHtml },
   props: {
+    rootpath:{ type: String, default:undefined},
     charpter: {
       type: Array,
       default: () => {

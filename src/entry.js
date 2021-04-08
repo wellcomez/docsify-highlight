@@ -27,8 +27,12 @@ export function install(hook, vm) {
     // 初始化并第一次加载完成数据后调用，没有参数。
   });
 }
-window.$docsify.plugins = (window.$docsify.plugins || []).concat(install)
-window.hlinit = hlinit
+try {
+  window.$docsify.plugins = (window.$docsify.plugins || []).concat(install)
+  window.hlinit = hlinit
+  // eslint-disable-next-line no-empty
+} catch (error) {
+}
 export default {
-  Panel, Note: NoteMenu, hlinit
+  Panel, Note: NoteMenu 
 }
