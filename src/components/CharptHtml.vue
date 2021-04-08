@@ -8,7 +8,7 @@
     <h2 v-else>{{ title }}</h2>
     <div
       v-for="(
-        { note, style, label, imgsrc, text, tags, url, t1, t2, neststyle },
+        { note, html, label, imgsrc, tags, url},
         index
       ) in list"
       :key="index"
@@ -56,10 +56,7 @@
             >{{ a }}</span
           >
         </div>
-        <span v-if="t1" :style="style">{{ t1 }}</span>
-        <span v-if="neststyle" :style="neststyle">{{ text }}</span>
-        <span v-else-if="text" :style="style">{{ text }}</span>
-        <span v-if="t2" :style="style">{{ t2 }}</span>
+        <div style="display:inline" v-html=html></div>
       </div>
       <img
         v-if="imgsrc"
@@ -73,7 +70,7 @@
   </div>
 </template>
 <script>
-import { convertStyle, getImgSrcUrl, wrapNest } from "../utils";
+import { convertStyle, getImgSrcUrl} from "../utils";
 
 export default {
   computed() {
@@ -93,15 +90,14 @@ export default {
   },
   methods: {
     convert(a, charpter) {
-      let { imgsrc, text, id } = a;
+      let { imgsrc, text, id} = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
       let url = charpter.url(id,this.rootpath);
       let label = text.substring(0, 6);
       let style = convertStyle(a.style);
       let ret = {
         ...a,
-        ...{ style, label, url, imgsrc },
-        ...wrapNest(a),
+        ...{ style, label, url, imgsrc }
       };
       return ret;
     },
