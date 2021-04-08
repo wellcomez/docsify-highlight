@@ -11,7 +11,7 @@ const leftPos = () => {
     return document.getElementsByClassName("content")[0].offsetWidth - 300;
 };
 
-const default_green = "#33FF33";
+const default_green = "#33FF338F";
 const default_red = "#ff336659";
 const default_yellow = "#FFFF3355";
 import α from 'color-alpha'
