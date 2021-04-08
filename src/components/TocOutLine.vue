@@ -87,9 +87,10 @@
   </Row>
 </template>
 <script>
-import isMobile from "_is-mobile@3.0.0@is-mobile";
+var isMobile = require('is-mobile');
+
 const rgba = require("color-rgba");
-var Colr = require("Colr");
+var Colr = require("colr");
 import { convertStyle, getImgSrcUrl } from "../utils";
 export default {
   name: "TocOutLine",

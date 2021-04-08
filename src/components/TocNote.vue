@@ -10,7 +10,7 @@ import { Book } from "../store";
 import { gotoNote, wrapNest } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
-import isMobile from "_is-mobile@3.0.0@is-mobile";
+var isMobile = require('is-mobile');
 
 let toc = {};
 export default {

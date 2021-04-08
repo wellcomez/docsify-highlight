@@ -31,7 +31,8 @@
   </Tooltip>
 </template>
 <script>
-import isMobile from "_is-mobile@3.0.0@is-mobile";
+var isMobile = require('is-mobile');
+
 const svgcolor_on = "#42b983";
 const svgcolor_off = "";
 export default {

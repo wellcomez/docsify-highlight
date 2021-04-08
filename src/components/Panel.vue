@@ -222,7 +222,8 @@ import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
-import isMobile from "_is-mobile@3.0.0@is-mobile";
+var isMobile = require('is-mobile');
+
 import { gotoNote } from "../utils";
 // import { checkClickOut } from "../mountCmp";
 export default {
