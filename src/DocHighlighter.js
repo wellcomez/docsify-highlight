@@ -4,7 +4,7 @@ import { User } from "./UserLogin";
 import { log } from "./log";
 import {getIntersection} from "./hl"
 import { getConfig } from './ANoteConfig';
-import { mountCmp, parseurl, queryBox } from './utils';
+import { createHtml, mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
@@ -326,9 +326,11 @@ export class DocHighlighter {
             let node = this.getElement(id)
             this.createNoteMenu(node)
         };
+        let {$root} = this;
         this.highlighter = new Highlighter({
+            $root,
             wrapTag: 'i',
-            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.hl-ignored'],
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.hl-ignored', '.charpterhtml'],
             style: {
                 className: 'docsify-highlighter'
             }
@@ -429,9 +431,16 @@ export class DocHighlighter {
         if (type == "from-store") {
             this.store.getAll()
             let creatFromStore = (hs) => {
-                let { id, style, note, bookmark } = this.store.geths(hs.id)
+                let { id, style, note, bookmark, tree } = this.store.geths(hs.id)
                 let a = new highlightType(this, id, style)
                 a.showHighlight()
+                let parentNodeId = this.parentNodeId(id)
+                if (parentNodeId == undefined) {
+                    if (tree == undefined) {
+                        tree = this.getHtml(id).tree
+                        this.store.update({ id, tree, version: '0.22' })
+                    }
+                }
                 if (note && note.length) {
                     this.createMarkNode(id, note);
                 }
@@ -463,10 +472,8 @@ export class DocHighlighter {
             this.createNoteMenu(this.getElement(hs.id), sources)
         }
     };
-    saveNoteData = (noteid, data) => {
+    parentNodeId(noteid) {
         let highlightIdExtra;
-        let { note, sources, style, tags, img, bookmark } = data ? data : {}
-        let change = style != undefined || note || tags.length || img && img.length || bookmark
         try {
             this.highlighter.getDoms(noteid).forEach((node) => {
                 if (highlightIdExtra == undefined)
@@ -477,7 +484,66 @@ export class DocHighlighter {
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        if (highlightIdExtra) {
+        return highlightIdExtra;
+    }
+    getHtml = (noteid) => {
+        let parent = new Set();
+        let doms = this.highlighter.getDoms(noteid);
+        doms.forEach((a) => {
+            console.log(a)
+        })
+        // let html = ""
+        this.highlighter.getDoms(noteid).forEach((node) => {
+            parent.add(node.parentElement)
+        });
+        let ret = []
+        let styleList = []
+        parent.forEach((node) => {
+            const buildTree = (node) => {
+                let ii = node.children
+                let { tagName } = node;
+                let children = []
+                for (let i = 0; i < ii.length; i++) {
+                    let el = ii[i];
+                    let a = buildTree(el)
+                    if (a.length) {
+                        children.push(a)
+                    }
+                    if (el.classList.contains('docsify-highlighter')) {
+                        let { tagName } = el;
+                        let style = el.getAttribute("style")
+                        if (styleList.indexOf(style) == -1) {
+                            styleList.push(style)
+                        }
+                        style = styleList.indexOf(style)
+                        let text = el.innerText;
+                        let child = { tagName, text, style }
+                        children.push(child)
+                        // console.log(child);
+                    }
+                }
+                return { tagName, children }
+            }
+            let a = buildTree(node)
+            //     el.removeAttribute("data-highlight-id")
+            //     el.removeAttribute("data-highlight-split-type")
+            //     el.removeAttribute("data-highlight-id-extra")
+            ret.push(a)
+        })
+        let tree = { nodes: ret, styleList }
+        let html = createHtml(tree)
+        return { html, tree }
+    }
+
+    saveNoteData = (noteid, data) => {
+        let { note, sources, style, tags, img, bookmark } = data ? data : {}
+        let change = style != undefined || note || tags.length || img && img.length || bookmark
+        let highlightIdExtra = this.parentNodeId(noteid)
+        let tree, version = '0.22';
+
+        if (highlightIdExtra == undefined) {
+            let a = this.getHtml(noteid)
+            tree = a.tree
             let hsparent = this.store.geths(highlightIdExtra)
             if (hsparent) {
                 let child = noteid
@@ -487,6 +553,9 @@ export class DocHighlighter {
                     style = { ...styleparent, ...style }
                 }
             }
+        } else {
+            let { tree } = this.getHtml(highlightIdExtra)
+            this.store.update({ id: highlightIdExtra, tree, version })
         }
 
         if (note) {
@@ -526,13 +595,14 @@ export class DocHighlighter {
                     hs.top = this.getElementPosition(noteid)
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
-                    hs.parent = highlightIdExtra
+                    hs.tree = tree
+                    hs.version = version
                     return hs
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
             } else {
-                this.store.update({ id: noteid, note, style, tags, bookmark,parent:highlightIdExtra})
+                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version })
             }
         } else {
             this.removeHighLight(noteid);
@@ -662,8 +732,10 @@ export class DocHighlighter {
                         wrap.classList.add('docsify-highlighter')
                         // wrap.classList.add('highlight-mengshou-wrap')
                         wrap.dataset['highlightId'] = id
-                        ele.parentElement.replaceChild(wrap, ele)
-                        wrap.appendChild(ele)
+                        if (ele) {
+                            ele.parentElement.replaceChild(wrap, ele)
+                            wrap.appendChild(ele)
+                        }
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }

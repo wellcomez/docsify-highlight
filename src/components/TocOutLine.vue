@@ -9,10 +9,9 @@
         :style="style"
         :class="outlineTitleClass"
       >
-        <span :style="style" v-if="t1">{{ t1 }}</span>
-        <span v-if="neststyle" style="backgroundColor:white;"> <span :style="neststyle" >{{ title2 }}</span></span>
-        <span v-else>{{ title2 }}</span>
-        <span :style="style" v-if="t2">{{ t2 }}</span>
+
+        <span v-if="html" v-html="html"></span>
+        <span v-else>{{title2}}</span>
         <img
           v-if="imgsrc"
           v-bind:src="imgsrc"
@@ -87,31 +86,28 @@
   </Row>
 </template>
 <script>
-var isMobile = require('is-mobile');
+var isMobile = require("is-mobile");
 
 const rgba = require("color-rgba");
 var Colr = require("colr");
-import { convertStyle, getImgSrcUrl } from "../utils";
+import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 export default {
   name: "TocOutLine",
   // directives: { ClickOutside },
   created() {
     let {
       label: title,
-      text,
       children,
       note,
       style: styleDefine,
-      neststyle,
-      t1,
-      t2,
       imgsrc,
+      tree,
     } = this.notedata;
     this.showiconRight = isMobile() != true;
     this.imgsrc = getImgSrcUrl(imgsrc);
+    this.html = createHtml(tree);
     // this.classOfSpan = this.spanclass(this.notedata);
-    title = neststyle?text:title;
-    this.title2 = title
+    this.title2 = title;
     if (note && note.length) {
       this.title2 = `"${note}"-${title}`;
     }
@@ -148,9 +144,9 @@ export default {
     this.title = title;
     this.tips = title;
     this.disabled = false;
-    this.t1 = t1;
-    this.t2 = t2;
-    this.neststyle = neststyle;
+    // this.t1 = t1;
+    // this.t2 = t2;
+    // this.neststyle = neststyle;
     if (children && children.length) {
       this.disabled = true;
     }
@@ -164,6 +160,8 @@ export default {
       t1: undefined,
       t2: undefined,
       showiconRight: true,
+      title2:undefined,
+      html:undefined,
       list: [
         {
           name: "删除",

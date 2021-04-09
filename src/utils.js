@@ -95,7 +95,7 @@ export function gotoNote({ path, id, key }) {
   }
 }
 
-export function getImgSrcUrl(imgsrc,rootpath) {
+export function getImgSrcUrl(imgsrc, rootpath) {
   if (imgsrc == undefined) return undefined;
   let url = undefined;
   try {
@@ -107,7 +107,7 @@ export function getImgSrcUrl(imgsrc,rootpath) {
     return imgsrc
   }
   let path = imgsrc
-  if(rootpath==undefined) {
+  if (rootpath == undefined) {
     rootpath = rootPath()
   }
   return `${rootpath}${path}`
@@ -119,16 +119,15 @@ export function rootPath() {
   let host = u.host
   return `${http}//${host}${pathname}`
 }
-export function wrapNest(node)
-{
-  let {text,nest} = node
-  let neststyle,t1,t2
-  if(nest){
+export function wrapNest(node) {
+  let { text, nest } = node
+  let neststyle, t1, t2
+  if (nest) {
     neststyle = convertStyle(nest.style)
     let sameparts = findSameParts(text, nest.text);
-    let split = sameparts.length?sameparts[0]:nest.text;
-    sameparts.forEach((a)=>{
-      if(split.length<a.length){
+    let split = sameparts.length ? sameparts[0] : nest.text;
+    sameparts.forEach((a) => {
+      if (split.length < a.length) {
         split = a;
       }
     })
@@ -136,48 +135,48 @@ export function wrapNest(node)
     let sss = text.split(split);
     t1 = t2 = ''
     t1 = sss[0];
-    for(let j=1;j<sss.length;j++){
-      t2 = t2+sss[j]
+    for (let j = 1; j < sss.length; j++) {
+      t2 = t2 + sss[j]
     }
     text = nest.text
   }
-  return {t1,t2,text,neststyle}
+  return { t1, t2, text, neststyle }
 }
 export function convertStyle(styleDefine) {
-  let style={}
-  for(let color in styleDefine) {
-    color=parseInt(color);
-    let a=styleDefine[color];
-    let { colorhex }=a;
-    if(color==tUl) {
-      style["border-bottom"]="1px solid "+colorhex;
-    } else if(color==tBackgroundColor) {
-      style.backgroundColor=colorhex;
+  let style = {}
+  for (let color in styleDefine) {
+    color = parseInt(color);
+    let a = styleDefine[color];
+    let { colorhex } = a;
+    if (color == tUl) {
+      style["border-bottom"] = "1px solid " + colorhex;
+    } else if (color == tBackgroundColor) {
+      style.backgroundColor = colorhex;
     } else {
-      style.color=colorhex;
+      style.color = colorhex;
     }
   }
   return style;
 }
-function findSameParts(str1, str2, options={}) {
+function findSameParts(str1, str2, options = {}) {
   if (typeof str1 !== "string" || typeof str2 !== "string") {
-      return [];
+    return [];
   }
   let trimStr1 = str1.trim();
   let trimStr2 = str2.trim();
   if (trimStr1.length === 0 || trimStr2.length === 0) {
-      return [];
+    return [];
   }
 
-  let {minStrLength, ignoreCase} = options;
+  let { minStrLength, ignoreCase } = options;
 
-  if(ignoreCase === undefined || (ignoreCase !== 0 && ignoreCase !== false)) {
-      ignoreCase = true; //default
+  if (ignoreCase === undefined || (ignoreCase !== 0 && ignoreCase !== false)) {
+    ignoreCase = true; //default
   }
 
   if (ignoreCase === true) {
-      trimStr1 = trimStr1.toLowerCase();
-      trimStr2 = trimStr2.toLowerCase();
+    trimStr1 = trimStr1.toLowerCase();
+    trimStr2 = trimStr2.toLowerCase();
   }
 
   const strArray = [trimStr1, trimStr2];
@@ -185,31 +184,59 @@ function findSameParts(str1, str2, options={}) {
   const shortStr = strArray[index];
   const longStr = strArray[1 - index];
 
-  if(!minStrLength || minStrLength < 1) {
-      minStrLength = 3; //default value
+  if (!minStrLength || minStrLength < 1) {
+    minStrLength = 3; //default value
   }
 
-  if(minStrLength > shortStr.length) {
-      minStrLength = shortStr.length;
+  if (minStrLength > shortStr.length) {
+    minStrLength = shortStr.length;
   }
 
   let allFoundStr = [];
   for (let i = 0; i < shortStr.length - minStrLength + 1;) {
-      let foundStr;
-      for (let j = minStrLength; j <= shortStr.length - i; j++) {
-          let tempStr = shortStr.substr(i, j);
-          if (longStr.indexOf(tempStr) > -1) {
-              foundStr = tempStr;
-          } else {
-              break;
-          }
-      }
-      if (foundStr) {
-          allFoundStr.push(foundStr.trim());
-          i += foundStr.length;
+    let foundStr;
+    for (let j = minStrLength; j <= shortStr.length - i; j++) {
+      let tempStr = shortStr.substr(i, j);
+      if (longStr.indexOf(tempStr) > -1) {
+        foundStr = tempStr;
       } else {
-          i++;
+        break;
       }
+    }
+    if (foundStr) {
+      allFoundStr.push(foundStr.trim());
+      i += foundStr.length;
+    } else {
+      i++;
+    }
   }
   return allFoundStr;
+}
+
+export function createHtml(json) {
+  if(json==undefined||json==null)return
+  let { nodes, styleList } = json
+  function convertNodes(nodes) {
+    return nodes.map((el) => {
+      let html = ''
+      let { tagName, text, style, children } = el
+      if (children) {
+        let a = convertNodes(children)
+        if (tagName) {
+          let b = document.createElement(tagName)
+          b.innerHTML = a;
+          a = b.outerHTML;
+        }
+        html = html + a;
+      }
+      else {
+        let el = document.createElement(tagName)
+        el.setAttribute('style', styleList[style])
+        el.innerText = text
+        html = html + el.outerHTML
+      }
+      return html
+    }).join('')
+  }
+  return convertNodes(nodes)
 }

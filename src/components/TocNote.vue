@@ -7,7 +7,7 @@
 
 <script>
 import { Book } from "../store";
-import { gotoNote, wrapNest } from "../utils";
+import { gotoNote} from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
 var isMobile = require('is-mobile');
@@ -66,7 +66,7 @@ export default {
         if (toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
-      let notedata = {...item,...wrapNest(item)};
+      let notedata = {...item};
       const render = (h) => {
         return h(TocOutLine, {
           props: {
