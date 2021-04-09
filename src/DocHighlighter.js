@@ -2,6 +2,7 @@ import Highlighter from 'web-highlighter';
 import { Book } from './store';
 import { User } from "./UserLogin";
 import { log } from "./log";
+import {getIntersection} from "./hl"
 import { getConfig } from './ANoteConfig';
 import { mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
@@ -194,6 +195,7 @@ export class DocHighlighter {
 
 
     constructor() {
+        this.$root = document
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
@@ -336,39 +338,39 @@ export class DocHighlighter {
         // this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
         this.highlighter.on(Highlighter.event.CREATE, this.onCreate.bind(this));
         this.highlighter.on(Highlighter.event.CLICK, onClick);
-        // this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
-        //     return selectedNodes
-        // });
+        this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
+            return selectedNodes
+        });
 
-        // this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
-        //     let last = selectedNodes[selectedNodes.length - 1]
-        //     if (last.splitType != 'tail') return []
-        //     if (selectedNodes.length === 0) {
-        //         return [];
-        //     }
-        //     selectedNodes = selectedNodes.filter((selected) => {
-        //         try {
-        //             let parent = selected.$node.parentNode;
-        //             if (parent.style.display == 'none' || parent.classList.contains('hl-ignored')) {
-        //                 return false;
-        //             }
-        //             // eslint-disable-next-line no-empty
-        //         } catch (error) {
-        //         }
-        //         return true
-        //     })
-        //     const candidates = selectedNodes.slice(1).reduce(
-        //         (left, selected) => getIntersection(left, this.getIds(selected)),
-        //         this.getIds(selectedNodes[0])
-        //     );
-        //     for (let i = 0; i < candidates.length; i++) {
-        //         if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
-        //             return [];
-        //         }
-        //     }
+        this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
+            let last = selectedNodes[selectedNodes.length - 1]
+            if (last.splitType != 'tail') return []
+            if (selectedNodes.length === 0) {
+                return [];
+            }
+            selectedNodes = selectedNodes.filter((selected) => {
+                try {
+                    let parent = selected.$node.parentNode;
+                    if (parent.style.display == 'none' || parent.classList.contains('hl-ignored')) {
+                        return false;
+                    }
+                    // eslint-disable-next-line no-empty
+                } catch (error) {
+                }
+                return true
+            })
+            const candidates = selectedNodes.slice(1).reduce(
+                (left, selected) => getIntersection(left, this.getIds(selected)),
+                this.getIds(selectedNodes[0])
+            );
+            for (let i = 0; i < candidates.length; i++) {
+                if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
+                    return [];
+                }
+            }
 
-        //     return selectedNodes;
-        // });
+            return selectedNodes;
+        });
 
         // this.highlighter.hooks.Serialize.Restore.tap(
         //     source => log('Serialize.Restore hook -', source)
@@ -552,147 +554,89 @@ export class DocHighlighter {
         }
     }
 
-    findhs(hs) {
-        let { startMeta, endMeta, text, } = hs;
-        let getInnerTxt = (startMeta) => {
-            try {
-                let { parentTagName, parentIndex, } = startMeta;
-                let node = document.querySelectorAll(parentTagName)[parentIndex];
-                return node.innerText;
+    replacementHS(hs) {
+        let { startMeta, endMeta, text, csspath } = hs;
+        if (csspath == undefined) {
+            csspath = {}
+        }
+        let begin = startMeta.textOffset;
+        let end = endMeta.textOffset;
+        let nodes = document.querySelectorAll(startMeta.parentTagName)
+        let getParentIndex = (endMeta, node) => {
+            let { parentTagName, parentIndex } = endMeta
+            let nn = this.$root.querySelectorAll(parentTagName)
+            for (let i = 0; i < nn.length; i++) {
+                let x = nn[i]
+                if (node == x) {
+                    parentIndex = i;
+                    return { parentIndex }
+                }
             }
-            catch (e) {
-                return '';
+            return {}
+        }
+        for (let idx = 0; idx < nodes.length; idx++) {
+            let node = nodes[idx]
+            let { innerText } = node;
+            let same = (startMeta.parentIndex == endMeta.parentIndex && startMeta.parentTagName == endMeta.parentTagName)
+            if (startMeta.parentIndex == endMeta.parentIndex && startMeta.parentTagName == endMeta.parentTagName) {
+                innerText = innerText.substring(begin, end)
+            } else {
+                innerText = innerText.substring(begin)
             }
-        };
-        let b = getInnerTxt(startMeta)
-        function skipSpace(b) {
-            if (b) {
-                let begin = 0
-                for (let i = 0; i < b.length; i++) {
-                    if (b != ' ') {
-                        begin = i;
+            if (innerText.length == 0) continue;
+            if (text.indexOf(innerText) != 0) continue
+            let endElement;
+            if (same) {
+                endElement = node
+            } else {
+                if (endMeta.parentTagName == startMeta.parentTagName) {
+                    let index = startMeta.parentIndex
+                    startMeta = { ...startMeta, ...getParentIndex(node) }
+                    let { parentIndex } = endMeta;
+                    parentIndex = parentIndex + index - startMeta.parentIndex
+                    endMeta = { ...endMeta, ...{ parentIndex } }
+                    console.log('find end')
+                    return { ...hs, ...{ startMeta, endMeta } }
+                }
+                let parents = this.$root.querySelectorAll(endMeta.parentTagName);
+                let a = text.substring(text.length - end)
+                for (let i = 0; i < parents.length; i++) {
+                    let span = parents[i]
+                    let b = span.innerText.substring(0, end)
+                    if (b.length == end && a.indexOf(b) == 0) {
+                        endElement = span;
                         break;
                     }
                 }
-                if (begin) {
-                    return b.substring(begin)
-                }
             }
-            return b
+            if (endElement) {
+
+                endMeta = { ...endMeta, ...getParentIndex(endMeta, endElement) }
+                startMeta = { ...startMeta, ...getParentIndex(startMeta, node) }
+                console.log('find end')
+                return { ...hs, ...{ startMeta, endMeta } }
+            } else {
+                let parents = this.$root.querySelectorAll(endMeta.parentTagName);
+                // eslint-disable-next-line no-unused-vars
+                // let a = text.substring(text.length - end - 1)
+                let aa = []
+                for (let i = 0; i < parents.length; i++) {
+                    let span = parents[i]
+                    let b = span.innerText.substring(0, end + 1)
+                    if (b.length) {
+                        aa.push(b)
+                    }
+                }
+
+            }
         }
-        b = b.substring(startMeta.textOffset)
-        b = skipSpace(b)
-        let ttt = skipSpace(text)
-        let e = getInnerTxt(endMeta)
-        e = e.substring(0, endMeta.textOffset)
-        let index = ttt.indexOf(b)
-        if (index != 0) return false
-        index = text.indexOf(e)
-        if (index >= 0) {
-            if (index + e.length >= text.length)
-                return true;
+        if(hs.startMeta.parentTagName!='img'){
+            console.warn('not find ',hs)
         }
-        return false;
+        return hs
     }
     checkHS(hs) {
-        if (this.findhs(hs)) {
-            return hs
-        } else {
-            let search = (css, tag, text, { begin, end }) => {
-                let ret = []
-                try {
-                    let nodes = []
-                    nodes = document.querySelectorAll(css)
-                    for (let i = 0; i < nodes.length; i++) {
-                        try {
-                            let node = nodes[i];
-                            let { innerText } = node
-                            if (innerText) {
-                                let find = false
-                                if (begin != undefined && end != undefined) {
-                                    let a = innerText.substring(begin, end)
-                                    if (a.length && text.indexOf(a) >= 0) {
-                                        find = true
-                                    }
-                                } else if (begin != undefined) {
-                                    let a = innerText.substring(begin)
-                                    if (a.length && text.indexOf(a) == 0) {
-                                        find = true
-                                    }
-
-                                } else if (end != undefined) {
-                                    let a = innerText.substring(0, end)
-                                    let index = a.length ? text.indexOf(a) : -1
-                                    if (index >= 0) {
-                                        if (index + end >= text.length) find = true
-                                    }
-                                }
-                                if (find) {
-                                    let nn = document.querySelectorAll(tag)
-                                    if (tag != css) {
-                                        for (let i = 0; i < nn.length; i++) {
-                                            let x = nn[i]
-                                            if (node == x) {
-                                                ret.push({ node, index: i })
-                                                continue
-                                            }
-                                        }
-                                    } else {
-                                        ret.push({ node, index: i })
-                                    }
-                                }
-                            }
-                            // eslint-disable-next-line no-empty
-                        } catch (error) { }
-                    }
-                }
-                // eslint-disable-next-line no-empty
-                catch (e) { }
-                return ret
-            };
-
-            let { startMeta, endMeta, text, csspath } = hs;
-            if (csspath == undefined) {
-                csspath = {}
-            }
-            let { start: cssstart, end: cssend } = csspath
-            let begin = startMeta.textOffset;
-            let end = endMeta.textOffset;
-            let same = (startMeta.parentTagName == endMeta.parentTagName && startMeta.parentIndex == endMeta.parentIndex)
-            let n1 = search(cssstart ? cssstart : startMeta.parentTagName,
-                startMeta.parentTagName,
-                text, { begin, end: same ? end : undefined })
-            let n2 = search(cssend ? cssend : endMeta.parentTagName,
-                endMeta.parentTagName,
-                text, { begin: same ? begin : undefined, end })
-            if (n1.length && n2.length) {
-                let findStartEnd = () => {
-                    if (n1.length == 1 && n1.length) {
-                        let start = n1[0]
-                        let end = n2[0]
-                        return { start, end }
-                    }
-                    return {}
-                }
-                const newhs = (start, end) => {
-                    let parentIndex = start.index
-                    startMeta = { ...startMeta, ...{ parentIndex } }
-                    parentIndex = end.index
-                    endMeta = { ...endMeta, ...{ parentIndex } }
-                    hs = { ...hs, ...{ startMeta, endMeta } }
-                    return hs
-                }
-                let { start, end } = findStartEnd()
-                if (start && end) {
-                    return newhs(start, end)
-                }
-            }
-            return hs
-        }
-        //        "parentTagName": "LI",
-        //"parentIndex": 14,
-        //"textOffset": 5
-        //    
+        return this.replacementHS(hs)
     }
     load = (loaded) => {
         if (loaded) {
