@@ -90,7 +90,7 @@ var isMobile = require("is-mobile");
 
 const rgba = require("color-rgba");
 var Colr = require("colr");
-import { convertStyle, getImgSrcUrl } from "../utils";
+import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 export default {
   name: "TocOutLine",
   // directives: { ClickOutside },
@@ -101,11 +101,11 @@ export default {
       note,
       style: styleDefine,
       imgsrc,
-      html,
+      tree,
     } = this.notedata;
     this.showiconRight = isMobile() != true;
     this.imgsrc = getImgSrcUrl(imgsrc);
-    this.html = html;
+    this.html = createHtml(tree);
     // this.classOfSpan = this.spanclass(this.notedata);
     this.title2 = title;
     if (note && note.length) {

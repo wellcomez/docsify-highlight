@@ -70,7 +70,7 @@
   </div>
 </template>
 <script>
-import { convertStyle, getImgSrcUrl} from "../utils";
+import { convertStyle, createHtml, getImgSrcUrl} from "../utils";
 
 export default {
   computed() {
@@ -90,14 +90,15 @@ export default {
   },
   methods: {
     convert(a, charpter) {
-      let { imgsrc, text, id} = a;
+      let { imgsrc, text, id,tree} = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
       let url = charpter.url(id,this.rootpath);
       let label = text.substring(0, 6);
       let style = convertStyle(a.style);
+      let html = createHtml(tree)
       let ret = {
         ...a,
-        ...{ style, label, url, imgsrc }
+        ...{ style, label, url, imgsrc,html }
       };
       return ret;
     },
