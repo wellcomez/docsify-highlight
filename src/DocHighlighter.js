@@ -12,6 +12,8 @@ import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { UTILS } from './css_path'
+const copyPasteBoard =require('clipboard-copy')
+
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -73,7 +75,13 @@ export class DocHighlighter {
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
-        if (hs == undefined) hs = {}
+        if (hs == undefined) {
+            if(sources.length){
+                hs = sources[0]
+            }else{
+                hs = {}
+            }
+        }
         let { style: data, note, tags, bookmark } = hs
         if (tags == undefined) tags = []
         if (data == undefined) data = {}
@@ -90,7 +98,7 @@ export class DocHighlighter {
         }
         let section = document.body
         //  document.querySelector('section.content')
-        mountCmp(NoteMenu, { top, left, bookmark, noteid, hl, note, data, sources, tags, onCloseMenu }, section)
+        mountCmp(NoteMenu, { top, left, bookmark, noteid, hl, note, data, sources, tags, onCloseMenu,hs}, section)
         // }
     };
     procssAllElements(nodeid, cb) {
@@ -402,22 +410,11 @@ export class DocHighlighter {
         getConfig().save({ on: enable })
         this.turnHighLight(enable);
     }
-    onCopy(id) {
-        var copyDom = this.getElement(id)
-        //创建选中范围
-        var range = document.createRange();
-        range.selectNode(copyDom);
-        //移除剪切板中内容
-        window.getSelection().removeAllRanges();
-        //添加新的内容到剪切板
-        window.getSelection().addRange(range);
-        //复制
-        // try{
-        //     var msg = successful ? "successful" : "failed";
-        //     alert('Copy command was : ' + msg);
-        // } catch(err){
-        //     alert('Oops , unable to copy!');
-        // }
+    onCopy(hs) {
+        let {text} = hs?hs:{}
+        if(text){
+            copyPasteBoard(text)
+        }
     }
     onCreate = (a) => {
         let { sources, type } = a;

@@ -255,11 +255,8 @@ export const NoteMenu = {
         },
         onCopy(e) {
             e.stopPropagation()
-            // console.log("onCopy");
-            let { hl } = window;
-            hl.onCopy(this.noteid);
-            this.removeSelectionHighLight();
-            this.removeMenu();
+            let { hl ,hs} = this;
+            hl.onCopy(hs);
         },
         notedata() {
             let { sources, tags, img, bookmark } = this;
@@ -334,6 +331,9 @@ export const NoteMenu = {
         props: "bookmark"
     },
     props: {
+        hs:{
+            type:Object, default:{}
+        },
         bookmark: {
             type: Boolean, default: false
         },
