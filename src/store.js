@@ -337,9 +337,12 @@ class Chapter {
   mergeChild() {
     let { children } = this
     let bbb = children.filter((a) => {
-      let { html } = a
-      if (html) return true;
-      return false;
+      let { tree, version } = a
+      if (version) {
+        if (tree) return true;
+        return false;
+      }
+      return true;
 
     })
     children = bbb
