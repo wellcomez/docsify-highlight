@@ -313,24 +313,24 @@ class Chapter {
         }
       }
       if (note) {
-        note = `\n\n\t>${note}\n`
+        note = `\t>${note}`
       } else {
         note = ""
       }
-      let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
+      // let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
       let img = ''
       if (imgsrc) {
         imgsrc = getImgSrcUrl(imgsrc)
         let { path } = parseurl(imgsrc)
-        img = `![${path}](${imgsrc})\n`
+        img = `![${path}](${imgsrc})`
       }
-      let span = label ? `    <span class="${hlyellow}">    ${label}    </span>\n` : "";
-      return (
-        `${idx + 1}. ${tile}\n
-  ${span}
-  ${img}
-  ${note}
-  `);
+      let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
+      let tile = img ? img : span
+      return `${idx + 1}.${tile}
+          
+         ${note}
+         
+        `;
     });
     return title.concat(items).join("\n\n");
   }
