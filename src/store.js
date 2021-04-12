@@ -331,12 +331,12 @@ class Chapter {
       let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
       // let tile =  img ? img : span
       return `${idx + 1}.[^](${url})${tags}${span}
+
+${img}
          
-         ${img}
+${note}
          
-         ${note}
-         
-        `;
+`;
     });
     return title.concat(items).join("\n\n");
   }
