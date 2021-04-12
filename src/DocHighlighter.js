@@ -65,13 +65,13 @@ export class DocHighlighter {
         }
     }
     createNoteMenu = (node, sources) => {
-        let noteid = node.dataset.highlightId;
+        let id= node.dataset.highlightId;
         const position = this.getPosition(node);
         let { top, left } = position;
         removeTips();
         let hs = {}
         try {
-            hs = this.store.geths(noteid)
+            hs = this.store.geths(id)
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
@@ -79,13 +79,9 @@ export class DocHighlighter {
             if(sources.length){
                 hs = sources[0]
             }else{
-                hs = {}
+                hs = {id}
             }
         }
-        let { style: data, note, tags, bookmark } = hs
-        if (tags == undefined) tags = []
-        if (data == undefined) data = {}
-        // log("createNoteMenu", top, left, color)z
         let hl = this;
         try {
             document.getSelection().removeAllRanges()
@@ -97,9 +93,7 @@ export class DocHighlighter {
             this.disableUserSelection(false)
         }
         let section = document.body
-        //  document.querySelector('section.content')
-        mountCmp(NoteMenu, { top, left, bookmark, noteid, hl, note, data, sources, tags, onCloseMenu,hs}, section)
-        // }
+        mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu,hs}, section)
     };
     procssAllElements(nodeid, cb) {
         const classname = 'docsify-highlighter'
@@ -428,8 +422,9 @@ export class DocHighlighter {
         if (type == "from-store") {
             this.store.getAll()
             let creatFromStore = (hs) => {
-                let { id, style, note, bookmark, tree } = this.store.geths(hs.id)
-                let a = new highlightType(this, id, style)
+                let hhs = this.store.geths(hs.id)
+                let { id, style, note, bookmark, tree } =  hhs
+                let a = new highlightType(this, hhs)
                 a.showHighlight()
                 let parentNodeId = this.parentNodeId(id)
                 if (parentNodeId == undefined) {

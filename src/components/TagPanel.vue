@@ -71,21 +71,36 @@ export default {
   //   components: { Card ,Divider},
   data() {
     return {
-      existsTag: [],
       tagSet: new Set(["稍后", "难"]),
-      tagClass: "",
     };
   },
   model: {
     prop: "tags",
   },
-  computed: {},
+  computed: {
+    tagClass() {
+      return this.existsTag.length > 0 ? "" : "tagClass-empty";
+    },
+    existsTag() {
+      let ret = [];
+      let { tagSet, tags } = this;
+      tagSet.forEach((txt) => {
+        let enable = false;
+        if (tags.indexOf(txt) >= 0) {
+          enable = true;
+        }
+        let color = enable ? "success" : "default";
+        let a = { color, txt, enable };
+        ret.push(a);
+      });
+      return ret;
+    },
+  },
   created() {
     let tagSet = new Book().tags();
     tagSet.forEach((e) => {
       this.tagSet.add(e);
     });
-    this.convert(this.tags);
   },
   methods: {
     update() {
@@ -102,7 +117,6 @@ export default {
         this.tags.push(inputText);
         this.update();
         tagSet.add(inputText);
-        this.convert(this.tags);
       };
 
       var tmpdata;
@@ -137,28 +151,11 @@ export default {
         this.tags.push(txt);
       }
       this.update();
-      this.convert(this.tags);
     },
     handleClose(index, txt) {
       this.removeItem(this.tags, txt);
       this.tagSet.delete(txt);
       this.update();
-      this.convert(this.tags);
-    },
-    convert(tags) {
-      let ret = [];
-      let { tagSet } = this;
-      tagSet.forEach((txt) => {
-        let enable = false;
-        if (tags.indexOf(txt) >= 0) {
-          enable = true;
-        }
-        let color = enable ? "success" : "default";
-        let a = { color, txt, enable };
-        ret.push(a);
-      });
-      this.existsTag = ret;
-      this.tagClass = this.existsTag.length > 0 ? "" : "tagClass-empty";
     },
   },
   props: {

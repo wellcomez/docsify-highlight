@@ -5,7 +5,9 @@ import {
 
 // eslint-disable-next-line no-unused-vars
 export class highlightType {
-    constructor(hl, noteid, style = {}) {
+    constructor(hl, hs) {
+        let { id: noteid, style } = hs;
+        if (style == undefined) style = {}
         this.hl = hl;
         this.noteid = noteid;
         if (style) {
@@ -14,7 +16,7 @@ export class highlightType {
         if (this.allTypes[tfontColor] == undefined) {
             this.allTypes[tfontColor] = { colorhex: "red" };
         }
-        if (this.allTypes[tUl]==undefined)
+        if (this.allTypes[tUl] == undefined)
             this.allTypes[tUl] = { colorhex: "red" };
     }
     showHighlight() {
@@ -26,6 +28,16 @@ export class highlightType {
                 this.hl.updateHignLightColor(noteid, color, colorhex);
             }
         }
+    }
+    getStyle() {
+        let style = {};
+        for (let a in this.allTypes) {
+            let { enable, colorhex } = this.allTypes[a]
+            if (enable) {
+                style[a] = { enable, colorhex }
+            }
+        }
+        return style
     }
     getType(type) {
         let a = this.allTypes[type];

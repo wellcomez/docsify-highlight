@@ -31,6 +31,9 @@ export const NoteMenu = {
     },
     data() {
         return {
+            noteid:this.hs.id,
+            tags: [],
+            bookmark: false,
             imageNeedAdd: false,
             justify: 'space-between',
             img: undefined,
@@ -42,7 +45,7 @@ export const NoteMenu = {
             UnderlineEnable: false,
             fontColor: undefined,
             fontColorEnable: false,
-            hlStyle: new highlightType(this.hl, this.noteid, this.data),
+            hlStyle: new highlightType(this.hl, this.hs),
             style: {
             },
             hlType: undefined,
@@ -68,6 +71,7 @@ export const NoteMenu = {
         }
     },
     computed: {
+        note() { return this.hs.note },
         bookmarkiconcolor() {
             if (this.bookmark) {
                 return "var(--theme-color, #42b983)";
@@ -95,7 +99,10 @@ export const NoteMenu = {
         },
     },
     mounted() {
-        let { sources, noteid, hl } = this
+        let { sources, noteid, hl, hs } = this
+        let { bookmark, tags } = hs
+        this.bookmark = bookmark
+        if (tags) this.tags = tags
         let nodes = hl.highlighter.getDoms(noteid)
         let imsgUrl = []
         let hasText = false
@@ -133,7 +140,7 @@ export const NoteMenu = {
         },
         updatePos() {
             let top = this.top - (this.showtagPane ? 140 : 80) - window.pageYOffset
-            top = Math.max(0,top)+'px'
+            top = Math.max(0, top) + 'px'
             this.style = {
                 left: this.menuLeft(),
                 top
@@ -255,7 +262,7 @@ export const NoteMenu = {
         },
         onCopy(e) {
             e.stopPropagation()
-            let { hl ,hs} = this;
+            let { hl, hs } = this;
             hl.onCopy(hs);
         },
         notedata() {
@@ -263,14 +270,7 @@ export const NoteMenu = {
             if (this.imageNeedAdd) {
                 img = undefined
             }
-            let style = undefined;
-            for (let a in this.hlStyle.allTypes) {
-                let { enable, colorhex } = this.hlStyle.allTypes[a]
-                if (enable) {
-                    if (style == undefined) style = {}
-                    style[a] = { enable, colorhex }
-                }
-            }
+            let style =  this.hlStyle.getStyle();
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
             return { note, sources, style, tags, img, bookmark };
@@ -331,28 +331,14 @@ export const NoteMenu = {
         props: "bookmark"
     },
     props: {
-        hs:{
-            type:Object, default:{}
-        },
-        bookmark: {
-            type: Boolean, default: false
+        hs: {
+            type: Object, default: {}
         },
         onCloseMenu: {
             type: Function,
             default: function () { }
         },
-        data: { type: Object, default: {} },
         colorhex: { type: String, default: "" },
-        tags: {
-            type: Array,
-            default: () => {
-                return []
-            }
-        },
-        note: {
-            type: String,
-            default: undefined,
-        },
         left: {
             type: Number,
             default: undefined,
@@ -368,11 +354,7 @@ export const NoteMenu = {
         top: {
             type: Number,
             default: undefined,
-        },
-        noteid: {
-            type: String,
-            default: undefined,
-        },
+        }
     },
 }
 const recommendedColor = [
