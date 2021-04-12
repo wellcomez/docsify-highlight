@@ -322,16 +322,18 @@ class Chapter {
       }
       // let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
       let img = ''
-      let url = this.url(id, this.rootpath);
+      let url = this.url(id);
       if (imgsrc) {
         imgsrc = getImgSrcUrl(imgsrc)
         let { path } = parseurl(imgsrc)
         img = `![${path}](${imgsrc})`
       }
       let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
-      let tile =  img ? img : span
-      return `${idx + 1}.[^](${url})${tags}${tile}
-          
+      // let tile =  img ? img : span
+      return `${idx + 1}.[^](${url})${tags}${span}
+         
+         ${img}
+         
          ${note}
          
         `;
