@@ -1,5 +1,5 @@
 import { colorClassList } from "./colorSelector";
-import { getImgSrcUrl, parseurl, rootPath } from "./utils";
+import { createHtml, getImgSrcUrl, parseurl, rootPath } from "./utils";
 import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
@@ -276,9 +276,16 @@ class Chapter {
     // store.forceSave(notes)
     let ret = new Chapter(store)
     ret.children = notes.map(({ hs }) => {
+      let { tree, version } = hs
+      if (version && tree) {
+        hs.html = createHtml(tree)
+      }
       return hs
     }).filter((hs) => {
-      if (hs.html) return true;
+      let { html, text, imgsrc } = hs
+      if (html) return true;
+      if (text) return true;
+      if (imgsrc) return true;
       return false;
     })
     return ret
@@ -303,10 +310,10 @@ class Chapter {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
-      let { label, style, note, imgsrc ,tags,id} = a;
-      tags = tags?tags.map((tag) => {
-        return "`"+`${tag}`+"`"
-      }).join(' '):""
+      let { label, style, note, imgsrc, tags, id } = a;
+      tags = tags ? tags.map((tag) => {
+        return "`" + `${tag}` + "`"
+      }).join(' ') : ""
       let hlyellow = ''
       for (let color in style) {
         let { enable, colorhex } = style[color];
@@ -343,12 +350,11 @@ ${note}
   mergeChild() {
     let { children } = this
     let bbb = children.filter((a) => {
-      let { tree, version } = a
+      let { tree, version, imgsrc, text, html } = a
       if (version) {
-        if (tree) return true;
-        return false;
+        return tree != undefined || html != undefined
       }
-      return true;
+      return imgsrc || text;
 
     })
     children = bbb
