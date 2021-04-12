@@ -303,7 +303,10 @@ class Chapter {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
     let items = this.children.map((a, idx) => {
-      let { label, style, note, imgsrc } = a;
+      let { label, style, note, imgsrc ,tags,id} = a;
+      tags = tags?tags.map((tag) => {
+        return "`"+`${tag}`+"`"
+      }).join(' '):""
       let hlyellow = ''
       for (let color in style) {
         let { enable, colorhex } = style[color];
@@ -313,24 +316,27 @@ class Chapter {
         }
       }
       if (note) {
-        note = `\n\n\t>${note}\n`
+        note = `\t>${note}`
       } else {
         note = ""
       }
-      let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
+      // let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
       let img = ''
+      let url = this.url(id);
       if (imgsrc) {
         imgsrc = getImgSrcUrl(imgsrc)
         let { path } = parseurl(imgsrc)
-        img = `![${path}](${imgsrc})\n`
+        img = `![${path}](${imgsrc})`
       }
-      let span = label ? `    <span class="${hlyellow}">    ${label}    </span>\n` : "";
-      return (
-        `${idx + 1}. ${tile}\n
-  ${span}
-  ${img}
-  ${note}
-  `);
+      let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
+      // let tile =  img ? img : span
+      return `${idx + 1}.[^](${url})${tags}${span}
+         
+         ${img}
+         
+         ${note}
+         
+        `;
     });
     return title.concat(items).join("\n\n");
   }
