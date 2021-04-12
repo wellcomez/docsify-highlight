@@ -11,7 +11,7 @@
       >
 
         <span v-if="html" v-html="html"></span>
-        <span v-else>{{title2}}</span>
+        <span v-else :style=style>{{title2}}</span>
         <img
           v-if="imgsrc"
           v-bind:src="imgsrc"
@@ -99,7 +99,6 @@ export default {
       label: title,
       children,
       note,
-      style: styleDefine,
       imgsrc,
       tree,
     } = this.notedata;
@@ -113,7 +112,7 @@ export default {
     }
     this.title = title;
     this.note = note && note.length ? `"${note}"` : undefined;
-    let style = convertStyle(styleDefine);
+    let styleDefine = this.notedata.styleDefine
     for (let color in styleDefine) {
       let a = styleDefine[color];
       let { colorhex } = a;
@@ -140,7 +139,6 @@ export default {
       this.outlineTitleClass = "outline-text-parent";
     }
     this.icon = icon;
-    this.style = style;
     this.title = title;
     this.tips = title;
     this.disabled = false;
@@ -174,7 +172,6 @@ export default {
         { name: "查看", click: () => {} },
       ],
       disabledPopMore: true,
-      style: {},
       textStyle: {},
       outlineTitleClass: "outline-text",
       imgsrc: undefined,
@@ -195,6 +192,9 @@ export default {
     onClickExpanded: { type: Function, default: undefined },
   },
   computed: {
+    style() {
+      return convertStyle(this.notedata.style)
+    },
     placement() {
       // return isMobile() ? "top-start" :
       return "left-start";

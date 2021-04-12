@@ -31,7 +31,7 @@ export const NoteMenu = {
     },
     data() {
         return {
-            noteid:this.hs.id,
+            noteid: this.hs.id,
             tags: [],
             bookmark: false,
             imageNeedAdd: false,
@@ -50,9 +50,7 @@ export const NoteMenu = {
             },
             hlType: undefined,
             selectedSubColor: undefined,
-            notetext: this.note ? this.note : "",
             color1: "",
-            notecouter: this.note ? this.note.length : 0,
             newnote: this.sources != undefined,
             colorList: []
         };
@@ -71,6 +69,10 @@ export const NoteMenu = {
         }
     },
     computed: {
+        notecouter(){return this.note ? this.note.length : 0},
+        notetext() {
+            return this.note ? this.note : ""
+        },
         note() { return this.hs.note },
         bookmarkiconcolor() {
             if (this.bookmark) {
@@ -270,7 +272,7 @@ export const NoteMenu = {
             if (this.imageNeedAdd) {
                 img = undefined
             }
-            let style =  this.hlStyle.getStyle();
+            let style = this.hlStyle.getStyle();
             let note =
                 this.notetext && this.notetext.length ? this.notetext : undefined;
             return { note, sources, style, tags, img, bookmark };

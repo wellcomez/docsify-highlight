@@ -8,7 +8,7 @@
     <h2 v-else>{{ title }}</h2>
     <div
       v-for="(
-        { note, html, label, imgsrc, tags, url},
+        { note, html, label, imgsrc, tags, url,text,style},
         index
       ) in list"
       :key="index"
@@ -56,7 +56,10 @@
             >{{ a }}</span
           >
         </div>
-        <div style="display:inline" v-html=html></div>
+        <div v-if="html" style="display:inline" v-html=html></div>
+        <div v-else style="display:inline">
+          <span :style="style">{{text}}</span>
+        </div>
       </div>
       <img
         v-if="imgsrc"
@@ -70,7 +73,7 @@
   </div>
 </template>
 <script>
-import { convertStyle, createHtml, getImgSrcUrl} from "../utils";
+import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 
 export default {
   computed() {
@@ -90,15 +93,15 @@ export default {
   },
   methods: {
     convert(a, charpter) {
-      let { imgsrc, text, id,tree} = a;
+      let { imgsrc, text, id, tree, version } = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
-      let url = charpter.url(id,this.rootpath);
+      let url = charpter.url(id, this.rootpath);
       let label = text.substring(0, 6);
       let style = convertStyle(a.style);
-      let html = createHtml(tree)
+      let html = version ? createHtml(tree) : undefined;
       let ret = {
         ...a,
-        ...{ style, label, url, imgsrc,html }
+        ...{ style, label, url, imgsrc, html, text },
       };
       return ret;
     },
@@ -141,7 +144,7 @@ export default {
 };
 </script>
 <style >
-.charpterhtml i{
+.charpterhtml i {
   font-style: normal;
 }
 .outline-title {
