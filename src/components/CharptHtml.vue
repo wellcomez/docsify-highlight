@@ -8,7 +8,7 @@
     <h2 v-else>{{ title }}</h2>
     <div
       v-for="(
-        { note, html, label, imgsrc, tags, url, text, style, notshowSeq }, index
+        { note, html, imgsrc, tags, url, text, style, notshowSeq }, index
       ) in list"
       :key="index"
     >
@@ -22,20 +22,16 @@
           font-size: small;
           font-weight: normal;
         "
-        @click="onIcon(index)"
       >
-          <!-- :href="href({ title, label, index })" -->
+        <!-- :href="href({ title, label, index })" -->
         <a
           v-if="notshowSeq != true"
           style="text-decoration: none; color: black"
         >
           {{ index + 1 }}.</a
         >
-          <!-- :href="href({ title, label, index })" -->
-        <a
-          v-if="notshowSeq"
-          style="text-decoration: none; color: black"
-        ></a>
+        <!-- :href="href({ title, label, index })" -->
+        <a v-if="notshowSeq" style="text-decoration: none; color: black"></a>
         <sup>
           <a
             v-if="onClick"
@@ -63,12 +59,13 @@
             >{{ a }}</span
           >
         </div>
-        <div v-if="html" style="display: inline" v-html="html"></div>
-        <div v-else style="display: inline">
+        <div @click="onIcon(index)" v-if="html" style="display: inline" v-html="html"></div>
+        <div @click="onIcon(index)" v-else style="display: inline">
           <span :style="style">{{ text }}</span>
         </div>
       </div>
       <img
+        @click="onIcon(index)"
         v-if="imgsrc"
         :src="imgsrc"
         style="width: 40%; border: 1px solid #42b983; margin: 2px"

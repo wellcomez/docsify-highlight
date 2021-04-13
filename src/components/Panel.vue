@@ -83,7 +83,12 @@
         </TabPane>
       </Tabs>
     </Row>
-    <Drawer class="setting-drawer" :closable="false" v-model="bDrawerOpen" :width="drawWidth">
+    <Drawer
+      class="setting-drawer"
+      :closable="false"
+      v-model="bDrawerOpen"
+      :width="drawWidth"
+    >
       <Account v-if="cloudOn" slot="header" style="width: 280px" />
       <div style="background: #f8f8f9; width: 280px">
         <Card :padding="0" shadow>
@@ -112,7 +117,7 @@
       title="笔记"
       :closable="true"
       v-model="openNoteBook"
-      :width=htmldrawerWidth
+      :width="htmldrawerWidth"
       scrollable
       :mask="false"
     >
@@ -222,7 +227,7 @@ import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
-var isMobile = require('is-mobile');
+var isMobile = require("is-mobile");
 
 import { gotoNote } from "../utils";
 // import { checkClickOut } from "../mountCmp";
@@ -276,7 +281,7 @@ export default {
   },
   data() {
     return {
-      htmldrawerWidth:480,
+      htmldrawerWidth: 480,
       book: new Book().sortedChapter(),
       openNoteBook: false,
       vesion: "",
@@ -303,13 +308,17 @@ export default {
     // this.drawWidth = window.screen.width < 480 ? 440: 320;
     if (window.screen.width < 480) {
       let left = window.screen.width - 300;
-      document.querySelector('.setting-drawer .ivu-drawer-right').style = `left:${left}px`;
-      left = 0
+      document.querySelector(
+        ".setting-drawer .ivu-drawer-right"
+      ).style = `left:${left}px`;
+      left = 0;
     }
-    if(isMobile()){
+    if (isMobile()) {
       let left = 0;
       this.htmldrawerWidth = window.screen.width;
-      document.querySelector('.html-drawer .ivu-drawer-right').style = `left:${left}px`;
+      document.querySelector(
+        ".html-drawer .ivu-drawer-right"
+      ).style = `left:${left}px`;
     }
     this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
@@ -326,6 +335,7 @@ export default {
     prop: "updated",
   },
   props: {
+    seq: { type: Number, default: 0 },
     updated: { type: Boolean, default: false },
     showdetail: {
       type: Boolean,
@@ -344,6 +354,11 @@ export default {
       default: 0,
     },
     changeNumber: { type: Number, default: 0 },
+  },
+  watch: {
+    seq() {
+      this.book = new Book().sortedChapter();
+    },
   },
   methods: {
     clickOnToc(a) {
@@ -365,8 +380,10 @@ export default {
       for (let i = 0; i < h2.length; i++) {
         let t = h2[i];
         if (t.innerText == a) {
-          let {top} = getPosition(t)
-          document.querySelector('.html-drawer .ivu-drawer-body').scrollTo(0,top-50)
+          let { top } = getPosition(t);
+          document
+            .querySelector(".html-drawer .ivu-drawer-body")
+            .scrollTo(0, top - 50);
           return;
         }
       }
@@ -408,7 +425,7 @@ export default {
       updateBookOnLean(b)
         // eslint-disable-next-line no-unused-vars
         .then((a) => {
-          Book.updated = false
+          Book.updated = false;
           hl.updatePanel();
           msg("saved ", b.toc.bookname + " to cloud");
         })

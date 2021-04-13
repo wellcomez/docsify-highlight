@@ -60,14 +60,17 @@ function hlinit() {
     let count = hl.count()
     let checked = hl.on()
     let updated = Book.updated
+    let seq = 0
     if (vm) {
         Vue.set(vm, "count", count);
         Vue.set(vm, "changeNumber", changeNumber);
         Vue.set(vm, "checked", checked);
         Vue.set(vm, "hl", hl);
         Vue.set(vm, "updated", updated);
+        seq++;
+        Vue.set(vm, "seq", seq);
     } else {
-        vm = window.vm = mountCmp(Panel, { checked, count, hl, changeNumber, updated }, main)
+        vm = window.vm = mountCmp(Panel, { checked, count, hl, changeNumber, updated, seq }, main)
     }
     hl.updatePanelCb = () => {
         let { changeNumber, localNumber } = getChanged()
@@ -75,6 +78,8 @@ function hlinit() {
         Vue.set(vm, "updated", Book.updated);
         changeNumber = new Book().count() - localNumber
         Vue.set(vm, "changeNumber", changeNumber);
+        seq++;
+        Vue.set(vm, "seq", seq);
         getConfig().save({ changeNumber })
     }
 }
