@@ -495,7 +495,7 @@ export class Book {
   md() {
     let tilte = "# " + window.$docsify.name;
 
-    let content = this.Charpter().map((a) => {
+    let content = this.sortedChapter().map((a) => {
       return a.md();
     });
     let styles = "<style>" + colorClassList.str() + "</style>";

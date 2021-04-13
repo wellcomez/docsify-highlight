@@ -277,7 +277,7 @@ export default {
   data() {
     return {
       htmldrawerWidth:480,
-      book: new Book().Charpter(),
+      book: new Book().sortedChapter(),
       openNoteBook: false,
       vesion: "",
       showexport: true,
@@ -376,7 +376,7 @@ export default {
     },
     onClickOpenNote() {
       this.openNoteBook = true;
-      this.book = new Book().Charpter();
+      this.book = new Book().sortedChapter();
     },
     ResetAll() {
       window.localStorage.clear();
