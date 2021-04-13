@@ -83,7 +83,7 @@
         </TabPane>
       </Tabs>
     </Row>
-    <Drawer :closable="false" v-model="bDrawerOpen" :width="drawWidth">
+    <Drawer class="setting-drawer" :closable="false" v-model="bDrawerOpen" :width="drawWidth">
       <Account v-if="cloudOn" slot="header" style="width: 280px" />
       <div style="background: #f8f8f9; width: 280px">
         <Card :padding="0" shadow>
@@ -112,7 +112,7 @@
       title="笔记"
       :closable="true"
       v-model="openNoteBook"
-      width="480"
+      :width=htmldrawerWidth
       scrollable
       :mask="false"
     >
@@ -276,6 +276,7 @@ export default {
   },
   data() {
     return {
+      htmldrawerWidth:480,
       book: new Book().Charpter(),
       openNoteBook: false,
       vesion: "",
@@ -302,9 +303,13 @@ export default {
     // this.drawWidth = window.screen.width < 480 ? 440: 320;
     if (window.screen.width < 480) {
       let left = window.screen.width - 300;
-      document.getElementsByClassName(
-        "ivu-drawer-right"
-      )[0].style = `left:${left}px`;
+      document.querySelector('.setting-drawer .ivu-drawer-right').style = `left:${left}px`;
+      left = 0
+    }
+    if(isMobile()){
+      let left = 0;
+      this.htmldrawerWidth = window.screen.width;
+      document.querySelector('.html-drawer .ivu-drawer-right').style = `left:${left}px`;
     }
     this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
