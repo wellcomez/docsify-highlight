@@ -12,6 +12,8 @@
       ) in list"
       :key="index"
     >
+      <Divider v-if="notshowSeq!=true"></Divider>
+      <div v-else><br><br></div>
       <div class="sub-title">
         <a
           v-if="notshowSeq != true"
@@ -26,10 +28,10 @@
             v-if="onClick"
             @click="onClick({ index, url })"
             style="text-decoration: none; color: #42b983"
-            >~</a
+            >^</a
           >
           <a v-else :href="url" style="text-decoration: none; color: #42b983"
-            >~</a
+            >^</a
           >
         </sup>
         <div v-if="tags" style="display: inline-block">
@@ -61,9 +63,10 @@
 </template>
 <script>
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
+import {Divider} from "iview"
 // import { Tooltip } from "iview";
 export default {
-  components: {},
+  components: {Divider},
   data() {
     return {
       showMerge: false,
