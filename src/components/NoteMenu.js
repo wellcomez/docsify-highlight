@@ -31,6 +31,7 @@ export const NoteMenu = {
     },
     data() {
         return {
+            notetext:this.note,
             noteid: this.hs.id,
             tags: [],
             bookmark: false,
@@ -69,10 +70,7 @@ export const NoteMenu = {
         }
     },
     computed: {
-        notecouter(){return this.note ? this.note.length : 0},
-        notetext() {
-            return this.note ? this.note : ""
-        },
+        notecouter(){return this.notetext? this.notetext.length : 0},
         note() { return this.hs.note },
         bookmarkiconcolor() {
             if (this.bookmark) {
