@@ -93,7 +93,9 @@ export default {
         let a = { color, txt, enable };
         ret.push(a);
       });
-      return ret;
+      return ret.sort(function compareFunction(param1, param2) {
+        return param1.txt.localeCompare(param2.txt, "zh");
+      });
     },
   },
   created() {
