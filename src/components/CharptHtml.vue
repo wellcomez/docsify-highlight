@@ -8,13 +8,13 @@
     <h2 v-else>{{ title }}</h2>
     <div
       v-for="(
-        { note, html, label, imgsrc, tags, url,text,style},
-        index
+        { note, html, label, imgsrc, tags, url, text, style, notshowSeq }, index
       ) in list"
       :key="index"
     >
       <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->
       <!-- <h3 v-else>{{ index + 1 }}</h3> -->
+
       <div
         style="
           margin-top: 4px;
@@ -22,13 +22,20 @@
           font-size: small;
           font-weight: normal;
         "
+        @click="onIcon(index)"
       >
         <a
+          v-if="notshowSeq != true"
           :href="href({ title, label, index })"
           style="text-decoration: none; color: black"
-          >{{ index + 1 }}.</a
         >
-
+          {{ index + 1 }}.</a
+        >
+        <a
+          v-if="notshowSeq"
+          :href="href({ title, label, index })"
+          style="text-decoration: none; color: black"
+        ></a>
         <sup>
           <a
             v-if="onClick"
@@ -56,9 +63,9 @@
             >{{ a }}</span
           >
         </div>
-        <div v-if="html" style="display:inline" v-html=html></div>
-        <div v-else style="display:inline">
-          <span :style="style">{{text}}</span>
+        <div v-if="html" style="display: inline" v-html="html"></div>
+        <div v-else style="display: inline">
+          <span :style="style">{{ text }}</span>
         </div>
       </div>
       <img
@@ -76,11 +83,10 @@
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 
 export default {
-  computed() {
-    return {};
-  },
   data() {
     return {
+      showMerge: false,
+      showSelected: {},
       hrefa: "",
       title: "",
       list: [{ name: "" }],
@@ -92,6 +98,40 @@ export default {
     };
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
+    onIcon(index) {
+      let { notshowSeq } = this.list[index];
+      notshowSeq = notshowSeq != true;
+      let pre = this.list[index - 1];
+      if (pre != undefined && notshowSeq == true) {
+        if (pre.notshowSeq) {
+          notshowSeq = true;
+        }
+      }
+      let getrootid = (notshowSeq, index) => {
+        if (notshowSeq) {
+          let end = index > 0 ? 0 : index + 1;
+          for (let i = index; i >= end; i--) {
+            let l = this.list[i];
+            let { notshowSeq, id } = l;
+            if (notshowSeq != true) {
+              return id;
+            }
+          }
+          return;
+        }
+      };
+      let l = this.list[index];
+      this.list[index] = { ...l, ...{ notshowSeq } };
+      this.list = this.list.map((a, idx) => {
+        let { notshowSeq } = a;
+        let rootid = getrootid(notshowSeq, idx);
+        if (rootid == undefined) {
+          notshowSeq = false;
+        }
+        return { ...a, ...{ rootid, notshowSeq } };
+      });
+    },
     convert(a, charpter) {
       let { imgsrc, text, id, tree, version } = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
