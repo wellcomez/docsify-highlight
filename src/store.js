@@ -300,9 +300,7 @@ class Chapter {
     let hash = path.substring(path.indexOf("#"));
     hash = `${hash}?noteid=${id}`
     if (rootpath == undefined) {
-      let host = document.location.host
-      let http = document.location.protocol
-      rootpath = `${http}//${host}`
+      rootpath = rootPath()
     }
     return `${rootpath}${hash}`
   }
