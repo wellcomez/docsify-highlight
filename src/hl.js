@@ -2,7 +2,7 @@ import Panel from './components/Panel.vue'
 import { log } from "./log";
 import Vue from 'vue';
 import { DocHighlighter } from './DocHighlighter';
-import { mountCmp } from './utils';
+import { mountCmp, pluginScript } from './utils';
 import { getConfig } from './ANoteConfig';
 import { Book, getChanged } from './store';
 export function findtipid(id) {
@@ -29,10 +29,11 @@ export function getIntersection(arrA, arrB) {
 function runScrip() {
     let { enableScript } = getConfig().load();
     if (enableScript != true) return;
-    let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
-    if (DocHighlighter) {
-        let { script } = DocHighlighter
-        run(script);
+    let script = pluginScript()
+    if (script.pre) {
+        run(script.pre);
+    } else {
+        run(script)
     }
     function run(script) {
         if (script) {

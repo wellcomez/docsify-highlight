@@ -38,7 +38,7 @@ export default {
     },
     getDataOfTable() {
       let b = new Book();
-      let aaa = b.Charpter();
+      let aaa = b.sortedChapter();
       let ddd = aaa.map((c) => {
         return this.createOutLine(c);
       });

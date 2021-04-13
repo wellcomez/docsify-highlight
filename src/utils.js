@@ -240,3 +240,11 @@ export function createHtml(json) {
   }
   return convertNodes(nodes)
 }
+export function pluginScript() {
+  let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
+  if (DocHighlighter) {
+      let { script } = DocHighlighter
+      return script
+  }
+  return {}
+}

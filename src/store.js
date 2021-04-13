@@ -1,5 +1,5 @@
 import { colorClassList } from "./colorSelector";
-import { createHtml, getImgSrcUrl, parseurl, rootPath } from "./utils";
+import { createHtml, getImgSrcUrl, parseurl, pluginScript, rootPath } from "./utils";
 import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
 class BookToc {
@@ -388,14 +388,20 @@ export class Book {
     let aa = this.toc.name
     this.bookid = md5(aa)
   }
-  exportHtml() {
+  sortedChapter(){
+    let sorttoc =pluginScript().sorttoc
     let b = this
-    let aaa = b.Charpter().sort((a) => {
+    let aaa = b.Charpter().sort((a, b) => {
       if (a.label == document.title) {
         return -1;
       }
-      return 1;
-    });
+      if(sorttoc) return sorttoc(a.label,b.label)
+      return a.label.localeCompare(b.label, "zh");
+    })
+    return aaa
+  }
+  exportHtml() {
+    let aaa = this.sortedChapter();
     let data = aaa.map((charpter) => {
       return charpter.json()
     });

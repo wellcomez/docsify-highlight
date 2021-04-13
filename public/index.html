@@ -32,7 +32,7 @@
     }
 
     // Docsify configuration
-    let script = () => {
+    let pre= () => {
       let eles = document.getElementsByTagName('span')
       for (let i = 0; i < eles.length; i++) {
         let el = eles[i];
@@ -43,6 +43,21 @@
             e.classList.add("hl-ignored")
         }
       }
+    }
+    let sorttoc = (a,b)=>{
+      let getnum=(s)=>{
+        try{
+          return parseInt(s.match(/教你炒股票(\d+)/g)[0].substring(5))
+        }catch(e){
+        }
+      }
+      let n1 = getnum(a)
+      let n2 = getnum(b)
+      if(n1!=undefined&&n2!=undefined){
+        if(n1==n2)return 0;
+        return n1>n2?1:-1;
+      }
+      return a.localeCompare(b, "zh");
     }
     window.$docsify = {
       notFoundPage: '_sidebar.md',
@@ -62,7 +77,7 @@
       maxLevel: 4,
       subMaxLevel: 2,
       DocHighlighter: {
-        script,
+        script:{pre,sorttoc},
         leancloud: {
           appId: "dvMVEXYBm0Rpy5JyWhhm6D43-gzGzoHsz",
           appKey: "UeGNjOzrueJjiSpjzipJpvfJ",
