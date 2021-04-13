@@ -10,7 +10,7 @@
         :class="outlineTitleClass"
       >
 
-        <span v-if="html" v-html="html"></span>
+        <span v-if="html" v-html="html" class="title-span"></span>
         <span v-else :style=style>{{title2}}</span>
         <img
           v-if="imgsrc"
@@ -237,6 +237,9 @@ export default {
   padding-right:1px;
   padding-top:1px;
   padding-bottom:1px; */
+}
+.title-span i{
+  font-style: normal;
 }
 .outline-text {
   line-height: normal;
