@@ -174,17 +174,20 @@ export default {
 .html-img:hover {
   width: 100%;
 }
-.charpterhtml .sub-title {
+.sub-title {
   margin-top: 4px;
   margin-bottom: 4px;
   font-size: small;
   font-weight: normal;
 }
-.charpterhtml .sub-tag {
-  margin-top: 4px;
-  margin-bottom: 4px;
+span.sub-tag {
+  margin: 4px;
   font-size: small;
   font-weight: normal;
+  padding:2px;
+  background-color:#42b983;
+  color: white;
+  border-radius: 3px;
 }
 .outline-title {
   border-left: 2px solid #42b983;
