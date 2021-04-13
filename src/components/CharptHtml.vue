@@ -24,16 +24,16 @@
         "
         @click="onIcon(index)"
       >
+          <!-- :href="href({ title, label, index })" -->
         <a
           v-if="notshowSeq != true"
-          :href="href({ title, label, index })"
           style="text-decoration: none; color: black"
         >
           {{ index + 1 }}.</a
         >
+          <!-- :href="href({ title, label, index })" -->
         <a
           v-if="notshowSeq"
-          :href="href({ title, label, index })"
           style="text-decoration: none; color: black"
         ></a>
         <sup>
@@ -98,7 +98,6 @@ export default {
     };
   },
   methods: {
-    // eslint-disable-next-line no-unused-vars
     onIcon(index) {
       let { notshowSeq } = this.list[index];
       notshowSeq = notshowSeq != true;
@@ -124,11 +123,12 @@ export default {
       let l = this.list[index];
       this.list[index] = { ...l, ...{ notshowSeq } };
       this.list = this.list.map((a, idx) => {
-        let { notshowSeq } = a;
+        let { notshowSeq, id } = a;
         let rootid = getrootid(notshowSeq, idx);
         if (rootid == undefined) {
           notshowSeq = false;
         }
+        this.charpter.store.update({ id, notshowSeq, rootid });
         return { ...a, ...{ rootid, notshowSeq } };
       });
     },

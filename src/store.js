@@ -198,9 +198,7 @@ class LocalStore {
     for (let i = 0; i < stores.length; i++) {
       if (stores[i].hs.id === id) {
         var { hs } = stores[i];
-        for (var aa in a) {
-          hs[aa] = a[aa];
-        }
+        hs = {...hs,...a}
         stores[i].hs = hs;
         this.jsonToStore(stores);
         break;
