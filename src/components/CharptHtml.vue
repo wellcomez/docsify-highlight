@@ -12,18 +12,7 @@
       ) in list"
       :key="index"
     >
-      <!-- <h3 v-if="label">{{ index + 1 }}</h3> -->
-      <!-- <h3 v-else>{{ index + 1 }}</h3> -->
-
-      <div
-        style="
-          margin-top: 4px;
-          margin-bottom: 4px;
-          font-size: small;
-          font-weight: normal;
-        "
-      >
-        <!-- :href="href({ title, label, index })" -->
+      <div class="sub-title">
         <a
           v-if="notshowSeq != true"
           style="text-decoration: none; color: black"
@@ -44,33 +33,27 @@
           >
         </sup>
         <div v-if="tags" style="display: inline-block">
-          <span
-            v-for="(a, index) in tags"
-            :key="index"
-            style="
-              background: #42b983;
-              color: white;
-              border-radius: 3px;
-              padding-left: 4px;
-              padding-right: 4px;
-              font-size: xx-small;
-              margin-left: 4px;
-            "
-            >{{ a }}</span
-          >
+          <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
+            a
+          }}</span>
         </div>
-        <div @click="onIcon(index)" v-if="html" style="display: inline" v-html="html"></div>
+        <div
+          @click="onIcon(index)"
+          v-if="html"
+          style="display: inline"
+          v-html="html"
+        ></div>
         <div @click="onIcon(index)" v-else style="display: inline">
           <span :style="style">{{ text }}</span>
         </div>
       </div>
       <img
+        class="html-img"
         @click="onIcon(index)"
         v-if="imgsrc"
         :src="imgsrc"
-        style="width: 40%; border: 1px solid #42b983; margin: 2px"
       />
-      <div v-if="note" :style="styleNote" class="outline-title">
+      <div v-if="note" class="outline-title">
         <p>{{ note }}</p>
       </div>
     </div>
@@ -78,8 +61,9 @@
 </template>
 <script>
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
-
+// import { Tooltip } from "iview";
 export default {
+  components: {},
   data() {
     return {
       showMerge: false,
@@ -87,11 +71,6 @@ export default {
       hrefa: "",
       title: "",
       list: [{ name: "" }],
-      styleNote:
-        " border-left: 2px solid #42b983;\
-  margin-left: 4px;\
-  padding-left: 4px;\
-  margin-top: 2px;",
     };
   },
   methods: {
@@ -183,6 +162,26 @@ export default {
 <style >
 .charpterhtml i {
   font-style: normal;
+}
+.html-img {
+  width: 60%;
+  border: 1px solid #42b983;
+  margin: 2px;
+}
+.html-img:hover {
+  width: 100%;
+}
+.charpterhtml .sub-title {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: small;
+  font-weight: normal;
+}
+.charpterhtml .sub-tag {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: small;
+  font-weight: normal;
 }
 .outline-title {
   border-left: 2px solid #42b983;
