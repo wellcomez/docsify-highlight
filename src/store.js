@@ -323,7 +323,7 @@ class Chapter {
         }
       }
       if (note) {
-        note = `\t>${note}`
+        note = `>${note}`
       } else {
         note = ""
       }
