@@ -13,14 +13,10 @@
         @on-change="handleChange(index, txt)"
         >{{ txt }}</Tag
       >
+      <Button icon="ios-add" type="dashed" size="small" @click="onAdd">添加标签</Button>
+
     </div>
-    <Row class="input-panel" type="flex" justify="end" align="middle">
-      <Col>
-        <Button size="small" class="add-btn" type="primary" @click="onAdd"
-          >Add</Button
-        >
-      </Col>
-    </Row>
+    <!-- <Button size="small" class="add-btn" style="display:in" type="primary" @click="onAdd">Add</Button> -->
   </div>
 </template>
 <style scoped>
@@ -46,6 +42,9 @@
 .tagpane ivu-tag-dot {
   height: 24px;
   line-height: 24px;
+}
+.tagClass,.tagClass-empty{
+  margin: 4px;
 }
 .tagClass-empty {
   height: 50px;
@@ -79,7 +78,7 @@ export default {
   },
   computed: {
     tagClass() {
-      return this.existsTag.length > 0 ? "" : "tagClass-empty";
+      return this.existsTag.length > 0 ? "tagClass" : "tagClass-empty";
     },
     existsTag() {
       let ret = [];
