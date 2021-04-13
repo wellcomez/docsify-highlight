@@ -28,10 +28,10 @@
             v-if="onClick"
             @click="onClick({ index, url })"
             style="text-decoration: none; color: #42b983"
-            >^</a
+            ><Icon type="md-link" /></a
           >
           <a v-else :href="url" style="text-decoration: none; color: #42b983"
-            >^</a
+            ><Icon type="md-link" /></a
           >
         </sup>
         <div v-if="tags" style="display: inline-block">

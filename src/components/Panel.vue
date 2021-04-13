@@ -335,6 +335,9 @@ export default {
       ).style = `left:${left}px`;
     } else {
       this.fullhtmldrawerWidth = window.screen.width * 0.8;
+      document.querySelector(
+        ".html-drawer .ivu-drawer-right"
+      ).style = `height:70%`;
     }
     this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
