@@ -117,10 +117,19 @@
       title="笔记"
       :closable="true"
       v-model="openNoteBook"
-      :width="htmldrawerWidth"
+      :width="htmldrawerWidthDynamic"
       scrollable
       :mask="false"
     >
+      <div slot="header" style="display: flex">
+        <Icon
+          type="ios-expand"
+          size="18"
+          @click="zoomNoteBook = zoomNoteBook != true"
+        >
+        </Icon>
+        <h3 style="margin-left: 20px">笔记</h3>
+      </div>
       <TocHtml :charpter="book" :click="clickOnToc" />
       <CharptHtml
         class="charpterhtml"
@@ -248,6 +257,12 @@ export default {
     ClickOutside,
   },
   computed: {
+    htmldrawerWidthDynamic() {
+      if (isMobile()) return this.htmldrawerWidth;
+      return this.zoomNoteBook
+        ? this.fullhtmldrawerWidth
+        : this.htmldrawerWidth;
+    },
     collapsedIcon() {
       return this.collapsed == false
         ? "icon-dotsvertical"
@@ -281,7 +296,9 @@ export default {
   },
   data() {
     return {
+      zoomNoteBook: false,
       htmldrawerWidth: 480,
+      fullhtmldrawerWidth: 480,
       book: new Book().sortedChapter(),
       openNoteBook: false,
       vesion: "",
@@ -316,9 +333,12 @@ export default {
     if (isMobile()) {
       let left = 0;
       this.htmldrawerWidth = window.screen.width;
+      this.fullhtmldrawerWidth = window.screen.width;
       document.querySelector(
         ".html-drawer .ivu-drawer-right"
       ).style = `left:${left}px`;
+    } else {
+      this.fullhtmldrawerWidth = window.screen.width * 0.8;
     }
     this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
