@@ -318,10 +318,6 @@ export default {
     let { enableScript } = getConfig().load();
     this.showexport = isMobile() ? false : true;
     this.enableScript = enableScript;
-    let { store } = this.hl;
-    if (store) {
-      this.bookmark = store.isBookMarked();
-    }
     // this.drawWidth = window.screen.width < 480 ? 440: 320;
     if (window.screen.width < 480) {
       let left = window.screen.width - 300;
@@ -376,6 +372,12 @@ export default {
     changeNumber: { type: Number, default: 0 },
   },
   watch: {
+    hl(hl) {
+      let { store } = hl;
+      if (store) {
+        this.bookmark = store.isBookMarked();
+      }
+    },
     seq() {
       this.book = new Book().sortedChapter();
     },
