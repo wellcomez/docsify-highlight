@@ -76,7 +76,7 @@
               <Button @click="onClickOpenNote" size="small">打开</Button>
             </Col>
           </Row>
-          <TocNote v-bind:close="closedetail" v-bind:key="count2"></TocNote>
+          <TocNote v-bind:close="closedetail" v-bind:key="count2" :book="book"></TocNote>
         </TabPane>
         <TabPane label="书签">
           <BookMarks :hl="hl" :key="bookmarkey" />
@@ -130,10 +130,10 @@
         </Icon>
         <h3 style="margin-left: 20px">笔记</h3>
       </div>
-      <TocHtml :charpter="book" :click="clickOnToc" />
+      <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
       <CharptHtml
         class="charpterhtml"
-        v-for="(charpter, index) in book"
+        v-for="(charpter, index) in sortedChapter"
         :charpter="charpter"
         :onClickURL="onClickURL"
         :key="index"
@@ -257,6 +257,9 @@ export default {
     ClickOutside,
   },
   computed: {
+    sortedChapter(){
+      return this.book.sortedChapter()
+    },
     htmldrawerWidthDynamic() {
       if (isMobile()) return this.htmldrawerWidth;
       return this.zoomNoteBook
@@ -275,7 +278,7 @@ export default {
       return style;
     },
     count2() {
-      let a = new Book().count() + this.count;
+      let a = this.book.count() + this.count;
       return a + preHighLightItems().length - this.count;
     },
     canupload() {
@@ -299,8 +302,8 @@ export default {
       zoomNoteBook: false,
       htmldrawerWidth: 480,
       fullhtmldrawerWidth: 480,
-      book: new Book().sortedChapter(),
       openNoteBook: false,
+      book: new Book(),
       vesion: "",
       showexport: true,
       drawWidth: 320,
@@ -382,7 +385,7 @@ export default {
       }
     },
     seq() {
-      this.book = new Book().sortedChapter();
+      this.book = new Book()
     },
   },
   methods: {
@@ -418,7 +421,6 @@ export default {
     },
     onClickOpenNote() {
       this.openNoteBook = true;
-      this.book = new Book().sortedChapter();
     },
     ResetAll() {
       window.localStorage.clear();
@@ -431,7 +433,7 @@ export default {
       }
     },
     getBookmarkCount() {
-      let b = new Book();
+      let b = this.book;
       let ddd = b.toc.bookMarkList();
       return ddd.length;
     },
@@ -468,17 +470,15 @@ export default {
       this.showdetail = this.showdetail == false;
     },
     onSelect(name) {
+      let b = new Book();
       if (name == "md") {
-        let b = new Book();
         let md = b.md();
         // console.log(md);
         funDownload(md, window.$docsify.name + ".md");
       } else if (name == "json") {
-        let b = new Book();
         let json = b.jsonstr();
         funDownload(json, window.$docsify.name + ".json");
       } else if (name == "html") {
-        let b = new Book();
         let json = b.exportHtml();
         funDownload(json, window.$docsify.name + ".html");
       }

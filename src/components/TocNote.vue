@@ -7,37 +7,19 @@
 
 <script>
 import { Book } from "../store";
-import { gotoNote} from "../utils";
+import { gotoNote } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
-var isMobile = require('is-mobile');
+var isMobile = require("is-mobile");
 
 let toc = {};
 export default {
   name: "TocNote",
   // eslint-disable-next-line vue/no-unused-components
   components: { TocOutLine },
-  computed: {},
-  props: {
-    close: {
-      type: Function,
-      default: undefined,
-    },
-  },
-  data() {
-    return {
-      data: [],
-    };
-  },
-  mounted() {
-    this.data = this.getDataOfTable();
-  },
-  methods: {
-    selectChange(a) {
-      toc[a.title] = a.expand;
-    },
-    getDataOfTable() {
-      let b = new Book();
+  computed: {
+    data(){
+      let b = this.book;
       let aaa = b.sortedChapter();
       let ddd = aaa.map((c) => {
         return this.createOutLine(c);
@@ -52,21 +34,36 @@ export default {
         }
       });
       return ret;
+    }
+  },
+  props: {
+    close: {
+      type: Function,
+      default: undefined,
+    },
+    book:{type:Object,default:new Book()}
+  },
+  data() {
+    return {
+    };
+  },
+  methods: {
+    selectChange(a) {
+      toc[a.title] = a.expand;
     },
     createOutLine(item) {
       let { label: title, children } = item;
       let expand = false;
       if (children) {
         try {
-            children = item.mergeChild() 
-        // eslint-disable-next-line no-empty
-        } catch (error) {
-        }
+          children = item.mergeChild();
+          // eslint-disable-next-line no-empty
+        } catch (error) {}
         children = this.mapchildren(children);
         if (toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
-      let notedata = {...item};
+      let notedata = { ...item };
       const render = (h) => {
         return h(TocOutLine, {
           props: {
@@ -78,7 +75,12 @@ export default {
             onClickExpanded: () => {
               let e = toc[title];
               toc[title] = e != true;
-              this.data = this.getDataOfTable();
+              this.data = this.data.map((a) => {
+                if (a.title == title) {
+                  a.expand = a.expand != true;
+                }
+                return a;
+              });
             },
           },
         });
@@ -103,7 +105,7 @@ export default {
         return;
       }
       if (key && id) {
-        gotoNote({key,id});
+        gotoNote({ key, id });
         if (this.close && isMobile()) {
           this.close();
         }

@@ -811,7 +811,7 @@ export class DocHighlighter {
                 if (ret.top == undefined) {
                     ret = pos
                 } else {
-                    if (top > ret.top) {
+                    if (top < ret.top) {
                         ret = pos
                     }
                 }
