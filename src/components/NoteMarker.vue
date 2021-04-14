@@ -1,6 +1,6 @@
 <template>
-  <span v-on:click="onClick">
-    <Tooltip
+  <span class="notemarker">
+    <!-- <Tooltip
       v-if="hidden == false"
       :content="content"
       :max-width="maxWidth"
@@ -13,15 +13,18 @@
       <sup>
         <Icon type="md-create" style="color: var(--theme-color, #42b983)" />
       </sup>
-    </Tooltip>
-    <sup v-if="hidden">
-      <Icon type="md-create" style="color: var(--theme-color, #42b983)" />
+    </Tooltip> -->
+    <sup>
+      <Icon type="md-create" style="color: var(--theme-color, #42b983)" @click="hidden=hidden!=true"/>
     </sup>
+    <TipsInline v-if="hidden == false" :tip="content" style="margin:2px"></TipsInline>
   </span>
 </template>
 <script>
+import TipsInline from "./TipsInline";
 export default {
   name: "NoteMarker",
+  components: { TipsInline },
   data() {
     return {
       on: true,
@@ -30,12 +33,12 @@ export default {
     };
   },
   computed: {
-      maxWidth(){
-          if(window.screen<320){
-              return 200;
-          }
-          return 400
+    maxWidth() {
+      if (window.screen < 320) {
+        return 200;
       }
+      return 400;
+    },
   },
   mounted() {
     if (this.showall == true) {
