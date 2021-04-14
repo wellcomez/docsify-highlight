@@ -198,7 +198,7 @@ class LocalStore {
     for (let i = 0; i < stores.length; i++) {
       if (stores[i].hs.id === id) {
         var { hs } = stores[i];
-        hs = {...hs,...a}
+        hs = { ...hs, ...a }
         stores[i].hs = hs;
         this.jsonToStore(stores);
         break;
@@ -305,8 +305,9 @@ class Chapter {
   md() {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
+    let index = 0;
     let items = this.children.map((a, idx) => {
-      let { label, style, note, imgsrc, tags, id } = a;
+      let { label, style, note, imgsrc, tags, id, notshowSeq } = a;
       tags = tags ? tags.map((tag) => {
         return "`" + `${tag}` + "`"
       }).join(' ') : ""
@@ -332,14 +333,21 @@ class Chapter {
         img = `![${path}](${imgsrc})`
       }
       let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
-      // let tile =  img ? img : span
-      return `${idx + 1}.[^](${url})${tags}${span}
-
-${img}
-         
-${note}
-         
-`;
+      if(notshowSeq!=true) {
+        index++;
+      }
+      let title = `${index}. [^](${url})${tags}${span}`
+      if (notshowSeq) {
+        title = `<span>&#8195;&#8195;</span>[^](${url})${tags}${span}`
+      }
+      let divider
+      if (notshowSeq) {
+        let a = this.children[idx + 1]
+        if (a && a.notshowSeq != true) {
+          divider = '---'
+        }
+      }
+      return [divider, title, img, note].filter((a) => a && a.length > 0).join('\n')
     });
     return title.concat(items).join("\n\n");
   }
@@ -384,14 +392,14 @@ export class Book {
     let aa = this.toc.name
     this.bookid = md5(aa)
   }
-  sortedChapter(){
-    let sorttoc =pluginScript().sorttoc
+  sortedChapter() {
+    let sorttoc = pluginScript().sorttoc
     let b = this
     let aaa = b.Charpter().sort((a, b) => {
       if (a.label == document.title) {
         return -1;
       }
-      if(sorttoc) return sorttoc(a.label,b.label)
+      if (sorttoc) return sorttoc(a.label, b.label)
       return a.label.localeCompare(b.label, "zh");
     })
     return aaa

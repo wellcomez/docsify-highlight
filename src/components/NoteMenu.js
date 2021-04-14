@@ -324,7 +324,6 @@ export const NoteMenu = {
             let { hl } = window;
             // console.log("*click remove-tip*", id);
             hl.deleteId(id);
-            this.removeMenu();
         },
     },
     model: {
