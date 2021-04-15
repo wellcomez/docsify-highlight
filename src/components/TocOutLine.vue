@@ -9,9 +9,8 @@
         :style="style"
         :class="outlineTitleClass"
       >
-
         <span v-if="html" v-html="html" class="title-span"></span>
-        <span v-else :style=style>{{title2}}</span>
+        <span v-else :style="style">{{ title2 }}</span>
         <img
           v-if="imgsrc"
           v-bind:src="imgsrc"
@@ -93,92 +92,26 @@ var Colr = require("colr");
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 export default {
   name: "TocOutLine",
-  // directives: { ClickOutside },
-  created() {
-    let {
-      label: title,
-      children,
-      note,
-      imgsrc,
-      tree,
-    } = this.notedata;
-    this.showiconRight = isMobile() != true;
-    this.imgsrc = getImgSrcUrl(imgsrc);
-    this.html = createHtml(tree);
-    // this.classOfSpan = this.spanclass(this.notedata);
-    this.title2 = title;
-    if (note && note.length) {
-      this.title2 = `"${note}"-${title}`;
-    }
-    this.title = title;
-    this.note = note && note.length ? `"${note}"` : undefined;
-    let styleDefine = this.notedata.styleDefine
-    for (let color in styleDefine) {
-      let a = styleDefine[color];
-      let { colorhex } = a;
-      if (this.iconColor.length == 0) {
-        let array = rgba(colorhex);
-        a[3] = 1;
-        let colr = Colr.fromRgbArray(array);
-        let { h, s, v } = colr.toHsvObject();
-        v = Math.min(70, v);
-        s = Math.max(90, s);
-        this.iconColor = Colr.fromHsvObject({ h, s, v }).toHex();
-      }
-    }
-
-    let icon = "ios-brush-outline";
-    if (note) {
-      icon = "md-create";
-    }
-    if (children && children.length) {
-      icon = undefined;
-      this.mainicon = this.expand
-        ? "ios-arrow-dropdown"
-        : "ios-arrow-dropright";
-      this.outlineTitleClass = "outline-text-parent";
-    }
-    this.icon = icon;
-    this.title = title;
-    this.tips = title;
-    this.disabled = false;
-    // this.t1 = t1;
-    // this.t2 = t2;
-    // this.neststyle = neststyle;
-    if (children && children.length) {
-      this.disabled = true;
-    }
-    // if(title==undefined||(title.length==0)){
-    //   this.disabled = true;
-    // }
-  },
   data() {
     return {
       neststyle: undefined,
       t1: undefined,
       t2: undefined,
-      showiconRight: true,
-      title2:undefined,
-      html:undefined,
+      showiconRight: isMobile() != true,
       list: [
         {
           name: "删除",
           click: () => {
             let { hl } = window;
-            let { id,charpter } = this.notedata;
-            let {store} = charpter?charpter:{}
-            hl.deleteId(id,store);
+            let { id, charpter } = this.notedata;
+            let { store } = charpter ? charpter : {};
+            hl.deleteId(id, store);
           },
         },
         { name: "查看", click: () => {} },
       ],
       disabledPopMore: true,
       textStyle: {},
-      outlineTitleClass: "outline-text",
-      imgsrc: undefined,
-      mainicon: undefined,
-      iconColor: "",
-      icon: undefined,
       classOfSpan: "",
       always: false,
     };
@@ -193,8 +126,83 @@ export default {
     onClickExpanded: { type: Function, default: undefined },
   },
   computed: {
+    parent() {
+      let { children } = this.notedata;
+      if (children && children.length) {
+        return true;
+      }
+      return false;
+    },
+    mainicon() {
+      if (this.parent) {
+        return this.expand ? "ios-arrow-dropdown" : "ios-arrow-dropright";
+      }
+      return undefined;
+    },
+    outlineTitleClass() {
+      if (this.parent) {
+        return "outline-text-parent";
+      }
+      return "outline-text";
+    },
+    icon() {
+      let icon = "ios-brush-outline";
+      if (this.note) {
+        icon = "md-create";
+      }
+      if (this.parent) {
+        icon = undefined;
+      }
+      return icon;
+    },
+    iconColor() {
+      let styleDefine = this.notedata.styleDefine;
+      for (let color in styleDefine) {
+        let a = styleDefine[color];
+        let { colorhex } = a;
+        let array = rgba(colorhex);
+        a[3] = 1;
+        let colr = Colr.fromRgbArray(array);
+        let { h, s, v } = colr.toHsvObject();
+        v = Math.min(70, v);
+        s = Math.max(90, s);
+        return Colr.fromHsvObject({ h, s, v }).toHex();
+      }
+      return undefined;
+    },
+    disabled() {
+      return this.parent;
+    },
+    tip() {
+      return this.title;
+    },
+    note() {
+      let { note } = this.notedata;
+      return note && note.length ? `"${note}"` : undefined;
+    },
+    title() {
+      let { label: title } = this.notedata;
+      return title;
+    },
+    title2() {
+      let { label: title, note } = this.notedata;
+      // this.classOfSpan = this.spanclass(this.notedata);
+      let title2 = title;
+      if (note && note.length) {
+        title2 = `"${note}"-${title}`;
+      }
+      return title2;
+    },
+    imgsrc() {
+      let { imgsrc } = this.notedata;
+      return getImgSrcUrl(imgsrc);
+    },
+    html() {
+      let { tree } = this.notedata;
+      return createHtml(tree);
+    },
     style() {
-      return convertStyle(this.notedata.style)
+      return convertStyle(this.notedata.style);
     },
     placement() {
       // return isMobile() ? "top-start" :
@@ -239,7 +247,7 @@ export default {
   padding-top:1px;
   padding-bottom:1px; */
 }
-.title-span i{
+.title-span i {
   font-style: normal;
 }
 .outline-text {
