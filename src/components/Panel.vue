@@ -258,6 +258,9 @@ export default {
     ClickOutside,
   },
   computed: {
+     bookmarkey(){
+        return this.seq+'-'+this.bookmark;
+     },
     sortedChapter(){
       return this.book.sortedChapter()
     },
@@ -311,11 +314,9 @@ export default {
       enableScript: false,
       bDrawerOpen: false,
       uername: undefined,
-      bookmarkCount: 0,
       collapsed: false,
       closedetail: this.fnclosedetail,
       bookmark: false,
-      bookmarkey: new Date() * 1,
     };
   },
   mounted() {
@@ -343,7 +344,6 @@ export default {
         ".html-drawer .ivu-drawer-right"
       ).style.height = "70%";
     }
-    this.bookmarkCount = this.getBookmarkCount();
     this.vesion = pkg.version;
   },
   beforeCreate: function () {
@@ -445,8 +445,6 @@ export default {
     onBookmark() {
       this.hl.store.setBookMark(this.bookmark != true);
       this.bookmark = this.bookmark != true;
-      this.bookmarkey = new Date() * 1;
-      this.bookmarkCount = this.getBookmarkCount();
     },
     onSave2Cloud() {
       let b = new Book();
