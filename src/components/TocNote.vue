@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { Book } from "../store";
 import { gotoNote } from "../utils";
 import { preHighLightItems } from "../DocHighlighter";
 import TocOutLine from "./TocOutLine";
@@ -17,9 +16,27 @@ export default {
   name: "TocNote",
   // eslint-disable-next-line vue/no-unused-components
   components: { TocOutLine },
-  computed: {
-    data(){
-      let b = this.book;
+  watch: {
+    book(b) {
+      let ret = this.getBookOutLine(b);
+      this.data = ret;
+    },
+  },
+  props: {
+    close: {
+      type: Function,
+      default: undefined,
+    },
+    book: { type: Object, default: undefined },
+  },
+  data() {
+    return {
+      data: this.getBookOutLine(this.book),
+    };
+  },
+  methods: {
+    getBookOutLine(b) {
+      if (b == undefined) return [];
       let aaa = b.sortedChapter();
       let ddd = aaa.map((c) => {
         return this.createOutLine(c);
@@ -34,36 +51,27 @@ export default {
         }
       });
       return ret;
-    }
-  },
-  props: {
-    close: {
-      type: Function,
-      default: undefined,
     },
-    book:{type:Object,default:new Book()}
-  },
-  data() {
-    return {
-    };
-  },
-  methods: {
+
     selectChange(a) {
       toc[a.title] = a.expand;
     },
-    createOutLine(item) {
+    createOutLine(item, charpter) {
       let { label: title, children } = item;
+      if (item&&charpter==undefined) {
+        charpter = item;
+      }
       let expand = false;
       if (children) {
         try {
           children = item.mergeChild();
           // eslint-disable-next-line no-empty
         } catch (error) {}
-        children = this.mapchildren(children);
+        children = this.mapchildren(children, charpter);
         if (toc[title]) expand = true;
       }
       // eslint-disable-next-line no-unused-vars
-      let notedata = { ...item };
+      let notedata = { ...item, ...{ charpter } };
       const render = (h) => {
         return h(TocOutLine, {
           props: {
@@ -87,10 +95,10 @@ export default {
       };
       return { title, children, expand, render };
     },
-    mapchildren(children) {
+    mapchildren(children, charpter) {
       if (children)
         return children.map((a) => {
-          return this.createOutLine(a);
+          return this.createOutLine(a, charpter);
         });
     },
     handleNodeClick(item) {
@@ -141,6 +149,7 @@ export default {
   border-bottom: 1px solid #eee;
 }
 </style>
+
 
 
 

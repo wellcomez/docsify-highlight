@@ -437,7 +437,8 @@ export default {
       let ddd = b.toc.bookMarkList();
       return ddd.length;
     },
-    hide() {
+    hide(a) {
+      if(a.target.innerText=='删除')return
       this.showdetail = false;
     },
     onBookmark() {

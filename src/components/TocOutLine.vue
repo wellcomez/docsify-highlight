@@ -165,8 +165,9 @@ export default {
           name: "删除",
           click: () => {
             let { hl } = window;
-            let { id } = this.notedata;
-            hl.deleteId(id);
+            let { id,charpter } = this.notedata;
+            let {store} = charpter?charpter:{}
+            hl.deleteId(id,store);
           },
         },
         { name: "查看", click: () => {} },

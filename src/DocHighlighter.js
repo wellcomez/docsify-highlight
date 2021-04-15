@@ -387,14 +387,17 @@ export class DocHighlighter {
         // });
     }
 
-    deleteId(id) {
+    deleteId(id,store) {
         let { highlighter } = this;
         this.removeHighLight(id)
         highlighter.removeClass(hl_note, id)
         highlighter.removeClass("highlight-wrap-hover", id);
         highlighter.removeClass("highlight-tags", id);
         highlighter.remove(id);
-        this.store.remove(id);
+        if(store==undefined){
+            store = this.store
+        }
+        store.remove(id);
         this.updatePanel();
     }
     enable(enable) {
@@ -584,7 +587,18 @@ export class DocHighlighter {
                     })
                     hs.text = text
                     hs.tags = tags
-                    hs.top = this.getElementPosition(noteid)
+                    let base = document.body.getBoundingClientRect().top;
+                    let pos = this.getElementPosition(noteid)
+                    let top 
+                    this.procssAllElements(noteid,(a)=>{
+                        let t = a.getBoundingClientRect().top-base
+                        if(top==undefined||t<top)
+                        {
+                            top = t
+                        }
+                    })
+                    pos.top = top
+                    hs.top = pos;
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
                     hs.tree = tree

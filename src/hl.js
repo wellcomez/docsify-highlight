@@ -45,6 +45,7 @@ function runScrip() {
         }
     }
 }
+let seq = 0
 function hlinit() {
     runScrip()
     log("hlinit-" + document.location.href)
@@ -60,7 +61,6 @@ function hlinit() {
     let count = hl.count()
     let checked = hl.on()
     let updated = Book.updated
-    let seq = 0
     if (vm) {
         Vue.set(vm, "count", count);
         Vue.set(vm, "changeNumber", changeNumber);
