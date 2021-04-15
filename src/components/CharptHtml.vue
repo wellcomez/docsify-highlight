@@ -12,8 +12,8 @@
       ) in list"
       :key="index"
     >
-      <Divider v-if="notshowSeq!=true"></Divider>
-      <div v-else><br><br></div>
+      <Divider v-if="notshowSeq != true"></Divider>
+      <div v-else><br /><br /></div>
       <div class="sub-title">
         <a
           v-if="notshowSeq != true"
@@ -28,12 +28,17 @@
             v-if="onClick"
             @click="onClick({ index, url })"
             style="text-decoration: none; color: #42b983"
-            ><Icon type="md-link" /></a
-          >
+            ><Icon type="md-link"
+          /></a>
           <a v-else :href="url" style="text-decoration: none; color: #42b983"
-            ><Icon type="md-link" /></a
-          >
-          <Icon type="ios-close" @click="onDelete(index)" size="18" color="#42b983"/>
+            ><Icon type="md-link"
+          /></a>
+          <Icon
+            type="ios-close"
+            @click="onDelete(index)"
+            size="18"
+            color="#42b983"
+          />
         </sup>
         <div v-if="tags" style="display: inline-block">
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
@@ -64,26 +69,38 @@
 </template>
 <script>
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
-import {Divider} from "iview"
+import { Divider } from "iview";
 // import { Tooltip } from "iview";
 export default {
-  components: {Divider},
+  components: { Divider },
   data() {
     return {
       showMerge: false,
       showSelected: {},
-      hrefa: "",
-      title: "",
-      list: [{ name: "" }],
     };
   },
+  computed: {
+    list() {
+      let list = [{ name: "" }];
+      let { charpter } = this;
+      if (charpter)
+        return charpter.mergeChild().map((a) => this.convert(a, charpter));
+      return list;
+    },
+    title() {
+      return this.charpter.label;
+    },
+    hrefa() {
+      return "#" + this.title;
+    },
+  },
   methods: {
-    onDelete(index){
-      let l  = this.list[index];
-      let {id} = l;
-      let {hl,charpter} = this
-      let {store} = charpter
-      hl.deleteId(id,store)
+    onDelete(index) {
+      let l = this.list[index];
+      let { id } = l;
+      let { hl, charpter } = this;
+      let { store } = charpter;
+      hl.deleteId(id, store);
     },
     onIcon(index) {
       let { notshowSeq } = this.list[index];
@@ -148,20 +165,6 @@ export default {
     },
   },
 
-  created() {
-    let { charpter } = this;
-    if (charpter) {
-      this.title = charpter.label;
-      this.hrefa = "#" + this.title;
-      let children = charpter.mergeChild();
-      this.list = children.map((a) => this.convert(a, charpter));
-    }
-  },
-  watch: {
-    charpter(charpter) {
-      this.list = charpter.mergeChild().map((a) => this.convert(a, charpter));
-    },
-  },
   props: {
     hl: { type: Object, default: undefined },
     rootpath: { type: String, default: undefined },
@@ -193,8 +196,8 @@ span.sub-tag {
   margin: 4px;
   font-size: small;
   font-weight: normal;
-  padding:2px;
-  background-color:#42b983;
+  padding: 2px;
+  background-color: #42b983;
   color: white;
   border-radius: 3px;
 }

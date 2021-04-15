@@ -396,9 +396,9 @@ export class Book {
     let sorttoc = pluginScript().sorttoc
     let b = this
     let aaa = b.Charpter().sort((a, b) => {
-      if (a.label == document.title) {
-        return -1;
-      }
+      // if (a.label == document.title) {
+      //   return -1;
+      // }
       if (sorttoc) return sorttoc(a.label, b.label)
       return a.label.localeCompare(b.label, "zh");
     })
