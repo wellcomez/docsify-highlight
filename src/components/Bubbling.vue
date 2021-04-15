@@ -30,7 +30,6 @@ export default {
       expanded: false,
     };
   },
-  mounted() {},
   props: {
     content: {
       type: String,

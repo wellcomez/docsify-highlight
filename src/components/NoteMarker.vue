@@ -27,7 +27,7 @@ export default {
   components: { TipsInline },
   data() {
     return {
-      on: true,
+      on: this.showall,
       always: true,
       hidden: false,
     };
@@ -41,11 +41,6 @@ export default {
     },
   },
   mounted() {
-    if (this.showall == true) {
-      this.on = true;
-    } else {
-      this.on = false;
-    }
     this.updateWithOnStatus();
   },
   props: {

@@ -68,7 +68,6 @@ export default {
   props: {
     open: { type: Boolean, default: undefined },
   },
-  mounted() {},
   computed: {
     loginbyphone() {
       return this.bywhat == "byphone";

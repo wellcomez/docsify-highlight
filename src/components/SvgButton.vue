@@ -66,11 +66,8 @@ export default {
   data() {
     return {
       always: false,
-      tipsDisabled: true,
+      tipsDisabled: !this.tips,
     };
-  },
-  mounted() {
-    this.tipsDisabled = !this.tips;
   },
   model: {
     prop: "on",

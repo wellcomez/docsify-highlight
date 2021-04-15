@@ -227,9 +227,6 @@ export default {
       if (isMobile()) this.always = false;
     },
     onClickExpanded1(e) {
-      let drop = "ios-arrow-dropdown" == this.mainicon;
-      this.mainicon =
-        drop == false ? "ios-arrow-dropdown" : "ios-arrow-dropright";
       this.onClickExpanded(e);
     },
     onClick(e) {

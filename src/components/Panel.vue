@@ -17,7 +17,7 @@
       </Col>
       <Col>
         <SvgButton
-          @click="onOpenContentList"
+          @click="showdetail=showdetail!=true"
           name="ios-book"
           tips="Table of Content"
           onOff
@@ -76,7 +76,11 @@
               <Button @click="onClickOpenNote" size="small">打开</Button>
             </Col>
           </Row>
-          <TocNote v-bind:close="closedetail" v-bind:key="count2" :book="book"></TocNote>
+          <TocNote
+            v-bind:close="closedetail"
+            v-bind:key="count2"
+            :book="book"
+          ></TocNote>
         </TabPane>
         <TabPane label="书签">
           <BookMarks :hl="hl" :key="bookmarkey" />
@@ -258,11 +262,11 @@ export default {
     ClickOutside,
   },
   computed: {
-     bookmarkey(){
-        return this.seq+'-'+this.bookmark;
-     },
-    sortedChapter(){
-      return this.book.sortedChapter()
+    bookmarkey() {
+      return this.seq + "-" + this.bookmark;
+    },
+    sortedChapter() {
+      return this.book.sortedChapter();
     },
     htmldrawerWidthDynamic() {
       if (isMobile()) return this.htmldrawerWidth;
@@ -303,27 +307,23 @@ export default {
   },
   data() {
     return {
+      showdetail: false,
       zoomNoteBook: false,
-      htmldrawerWidth: 480,
-      fullhtmldrawerWidth: 480,
+      htmldrawerWidth: isMobile()? 480: window.screen.width,
+      fullhtmldrawerWidth :isMobile()? window.screen.width:window.screen.width * 0.8,
       openNoteBook: false,
       book: new Book(),
-      vesion: "",
-      showexport: true,
+      vesion: pkg.version,
+      showexport: isMobile() ? false : true,
       drawWidth: 320,
-      enableScript: false,
+      enableScript: getConfig().load().enableScript,
       bDrawerOpen: false,
       uername: undefined,
       collapsed: false,
-      closedetail: this.fnclosedetail,
       bookmark: false,
     };
   },
   mounted() {
-    let { enableScript } = getConfig().load();
-    this.showexport = isMobile() ? false : true;
-    this.enableScript = enableScript;
-    // this.drawWidth = window.screen.width < 480 ? 440: 320;
     if (window.screen.width < 480) {
       let left = window.screen.width - 300;
       document.querySelector(
@@ -333,26 +333,13 @@ export default {
     }
     if (isMobile()) {
       let left = 0;
-      this.htmldrawerWidth = window.screen.width;
-      this.fullhtmldrawerWidth = window.screen.width;
       document.querySelector(
         ".html-drawer .ivu-drawer-right"
       ).style.left = `${left}px`;
     } else {
-      this.fullhtmldrawerWidth = window.screen.width * 0.8;
-      document.querySelector(
-        ".html-drawer .ivu-drawer-right"
-      ).style.height = "70%";
+      document.querySelector(".html-drawer .ivu-drawer-right").style.height =
+        "70%";
     }
-    this.vesion = pkg.version;
-  },
-  beforeCreate: function () {
-    this.fnclosedetail = () => {
-      this.showdetail = false;
-    };
-  },
-  beforeDestroy: function () {
-    // checkClickOut(undefined, this.hideDetails);
   },
   model: {
     prop: "updated",
@@ -360,10 +347,7 @@ export default {
   props: {
     seq: { type: Number, default: 0 },
     updated: { type: Boolean, default: false },
-    showdetail: {
-      type: Boolean,
-      default: false,
-    },
+
     checked: {
       type: Boolean,
       default: true,
@@ -386,7 +370,7 @@ export default {
       }
     },
     seq() {
-      this.book = new Book()
+      this.book = new Book();
     },
   },
   methods: {
@@ -439,7 +423,10 @@ export default {
       return ddd.length;
     },
     hide(a) {
-      if(a.target.innerText=='删除')return
+      if (a.target.innerText == "删除") return;
+      this.closedetail()
+    },
+    closedetail(){
       this.showdetail = false;
     },
     onBookmark() {
@@ -465,9 +452,6 @@ export default {
         getConfig().save({ changeNumber, localNumber });
         window.location.reload();
       });
-    },
-    onOpenContentList() {
-      this.showdetail = this.showdetail == false;
     },
     onSelect(name) {
       let b = new Book();
