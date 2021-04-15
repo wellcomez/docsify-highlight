@@ -137,6 +137,7 @@
         :charpter="charpter"
         :onClickURL="onClickURL"
         :key="index"
+        :hl="hl"
       />
     </Drawer>
   </div>

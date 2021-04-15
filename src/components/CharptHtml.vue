@@ -33,6 +33,7 @@
           <a v-else :href="url" style="text-decoration: none; color: #42b983"
             ><Icon type="md-link" /></a
           >
+          <Icon type="ios-close" @click="onDelete(index)" size="18" color="#42b983"/>
         </sup>
         <div v-if="tags" style="display: inline-block">
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
@@ -77,6 +78,13 @@ export default {
     };
   },
   methods: {
+    onDelete(index){
+      let l  = this.list[index];
+      let {id} = l;
+      let {hl,charpter} = this
+      let {store} = charpter
+      hl.deleteId(id,store)
+    },
     onIcon(index) {
       let { notshowSeq } = this.list[index];
       notshowSeq = notshowSeq != true;
@@ -155,6 +163,7 @@ export default {
     },
   },
   props: {
+    hl: { type: Object, default: undefined },
     rootpath: { type: String, default: undefined },
     exporthtml: { type: Boolean, default: false },
     charpter: { type: Object, default: undefined },

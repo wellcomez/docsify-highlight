@@ -347,11 +347,11 @@ export class DocHighlighter {
         });
 
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
-            let last = selectedNodes[selectedNodes.length - 1]
-            if (last.splitType != 'tail') return []
             if (selectedNodes.length === 0) {
                 return [];
             }
+            let last = selectedNodes[selectedNodes.length - 1]
+            if (last.splitType != 'tail') return []
             selectedNodes = selectedNodes.filter((selected) => {
                 try {
                     let parent = selected.$node.parentNode;
