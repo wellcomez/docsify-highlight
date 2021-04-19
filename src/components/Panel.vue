@@ -309,8 +309,8 @@ export default {
     return {
       showdetail: false,
       zoomNoteBook: false,
-      htmldrawerWidth: isMobile()? 480: window.screen.width,
-      fullhtmldrawerWidth :isMobile()? window.screen.width:window.screen.width * 0.8,
+      htmldrawerWidth: isMobile()? 480: window.screen.width*.3,
+      fullhtmldrawerWidth :isMobile()? window.screen.width:window.screen.width,
       openNoteBook: false,
       book: new Book(),
       vesion: pkg.version,
