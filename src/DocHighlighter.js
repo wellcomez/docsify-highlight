@@ -538,7 +538,7 @@ export class DocHighlighter {
 
     saveNoteData = (noteid, data) => {
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
-        let change = style != undefined || note || tags.length || img && img.length || bookmark
+        let change = style != undefined && Object.keys(style).length || note || tags.length || img && img.length || bookmark
         let highlightIdExtra = this.parentNodeId(noteid)
         let tree, version = '0.22';
 
