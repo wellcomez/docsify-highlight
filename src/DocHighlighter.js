@@ -2,7 +2,7 @@ import Highlighter from 'web-highlighter';
 import { Book } from './store';
 import { User } from "./UserLogin";
 import { log } from "./log";
-import {getIntersection} from "./hl"
+import { getIntersection } from "./hl"
 import { getConfig } from './ANoteConfig';
 import { createHtml, mountCmp, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
@@ -12,7 +12,7 @@ import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { UTILS } from './css_path'
-const copyPasteBoard =require('clipboard-copy')
+const copyPasteBoard = require('clipboard-copy')
 
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
@@ -65,7 +65,7 @@ export class DocHighlighter {
         }
     }
     createNoteMenu = (node, sources) => {
-        let id= node.dataset.highlightId;
+        let id = node.dataset.highlightId;
         const position = this.getPosition(node);
         let { top, left } = position;
         removeTips();
@@ -76,10 +76,10 @@ export class DocHighlighter {
         } catch (error) {
         }
         if (hs == undefined) {
-            if(sources.length){
+            if (sources.length) {
                 hs = sources[0]
-            }else{
-                hs = {id}
+            } else {
+                hs = { id }
             }
         }
         let hl = this;
@@ -93,7 +93,7 @@ export class DocHighlighter {
             this.disableUserSelection(false)
         }
         let section = document.body
-        mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu,hs}, section)
+        mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu, hs }, section)
     };
     procssAllElements(nodeid, cb) {
         const classname = 'docsify-highlighter'
@@ -328,7 +328,7 @@ export class DocHighlighter {
             let node = this.getElement(id)
             this.createNoteMenu(node)
         };
-        let {$root} = this;
+        let { $root } = this;
         this.highlighter = new Highlighter({
             $root,
             wrapTag: 'i',
@@ -351,7 +351,13 @@ export class DocHighlighter {
                 return [];
             }
             let last = selectedNodes[selectedNodes.length - 1]
-            if (last.splitType != 'tail') return []
+            if (last.splitType != 'tail') {
+                if (last.splitType == 'both' && selectedNodes.length == 1) {
+                    return selectedNodes
+                }
+                console.error("selectedNodes", selectedNodes.length, last.splitType);
+                return []
+            }
             selectedNodes = selectedNodes.filter((selected) => {
                 try {
                     let parent = selected.$node.parentNode;
@@ -387,14 +393,14 @@ export class DocHighlighter {
         // });
     }
 
-    deleteId(id,store) {
+    deleteId(id, store) {
         let { highlighter } = this;
         this.removeHighLight(id)
         highlighter.removeClass(hl_note, id)
         highlighter.removeClass("highlight-wrap-hover", id);
         highlighter.removeClass("highlight-tags", id);
         highlighter.remove(id);
-        if(store==undefined){
+        if (store == undefined) {
             store = this.store
         }
         store.remove(id);
@@ -408,8 +414,8 @@ export class DocHighlighter {
         this.turnHighLight(enable);
     }
     onCopy(hs) {
-        let {text} = hs?hs:{}
-        if(text){
+        let { text } = hs ? hs : {}
+        if (text) {
             copyPasteBoard(text)
         }
     }
@@ -426,7 +432,7 @@ export class DocHighlighter {
             this.store.getAll()
             let creatFromStore = (hs) => {
                 let hhs = this.store.geths(hs.id)
-                let { id, style, note, bookmark, tree } =  hhs
+                let { id, style, note, bookmark, tree } = hhs
                 let a = new highlightType(this, hhs)
                 a.showHighlight()
                 let parentNodeId = this.parentNodeId(id)
@@ -589,11 +595,10 @@ export class DocHighlighter {
                     hs.tags = tags
                     let base = document.body.getBoundingClientRect().top;
                     let pos = this.getElementPosition(noteid)
-                    let top 
-                    this.procssAllElements(noteid,(a)=>{
-                        let t = a.getBoundingClientRect().top-base
-                        if(top==undefined||t<top)
-                        {
+                    let top
+                    this.procssAllElements(noteid, (a) => {
+                        let t = a.getBoundingClientRect().top - base
+                        if (top == undefined || t < top) {
                             top = t
                         }
                     })
@@ -654,14 +659,31 @@ export class DocHighlighter {
             let node = nodes[idx]
             let { innerText } = node;
             let same = (startMeta.parentIndex == endMeta.parentIndex && startMeta.parentTagName == endMeta.parentTagName)
+            let endElement;
             if (startMeta.parentIndex == endMeta.parentIndex && startMeta.parentTagName == endMeta.parentTagName) {
-                innerText = innerText.substring(begin, end)
+                if (innerText.length >= text.length) {
+                    let childNodes = []
+                    for (let j = 0; j < node.childNodes.length; j++) {
+                        childNodes.push(node.childNodes[j])
+                    }
+                    innerText = childNodes.filter((a) => {
+                        if (a.classList)
+                            return a.classList.contains("hl-ignored") ? false : true;
+                        return true
+                    }).map((a) => {
+                        return a.textContent
+                    }).join("")
+                    text = text.replace(/\u3000| |\t/g, '')
+                    innerText = innerText.replace(/\u3000| |\t/g, '')
+                } else {
+                    innerText = ""
+                }
+
             } else {
                 innerText = innerText.substring(begin)
             }
             if (innerText.length == 0) continue;
             if (text.indexOf(innerText) != 0) continue
-            let endElement;
             if (same) {
                 endElement = node
             } else {
@@ -671,7 +693,7 @@ export class DocHighlighter {
                     let { parentIndex } = endMeta;
                     parentIndex = parentIndex + index - startMeta.parentIndex
                     endMeta = { ...endMeta, ...{ parentIndex } }
-                    console.log('find end')
+                    // console.log('find end')
                     return { ...hs, ...{ startMeta, endMeta } }
                 }
                 let parents = this.$root.querySelectorAll(endMeta.parentTagName);
@@ -689,7 +711,7 @@ export class DocHighlighter {
 
                 endMeta = { ...endMeta, ...getParentIndex(endMeta, endElement) }
                 startMeta = { ...startMeta, ...getParentIndex(startMeta, node) }
-                console.log('find end')
+                // console.log('find end')
                 return { ...hs, ...{ startMeta, endMeta } }
             } else {
                 let parents = this.$root.querySelectorAll(endMeta.parentTagName);
@@ -706,8 +728,8 @@ export class DocHighlighter {
 
             }
         }
-        if(hs.startMeta.parentTagName!='img'){
-            console.warn('not find ',hs)
+        if (hs.startMeta.parentTagName != 'img') {
+            console.warn('not find ', hs)
         }
         return hs
     }
