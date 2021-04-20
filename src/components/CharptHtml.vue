@@ -1,5 +1,6 @@
 <template>
   <div class="charpterhtml" style="margin-left: 10%; margin-right: 10%">
+    <Divider></Divider>
     <h2 v-if="exporthtml">
       <a :href="hrefa">{{ title }}</a>
     </h2>
@@ -10,7 +11,7 @@
       ) in list"
       :key="index"
     >
-      <Divider v-if="notshowSeq != true"></Divider>
+      <Divider v-if="notshowSeq != true && index != 0"></Divider>
       <div v-else><br /><br /></div>
       <div class="sub-title">
         <a
@@ -29,7 +30,6 @@
           type="ios-close"
           @click="onDelete(index)"
           size="18"
-          color="#42b983"
         />
 
         <div v-if="tags" style="display: inline-block">
@@ -177,6 +177,9 @@ export default {
 <style >
 .charpterhtml a {
   text-decoration: none;
+  color: #42b983;
+}
+.charpterhtml .ivu-icon{
   color: #42b983;
 }
 .charpterhtml i {
