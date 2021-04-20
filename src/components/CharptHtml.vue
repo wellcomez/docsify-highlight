@@ -1,9 +1,7 @@
 <template>
   <div class="charpterhtml" style="margin-left: 10%; margin-right: 10%">
     <h2 v-if="exporthtml">
-      <a :href="hrefa" style="text-decoration: none; color: #42b983">{{
-        title
-      }}</a>
+      <a :href="hrefa">{{ title }}</a>
     </h2>
     <h2 v-else>{{ title }}</h2>
     <div
@@ -21,25 +19,19 @@
         >
           {{ index + 1 }}.</a
         >
-        <!-- :href="href({ title, label, index })" -->
-        <a v-if="notshowSeq" style="text-decoration: none; color: black"></a>
-        <sup>
-          <a
-            v-if="onClick"
-            @click="onClick({ index, url })"
-            style="text-decoration: none; color: #42b983"
+        <sup style="margin-left: 4px">
+          <a v-if="onClick" @click="onClick({ index, url })"
             ><Icon type="md-link"
           /></a>
-          <a v-else :href="url" style="text-decoration: none; color: #42b983"
-            ><Icon type="md-link"
-          /></a>
-          <Icon
-            type="ios-close"
-            @click="onDelete(index)"
-            size="18"
-            color="#42b983"
-          />
+          <a v-else :href="url"><Icon type="md-link" /></a>
         </sup>
+        <Icon
+          type="ios-close"
+          @click="onDelete(index)"
+          size="18"
+          color="#42b983"
+        />
+
         <div v-if="tags" style="display: inline-block">
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
             a
@@ -75,18 +67,12 @@ export default {
   components: { Divider },
   data() {
     return {
+      list: this.initList(this.charpter),
       showMerge: false,
       showSelected: {},
     };
   },
   computed: {
-    list() {
-      let list = [{ name: "" }];
-      let { charpter } = this;
-      if (charpter)
-        return charpter.mergeChild().map((a) => this.convert(a, charpter));
-      return list;
-    },
     title() {
       return this.charpter.label;
     },
@@ -94,7 +80,17 @@ export default {
       return "#" + this.title;
     },
   },
+  watch: {
+    charpter(charpter) {
+      this.list = this.initList(charpter);
+    },
+  },
   methods: {
+    initList(charpter) {
+      if (charpter)
+        return charpter.mergeChild().map((a) => this.convert(a, charpter));
+      return [{ name: "" }];
+    },
     onDelete(index) {
       let l = this.list[index];
       let { id } = l;
@@ -102,15 +98,7 @@ export default {
       let { store } = charpter;
       hl.deleteId(id, store);
     },
-    onIcon(index) {
-      let { notshowSeq } = this.list[index];
-      notshowSeq = notshowSeq != true;
-      let pre = this.list[index - 1];
-      if (pre != undefined && notshowSeq == true) {
-        if (pre.notshowSeq) {
-          notshowSeq = true;
-        }
-      }
+    updateList() {
       let getrootid = (notshowSeq, index) => {
         if (notshowSeq) {
           let end = index > 0 ? 0 : index + 1;
@@ -124,9 +112,7 @@ export default {
           return;
         }
       };
-      let l = this.list[index];
-      this.list[index] = { ...l, ...{ notshowSeq } };
-      this.list = this.list.map((a, idx) => {
+      return this.list.map((a, idx) => {
         let { notshowSeq, id } = a;
         let rootid = getrootid(notshowSeq, idx);
         if (rootid == undefined) {
@@ -135,6 +121,20 @@ export default {
         this.charpter.store.update({ id, notshowSeq, rootid });
         return { ...a, ...{ rootid, notshowSeq } };
       });
+    },
+    onIcon(index) {
+      let { notshowSeq } = this.list[index];
+      notshowSeq = notshowSeq != true;
+      let pre = this.list[index - 1];
+      if (pre != undefined && notshowSeq == true) {
+        if (pre.notshowSeq) {
+          notshowSeq = true;
+        }
+      }
+
+      let l = this.list[index];
+      this.list[index] = { ...l, ...{ notshowSeq } };
+      this.list = this.updateList();
     },
     convert(a, charpter) {
       let { imgsrc, text, id, tree, version } = a;
@@ -175,6 +175,10 @@ export default {
 };
 </script>
 <style >
+.charpterhtml a {
+  text-decoration: none;
+  color: #42b983;
+}
 .charpterhtml i {
   font-style: normal;
 }
@@ -191,6 +195,7 @@ export default {
   margin-bottom: 4px;
   font-size: small;
   font-weight: normal;
+  display: inline-block;
 }
 span.sub-tag {
   margin: 4px;

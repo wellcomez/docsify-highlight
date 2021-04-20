@@ -160,7 +160,6 @@
   border-radius: 3px;
   color: black;
   padding: 4px;
-  /* background: var(--theme-color, #42b983); */
 }
 .op-panel .ivu-switch {
   /* margin: top 4px; */
@@ -177,7 +176,7 @@
 }
 .op-panel .outline,
 .op-panel {
-  width: 268px;
+  width: 320px;
 }
 .op-panel .contenttable .tabs {
   height: inherit;
