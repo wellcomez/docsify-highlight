@@ -20,37 +20,36 @@
         >
           {{ index + 1 }}.</a
         >
-        <sup style="margin-left: 4px">
-          <a v-if="onClick" @click="onClick({ index, url })"
-            ><Icon type="md-link"
-          /></a>
-          <a v-else :href="url"><Icon type="md-link" /></a>
-        </sup>
         <Icon
-          type="ios-close"
-          @click="onDelete(index)"
-          size="18"
+          v-if="notshowSeq"
+          style="margin-left: 20px"
+          type="md-arrow-dropleft"
+          @click="onIcon(index)"
         />
+        <Icon v-else type="md-arrow-dropright" @click="onIcon(index)" />
 
+        <Icon type="ios-close" @click="onDelete(index)" size="18" />
         <div v-if="tags" style="display: inline-block">
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
             a
           }}</span>
         </div>
         <div
-          @click="onIcon(index)"
+          @click="onClick({ index, url })"
           v-if="html"
           style="display: inline"
           v-html="html"
         ></div>
-        <div @click="onIcon(index)" v-else style="display: inline">
+        <div @click="onClick({ index, url })" v-else style="display: inline">
           <span :style="style">{{ text }}</span>
         </div>
       </div>
       <img
         class="html-img"
-        @click="onIcon(index)"
+        @click="onClick({ index, url })"
         v-if="imgsrc"
+        @mouseover="onImageIn"
+        @mouseout="onImageOut"
         :src="imgsrc"
       />
       <div v-if="note" class="outline-title">
@@ -70,6 +69,7 @@ export default {
       list: this.initList(this.charpter),
       showMerge: false,
       showSelected: {},
+      hoverDelayImg: undefined,
     };
   },
   computed: {
@@ -90,6 +90,21 @@ export default {
       if (charpter)
         return charpter.mergeChild().map((a) => this.convert(a, charpter));
       return [{ name: "" }];
+    },
+    onImageOut(e) {
+      let { target } = e;
+      let { hoverDelayImg } = this;
+      if (hoverDelayImg) clearTimeout(hoverDelayImg);
+      this.hoverDelayImg = undefined;
+      if (target) target.style.width = "60%";
+    },
+    onImageIn(e) {
+      let { target } = e;
+      let { hoverDelayImg } = this;
+      if (hoverDelayImg) return;
+      this.hoverDelayImg = setTimeout(() => {
+        if (target) target.style.width = "100%";
+      }, 100);
     },
     onDelete(index) {
       let l = this.list[index];
@@ -179,19 +194,18 @@ export default {
   text-decoration: none;
   color: #42b983;
 }
-.charpterhtml .ivu-icon{
+.charpterhtml .ivu-icon {
   color: #42b983;
 }
 .charpterhtml i {
   font-style: normal;
 }
-.html-img {
+.html-img,
+html-img-hover {
+  display: inline;
   width: 60%;
   border: 1px solid #42b983;
   margin: 2px;
-}
-.html-img:hover {
-  width: 100%;
 }
 .sub-title {
   margin-top: 4px;
