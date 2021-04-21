@@ -216,6 +216,7 @@ function findSameParts(str1, str2, options = {}) {
 export function createHtml(json) {
   if(json==undefined||json==null)return
   let { nodes, styleList } = json
+  // eslint-disable-next-line no-unused-vars
   function convertNodes(nodes) {
     return nodes.map((el) => {
       let html = ''
@@ -238,7 +239,22 @@ export function createHtml(json) {
       return html
     }).join('')
   }
-  return convertNodes(nodes)
+  let p = document.createElement('p')
+  function convertNodes2(nodes) {
+    nodes.forEach((el) => {
+      let { tagName, text, style, children } = el
+      if(tagName=="I"){
+        let el = document.createElement(tagName)
+        el.setAttribute('style', styleList[style])
+        el.innerText = text
+        p.appendChild(el)
+      }
+      convertNodes2(children?children:[])
+    })
+    return p.innerHTML
+  }
+  return convertNodes2(nodes)
+  // return convertNodes(nodes)
 }
 export function pluginScript() {
   let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
