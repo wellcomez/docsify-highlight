@@ -94,6 +94,10 @@ export default {
   name: "TocOutLine",
   data() {
     return {
+      parentData: {
+        type: Object,
+        default: undefined,
+      },
       neststyle: undefined,
       t1: undefined,
       t2: undefined,
@@ -121,6 +125,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    children: { type: Array, default: undefined },
     notedata: { type: Object, default: undefined },
     onSelected: { type: Function, default: undefined },
     onClickExpanded: { type: Function, default: undefined },
@@ -215,6 +220,19 @@ export default {
       return 400;
     },
   },
+  created() {
+    // console.log("created", this.expand, this.notedata);
+  },
+  mounted() {
+    // console.log("mounted", this.expand, this.notedata);
+    // let a = this.$parent;
+    // this.parentData = a.data;
+    // this.children = a.data.children
+    //   ? a.data.children.map((a) => {
+    //       return a;
+    //     })
+    //   : [];
+  },
   methods: {
     onClickMore() {
       this.openMore = this.openMore != true;
@@ -226,8 +244,13 @@ export default {
     endHandler() {
       if (isMobile()) this.always = false;
     },
+    // eslint-disable-next-line no-unused-vars
     onClickExpanded1(e) {
-      this.onClickExpanded(e);
+      let a = this.$parent;
+      // let { children } = this;
+      // let expanded = a.data.expanded != true;
+      a.$set(a.data, "expand", !a.data.expand);
+      // a.$set(a.data, "children", expanded ? children : []);
     },
     onClick(e) {
       this.onSelected(e);
