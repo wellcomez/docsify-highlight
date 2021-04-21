@@ -17,7 +17,7 @@
       </Col>
       <Col>
         <SvgButton
-          @click="showdetail=showdetail!=true"
+          @click="showdetail = showdetail != true"
           name="ios-book"
           tips="Table of Content"
           onOff
@@ -308,8 +308,10 @@ export default {
     return {
       showdetail: false,
       zoomNoteBook: false,
-      htmldrawerWidth: isMobile()? 480: window.screen.width*.3,
-      fullhtmldrawerWidth :isMobile()? window.screen.width:window.screen.width,
+      htmldrawerWidth: isMobile() ? 480 : window.screen.width * 0.3,
+      fullhtmldrawerWidth: isMobile()
+        ? window.screen.width
+        : window.screen.width,
       openNoteBook: false,
       book: new Book(),
       vesion: pkg.version,
@@ -335,10 +337,8 @@ export default {
       document.querySelector(
         ".html-drawer .ivu-drawer-right"
       ).style.left = `${left}px`;
-    } else {
-      document.querySelector(".html-drawer .ivu-drawer-right").style.height =
-        "70%";
     }
+    this.zoomNoteBook = false;
   },
   model: {
     prop: "updated",
@@ -362,6 +362,13 @@ export default {
     changeNumber: { type: Number, default: 0 },
   },
   watch: {
+    zoomNoteBook(a) {
+      if (isMobile() == false) {
+        document.querySelector(
+          ".html-drawer .ivu-drawer-right"
+        ).style.height = a ? "40%" : "70%";
+      }
+    },
     hl(hl) {
       let { store } = hl;
       if (store) {
@@ -423,9 +430,9 @@ export default {
     },
     hide(a) {
       if (a.target.innerText == "删除") return;
-      this.closedetail()
+      this.closedetail();
     },
-    closedetail(){
+    closedetail() {
       this.showdetail = false;
     },
     onBookmark() {
