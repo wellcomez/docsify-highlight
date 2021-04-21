@@ -203,7 +203,7 @@ export default {
 }
 .html-img,
 html-img-hover {
-  display: inline;
+  display: block;
   width: 60%;
   border: 1px solid #42b983;
   margin: 2px;
