@@ -495,7 +495,16 @@ export class DocHighlighter {
         })
         // let html = ""
         this.highlighter.getDoms(noteid).forEach((node) => {
-            parent.add(node.parentElement)
+            let find = false;
+            parent.forEach((a)=>{
+                a.querySelectorAll(".docsify-highlighter").forEach((b)=>{
+                    if(find==false){
+                        find = b==node;
+                    }
+                })
+            })
+            if(find==false)
+                parent.add(node.parentElement)
         });
         let ret = []
         let styleList = []
@@ -507,7 +516,7 @@ export class DocHighlighter {
                 for (let i = 0; i < ii.length; i++) {
                     let el = ii[i];
                     let a = buildTree(el)
-                    if (a.length) {
+                    if (a.children.length) {
                         children.push(a)
                     }
                     if (el.classList.contains('docsify-highlighter')) {
