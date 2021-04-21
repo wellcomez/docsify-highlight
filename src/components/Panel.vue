@@ -73,7 +73,9 @@
           <Row type="flex" justify="space-between">
             <Col> <span style="margin-left: 4px">全部</span> </Col>
             <Col span="5">
-              <Button @click="onClickOpenNote" size="small">打开</Button>
+              <Button @click="onClickOpenNote" size="small" style="margin: 4px"
+                >打开</Button
+              >
             </Col>
           </Row>
           <TocNotePanel
@@ -117,34 +119,11 @@
       </div>
       <!-- <ConfigPanel /> -->
     </Drawer>
-    <Drawer
-      class="html-drawer"
-      title="笔记"
-      :closable="true"
-      v-model="openNoteBook"
-      :width="htmldrawerWidthDynamic"
-      scrollable
-      :mask="false"
-    >
-      <div slot="header" style="display: flex">
-        <Icon
-          type="ios-expand"
-          size="18"
-          @click="zoomNoteBook = zoomNoteBook != true"
-        >
-        </Icon>
-        <h3 style="margin-left: 20px">笔记</h3>
-      </div>
-      <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
-      <CharptHtml
-        class="charpterhtml"
-        v-for="(charpter, index) in sortedChapter"
-        :charpter="charpter"
-        :onClickURL="onClickURL"
-        :key="index"
-        :hl="hl"
-      />
-    </Drawer>
+    <NoteSiderBar
+      :hl="hl"
+      :openNoteBook.sync="openNoteBook"
+      :sortedChapter="sortedChapter"
+    ></NoteSiderBar>
   </div>
 </template>
 <style >
@@ -174,21 +153,21 @@
   background: white;
   border: 1px solid var(--theme-color, #42b983);
 }
-.op-panel .contenttable .tabpanel{
+.op-panel .contenttable .tabpanel {
   height: 480px;
 }
 .op-panel .tabpanel::-webkit-scrollbar {
   display: none;
 }
-.op-panel .tabpanel{
-  overflow-y:scroll;
+.op-panel .tabpanel {
+  overflow-y: scroll;
   overflow-x: hidden;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
-.op-panel .tabpanel{
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+.op-panel .tabpanel {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 .op-panel .outline,
 .op-panel {
@@ -256,16 +235,14 @@ import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import Account from "./Account";
-import CharptHtml from "./CharptHtml";
-import TocHtml from "./TocHtml";
 import ClickOutside from "vue-click-outside";
 import { getConfig } from "../ANoteConfig";
 var isMobile = require("is-mobile");
-
+import NoteSiderBar from "./NoteSiderBar";
 import { gotoNote } from "../utils";
-// import { checkClickOut } from "../mountCmp";
 export default {
   components: {
+    NoteSiderBar,
     PopSvgButton,
     TocNotePanel,
     Bubbling,
@@ -273,8 +250,6 @@ export default {
     BookMarks,
     Account,
     Drawer,
-    CharptHtml,
-    TocHtml,
   },
   name: "Panel",
   directives: {
@@ -286,12 +261,6 @@ export default {
     },
     sortedChapter() {
       return this.book.sortedChapter();
-    },
-    htmldrawerWidthDynamic() {
-      if (isMobile()) return this.htmldrawerWidth;
-      return this.zoomNoteBook
-        ? this.fullhtmldrawerWidth
-        : this.htmldrawerWidth;
     },
     collapsedIcon() {
       return this.collapsed == false
@@ -327,11 +296,6 @@ export default {
   data() {
     return {
       showdetail: false,
-      zoomNoteBook: false,
-      htmldrawerWidth: isMobile() ? 480 : window.screen.width * 0.3,
-      fullhtmldrawerWidth: isMobile()
-        ? window.screen.width
-        : window.screen.width,
       openNoteBook: false,
       book: new Book(),
       vesion: pkg.version,
@@ -358,7 +322,6 @@ export default {
         ".html-drawer .ivu-drawer-right"
       ).style.left = `${left}px`;
     }
-    this.zoomNoteBook = false;
   },
   model: {
     prop: "updated",
@@ -382,13 +345,6 @@ export default {
     changeNumber: { type: Number, default: 0 },
   },
   watch: {
-    zoomNoteBook(a) {
-      if (isMobile() == false) {
-        document.querySelector(
-          ".html-drawer .ivu-drawer-right"
-        ).style.height = a ? "40%" : "70%";
-      }
-    },
     hl(hl) {
       let { store } = hl;
       if (store) {
@@ -400,33 +356,6 @@ export default {
     },
   },
   methods: {
-    clickOnToc(a) {
-      const getPosition = ($node) => {
-        let offset = {
-          top: 0,
-          left: 0,
-          height: $node.offsetHeight,
-        };
-        while ($node) {
-          offset.top += $node.offsetTop;
-          offset.left += $node.offsetLeft;
-          $node = $node.offsetParent;
-        }
-        offset.bottom = offset.top + offset.height;
-        return offset;
-      };
-      let h2 = document.querySelectorAll(".charpterhtml h2");
-      for (let i = 0; i < h2.length; i++) {
-        let t = h2[i];
-        if (t.innerText == a) {
-          let { top } = getPosition(t);
-          document
-            .querySelector(".html-drawer .ivu-drawer-body")
-            .scrollTo(0, top - 50);
-          return;
-        }
-      }
-    },
     onClickURL(a) {
       gotoNote(a);
     },
@@ -508,12 +437,6 @@ export default {
 };
 </script>
 <style >
-.alpha {
-  height: 100%;
-  overflow: hidden;
-}
-</style>
-<style>
 @import "../styles/iview.css";
 @import "../assets/web.css";
 @import "../assets/iconfont.css";
