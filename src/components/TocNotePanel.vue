@@ -1,13 +1,14 @@
 
 <template>
-  <Collapse class="TocNotePanel">
+  <Collapse class="TocNotePanel" accordion v-model="value">
     <Panel v-for="{ title, children } in pannel" :name="title" :key="title">
       {{ title }}
-      <div slot="content" style=>
+      <div slot="content" v-if="title == value">
         <TocOutLine
           :children="[]"
-          v-for="({ notedata }, index) in children"
+          v-for="({ notedata, onSelected }, index) in children"
           :notedata="notedata"
+          :onSelected="onSelected"
           :expand="false"
           :key="index"
         ></TocOutLine>
@@ -43,6 +44,7 @@ export default {
   },
   data() {
     return {
+      value: "",
       pannel: this.getBookOutLine(this.book),
     };
   },
@@ -84,7 +86,10 @@ export default {
       }
       // eslint-disable-next-line no-unused-vars
       let notedata = { ...item, ...{ charpter } };
-      return { title, children, expand, notedata };
+      let onSelected = () => {
+        this.handleNodeClick(item);
+      };
+      return { title, children, expand, notedata, onSelected };
     },
     mapchildren(children, charpter) {
       if (children)
@@ -119,6 +124,9 @@ export default {
 }
 .TocNotePanel div.ivu-collapse-content-box {
   padding: 0px;
+}
+.TocNotePanel .ivu-collapse-item {
+  overflow: hidden;
 }
 </style>
 

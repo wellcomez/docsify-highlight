@@ -76,11 +76,12 @@
               <Button @click="onClickOpenNote" size="small">打开</Button>
             </Col>
           </Row>
-          <TocNote
+          <TocNotePanel
             v-bind:close="closedetail"
             v-bind:key="count2"
             :book="book"
-          ></TocNote>
+            class="tabpanel"
+          ></TocNotePanel>
         </TabPane>
         <TabPane label="书签">
           <BookMarks :hl="hl" :key="bookmarkey" />
@@ -170,9 +171,24 @@
 }
 .op-panel .contenttable {
   overflow: hidden;
-  height: 480px;
   background: white;
   border: 1px solid var(--theme-color, #42b983);
+}
+.op-panel .contenttable .tabpanel{
+  height: 480px;
+}
+.op-panel .tabpanel::-webkit-scrollbar {
+  display: none;
+}
+.op-panel .tabpanel{
+  overflow-y:scroll;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.op-panel .tabpanel{
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 .op-panel .outline,
 .op-panel {
@@ -206,6 +222,10 @@
     width: 100%;
     height: 320px;
   }
+  .op-panel .contenttable .tabpanel {
+    width: 100%;
+    height: 320px;
+  }
   .op-panel .doclist {
     height: 280px;
   }
@@ -230,7 +250,7 @@ function funDownload(content, filename) {
   msg("导出", "保存到 " + filename);
 }
 import { preHighLightItems } from "../DocHighlighter";
-import TocNote from "./TocNote";
+import TocNotePanel from "./TocNotePanel";
 import Bubbling from "./Bubbling";
 import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
@@ -247,7 +267,7 @@ import { gotoNote } from "../utils";
 export default {
   components: {
     PopSvgButton,
-    TocNote,
+    TocNotePanel,
     Bubbling,
     SvgButton,
     BookMarks,
