@@ -20,15 +20,16 @@
         >
           {{ index + 1 }}.</a
         >
-        <Icon
-          v-if="notshowSeq"
-          style="margin-left: 20px"
-          type="md-arrow-dropleft"
-          @click="onIcon(index)"
-        />
-        <Icon v-else type="md-arrow-dropright" @click="onIcon(index)" />
-
-        <Icon type="ios-close" @click="onDelete(index)" size="18" />
+        <div v-if="exporthtml==false" style="display: inline">
+          <Icon
+            v-if="notshowSeq"
+            style="margin-left: 20px"
+            type="md-arrow-dropleft"
+            @click="onIcon(index)"
+          />
+          <Icon v-else type="md-arrow-dropright" @click="onIcon(index)" />
+          <Icon v-if="exporthtml==false" type="ios-close" @click="onDelete(index)" size="18" />
+        </div>
         <div v-if="tags" style="display: inline-block">
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
             a
