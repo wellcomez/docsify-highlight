@@ -1,20 +1,15 @@
 <template>
-  <div class="" :style="style">
-    <ul style="margin: 10px; padding: 10px; padding-left: 20px">
+  <div class="toc-html">
+    <ul>
       <li
         class="html-toc-li"
         v-for="({ href, label }, index) in list"
         @click="clickme(label)"
         :key="index"
-        style="list-style-type: decimal; list-style: decimal; color: #42b983"
+        style="list-style-type: decimal; list-style: decimal"
       >
-        <a
-          v-if="exporthtml"
-          :href="href"
-          style="text-decoration: none; color: #42b983"
-          >{{ label }}</a
-        >
-        <a v-else style="text-decoration: none; color: #42b983">{{ label }}</a>
+        <a v-if="exporthtml" :href="href">{{ label }}</a>
+        <a v-else>{{ label }}</a>
       </li>
     </ul>
   </div>
@@ -39,22 +34,12 @@ export default {
   },
   data() {
     return {
-      style: "margin-left: 10%; margin-right: 10%",
       list: [],
     };
   },
   created() {
     if (this.exporthtml) {
-      this.style =
-        "box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);\
-        border-color: #eee;\
-        border-radius:5px;\
-        position: fixed;top: 10px;right: 20px;\
-        background: white;\
-        overflow-y: auto;\
-        height:200px;\
-        width:300px;\
-        font-size: small;";
+      this.$el.classList.add("exporthtml");
     }
     this.newFunction();
   },
@@ -105,3 +90,35 @@ export default {
   },
 };
 </script>
+
+<style>
+.toc-html {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+.toc-html.export-html {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  border-color: #eee;
+  border-radius: 5px;
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  background: white;
+  overflow-y: auto;
+  height: 200px;
+  width: 300px;
+  font-size: small;
+}
+.toc-html a {
+  text-decoration: none;
+  color: #42b983;
+}
+.toc-html li {
+  color: #42b983;
+}
+.toc-html ul {
+  margin: 10px;
+  padding: 10px;
+  padding-left: 20px;
+}
+</style>

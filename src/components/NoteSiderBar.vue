@@ -8,24 +8,50 @@
     scrollable
     :mask="false"
   >
-    <div slot="header" style="display: flex">
-      <Icon
-        type="ios-expand"
-        size="18"
-        @click="zoomNoteBook = zoomNoteBook != true"
-      >
-      </Icon>
-      <h3 style="margin-left: 20px">笔记</h3>
+    <Row
+      slot="header"
+      type="flex"
+      justify="space-between"
+      style="margin-right: 20px"
+    >
+      <Col>
+        <Tooltip theme="light" :disabled="disabled" placement="bottom-start" style="overflow-x:hidden">
+          <Button size="small" @click="disabled = !disabled">目录</Button>
+          <TocHtml
+            slot="content"
+            :charpter="sortedChapter"
+            :click="clickOnToc"
+            class="html-drawer-toc"
+          />
+        </Tooltip>
+      </Col>
+      <Col>
+        <h2>笔记</h2>
+      </Col>
+      <Col>
+        <Icon
+          type="ios-expand"
+          size="18"
+          @click="zoomNoteBook = zoomNoteBook != true"
+        />
+      </Col>
+    </Row>
+    <div class="html-drawer-content">
+      <!-- <div class="backtop">
+        <Button type="success" size="small" @click="onBackTop">
+          <Icon type="md-arrow-up" />
+        </Button>
+      </div> -->
+
+      <CharptHtml
+        class="charpterhtml"
+        v-for="(charpter, index) in sortedChapter"
+        :charpter="charpter"
+        :onClickURL="onClickURL"
+        :key="index"
+        :hl="hl"
+      />
     </div>
-    <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
-    <CharptHtml
-      class="charpterhtml"
-      v-for="(charpter, index) in sortedChapter"
-      :charpter="charpter"
-      :onClickURL="onClickURL"
-      :key="index"
-      :hl="hl"
-    />
   </Drawer>
 </template>
 
@@ -39,11 +65,17 @@ export default {
   name: "NoteSiderBar",
   components: { CharptHtml, TocHtml, Drawer },
   computed: {
+    tocWidth() {
+      return this.htmldrawerWidthDynamic - 20;
+    },
     htmldrawerWidthDynamic() {
       if (isMobile()) return this.htmldrawerWidth;
       return this.zoomNoteBook
         ? this.fullhtmldrawerWidth
         : this.htmldrawerWidth;
+    },
+    left() {
+      return this.fullhtmldrawerWidth - this.htmldrawerWidth;
     },
   },
   model: {
@@ -52,14 +84,18 @@ export default {
   data() {
     return {
       open: undefined,
+      disabled: true,
       zoomNoteBook: false,
-      htmldrawerWidth: isMobile() ? 480 : window.screen.width * 0.3,
+      htmldrawerWidth: isMobile()
+        ? window.screen.width * 0.8
+        : window.screen.width * 0.3,
       fullhtmldrawerWidth: isMobile()
         ? window.screen.width
         : window.screen.width,
     };
   },
   methods: {
+    clickoutside() {},
     onBackTop() {
       this.$el.scrollTo(0, 0);
     },
@@ -129,15 +165,36 @@ export default {
   },
   mounted() {
     if (isMobile()) {
-      let left = 0;
-      document.querySelector(
-        ".html-drawer .ivu-drawer-right"
-      ).style.left = `${left}px`;
+      // let left = 0;
+      this.$el.classList.add("mobile");
+      let left = this.left + "px";
+      document.querySelector(".html-drawer .ivu-drawer-right").style[
+        "margin-left"
+      ] = left;
     }
     this.zoomNoteBook = false;
   },
 };
 </script>
 
-<style scoped>
+<style>
+.html-drawer-toc {
+  overflow-x: hidden;
+}
+.html-drawer-toc .ivu-tooltip-inner {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.mobile .html-drawer-toc {
+  margin: 1px;
+}
+.mobile .html-drawer-toc .ivu-tooltip-inner {
+  margin-left: 5px;
+  margin-right: 30px;
+  height: 200px;
+}
+.mobile .html-drawer-toc .ivu-tooltip-inner ul {
+  padding: 1px;
+  margin: 1px;
+}
 </style>
