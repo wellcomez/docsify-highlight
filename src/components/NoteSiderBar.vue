@@ -76,7 +76,7 @@ export default {
     return {
       open: undefined,
       disabled: true,
-      zoomNoteBook: false,
+      zoomNoteBook: undefined,
     };
   },
   methods: {
@@ -125,17 +125,28 @@ export default {
       if (a) {
         this.open = true;
       }
-      let width = document.querySelector("body").clientWidth;
-      width = width <= 480 ? 0 : width * 0.3;
-      document.querySelector(".content").style["margin-right"] =
-        a == false ? "0px" : width + "px";
+      let c = 'open-sidebar'
+      if(a){
+        document.querySelector(".content").classList.add(c)
+      }
+      else{
+        document.querySelector(".content").classList.remove(c)
+      }
     },
     zoomNoteBook(a) {
-      if (a == false) {
-        this.$el.classList.replace("zoom-out", "zoom-in");
-      } else {
-        this.$el.classList.replace("zoom-in", "zoom-out");
-      }
+      if(isMobile())return;
+      let el = document.querySelector(".content");
+      let setzoom = (a,el) => {
+        if (a == false) {
+          el.classList.add("zoom-in");
+          el.classList.remove("zoom-out");
+        } else {
+          el.classList.add("zoom-out");
+          el.classList.remove("zoom-in");
+        }
+      };
+      setzoom(a,el)
+      setzoom(a,this.$el)
     },
   },
   props: {
@@ -158,14 +169,31 @@ export default {
 </script>
 
 <style>
-.html-drawer .ivu-drawer.ivu-drawer-right {
+.html-drawer.zoom-out .ivu-drawer.ivu-drawer-right {
+  left: 0px !important;
+  width: 100% !important;
+  height: 40% !important;
+  /* top:60% !important; */
+}
+.html-drawer.zoom-in .ivu-drawer.ivu-drawer-right {
   left: 70% !important;
   width: 30% !important;
+  height: 100% !important;
+  margin-bottom: 10px !important;
+}
+.open-sidebar.content.zoom-in {
+  margin-right: calc(40vh);
+}
+.open-sidebar.content.zoom-out {
+  margin-right: 0px;
+  margin-top: 300px;
 }
 @media screen and (max-width: 480px) {
   .html-drawer .ivu-drawer.ivu-drawer-right {
     left: 10% !important;
     width: 90% !important;
+    top: 0px !important;
+    bottom: 0px !important;
   }
 }
 
