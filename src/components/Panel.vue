@@ -338,6 +338,11 @@ export default {
         this.bookmark = store.isBookMarked();
       }
     },
+    openNoteBook(a){
+      if(a){
+        this.showdetail = false;
+      }
+    },
     seq() {
       this.book = new Book();
     },
