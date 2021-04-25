@@ -1,10 +1,9 @@
 <template>
   <Drawer
-    class="html-drawer"
+    class="html-drawer zoom-in"
     title="笔记"
     :closable="true"
     v-model="open"
-    :width="htmldrawerWidthDynamic"
     scrollable
     :mask="false"
   >
@@ -15,7 +14,12 @@
       style="margin-right: 20px"
     >
       <Col>
-        <Tooltip theme="light" :disabled="disabled" placement="bottom-start" style="overflow-x:hidden">
+        <Tooltip
+          theme="light"
+          :disabled="disabled"
+          placement="bottom-start"
+          style="overflow-x: hidden"
+        >
           <Button size="small" @click="disabled = !disabled">目录</Button>
           <TocHtml
             slot="content"
@@ -64,20 +68,7 @@ import { gotoNote } from "../utils";
 export default {
   name: "NoteSiderBar",
   components: { CharptHtml, TocHtml, Drawer },
-  computed: {
-    tocWidth() {
-      return this.htmldrawerWidthDynamic - 20;
-    },
-    htmldrawerWidthDynamic() {
-      if (isMobile()) return this.htmldrawerWidth;
-      return this.zoomNoteBook
-        ? this.fullhtmldrawerWidth
-        : this.htmldrawerWidth;
-    },
-    left() {
-      return this.fullhtmldrawerWidth - this.htmldrawerWidth;
-    },
-  },
+  computed: {},
   model: {
     prop: "openNoteBook",
   },
@@ -86,12 +77,6 @@ export default {
       open: undefined,
       disabled: true,
       zoomNoteBook: false,
-      htmldrawerWidth: isMobile()
-        ? window.screen.width * 0.8
-        : window.screen.width * 0.3,
-      fullhtmldrawerWidth: isMobile()
-        ? window.screen.width
-        : window.screen.width,
     };
   },
   methods: {
@@ -140,16 +125,16 @@ export default {
       if (a) {
         this.open = true;
       }
-      if (isMobile() == false) {
-        document.querySelector(".content").style["margin-right"] =
-          a == false ? "0px" : "250px";
-      }
+      let width = document.querySelector("body").clientWidth;
+      width = width <= 480 ? 0 : width * 0.3;
+      document.querySelector(".content").style["margin-right"] =
+        a == false ? "0px" : width + "px";
     },
     zoomNoteBook(a) {
-      if (isMobile() == false) {
-        document.querySelector(
-          ".html-drawer .ivu-drawer-right"
-        ).style.height = a ? "40%" : "70%";
+      if (a == false) {
+        this.$el.classList.replace("zoom-out", "zoom-in");
+      } else {
+        this.$el.classList.replace("zoom-in", "zoom-out");
       }
     },
   },
@@ -165,12 +150,7 @@ export default {
   },
   mounted() {
     if (isMobile()) {
-      // let left = 0;
       this.$el.classList.add("mobile");
-      let left = this.left + "px";
-      document.querySelector(".html-drawer .ivu-drawer-right").style[
-        "margin-left"
-      ] = left;
     }
     this.zoomNoteBook = false;
   },
@@ -178,6 +158,17 @@ export default {
 </script>
 
 <style>
+.html-drawer .ivu-drawer.ivu-drawer-right {
+  left: 70% !important;
+  width: 30% !important;
+}
+@media screen and (max-width: 480px) {
+  .html-drawer .ivu-drawer.ivu-drawer-right {
+    left: 10% !important;
+    width: 90% !important;
+  }
+}
+
 .html-drawer-toc {
   overflow-x: hidden;
 }
@@ -196,5 +187,12 @@ export default {
 .mobile .html-drawer-toc .ivu-tooltip-inner ul {
   padding: 1px;
   margin: 1px;
+}
+.mobile .charpterhtml .html-img,
+.zoom-in .charpterhtml .html-img {
+  width: 90%;
+}
+.zoom-out .charpterhtml .html-img {
+  width: 60%;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="charpterhtml" style="margin-left: 10%; margin-right: 10%">
+  <div class="charpterhtml">
     <Divider></Divider>
     <h2 v-if="exporthtml">
       <a :href="hrefa">{{ title }}</a>
@@ -20,7 +20,7 @@
         >
           {{ index + 1 }}.</a
         >
-        <div v-if="exporthtml==false" style="display: inline">
+        <div v-if="exporthtml == false" style="display: inline">
           <Icon
             v-if="notshowSeq"
             style="margin-left: 20px"
@@ -28,7 +28,12 @@
             @click="onIcon(index)"
           />
           <Icon v-else type="md-arrow-dropright" @click="onIcon(index)" />
-          <Icon v-if="exporthtml==false" type="ios-close" @click="onDelete(index)" size="18" />
+          <Icon
+            v-if="exporthtml == false"
+            type="ios-close"
+            @click="onDelete(index)"
+            size="18"
+          />
         </div>
         <div v-if="tags" style="display: inline-block">
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
@@ -191,6 +196,10 @@ export default {
 };
 </script>
 <style >
+.charpterhtml {
+  margin-left: 10%;
+  margin-right: 10%;
+}
 .charpterhtml a {
   text-decoration: none;
   color: #42b983;
