@@ -309,19 +309,6 @@ export default {
     };
   },
   mounted() {
-    if (window.screen.width < 480) {
-      let left = window.screen.width - 300;
-      document.querySelector(
-        ".setting-drawer .ivu-drawer-right"
-      ).style = `left:${left}px`;
-      left = 0;
-    }
-    if (isMobile()) {
-      let left = 0;
-      document.querySelector(
-        ".html-drawer .ivu-drawer-right"
-      ).style.left = `${left}px`;
-    }
   },
   model: {
     prop: "updated",
