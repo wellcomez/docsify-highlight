@@ -125,18 +125,17 @@ export default {
       if (a) {
         this.open = true;
       }
-      let c = 'open-sidebar'
-      if(a){
-        document.querySelector(".content").classList.add(c)
-      }
-      else{
-        document.querySelector(".content").classList.remove(c)
+      let c = "open-sidebar";
+      if (a) {
+        document.querySelector(".content").classList.add(c);
+      } else {
+        document.querySelector(".content").classList.remove(c);
       }
     },
     zoomNoteBook(a) {
-      if(isMobile())return;
+      if (isMobile()) return;
       let el = document.querySelector(".content");
-      let setzoom = (a,el) => {
+      let setzoom = (a, el) => {
         if (a == false) {
           el.classList.add("zoom-in");
           el.classList.remove("zoom-out");
@@ -145,8 +144,8 @@ export default {
           el.classList.remove("zoom-in");
         }
       };
-      setzoom(a,el)
-      setzoom(a,this.$el)
+      setzoom(a, el);
+      setzoom(a, this.$el);
     },
   },
   props: {
@@ -188,13 +187,11 @@ export default {
   margin-right: 0px;
   margin-top: 300px;
 }
-@media screen and (max-width: 480px) {
-  .html-drawer .ivu-drawer.ivu-drawer-right {
-    left: 10% !important;
-    width: 90% !important;
-    top: 0px !important;
-    bottom: 0px !important;
-  }
+.mobile.html-drawer .ivu-drawer.ivu-drawer-right {
+  left: 0px !important;
+  width: 80% !important;
+  top: 0px !important;
+  bottom: 0px !important;
 }
 
 .html-drawer-toc {
