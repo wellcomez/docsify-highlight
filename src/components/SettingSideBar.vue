@@ -2,7 +2,7 @@
   <Drawer
     class="setting-drawer"
     :closable="false"
-    v-model="bDrawerOpen"
+    v-model="open"
     :width="drawWidth"
   >
     <Account v-if="cloudOn" slot="header" style="width: 280px" />
@@ -48,14 +48,24 @@ export default {
   },
   data() {
     return {
+      open: false,
       drawWidth: 320,
       vesion: pkg.version,
       enableScript: getConfig().load().enableScript,
     };
   },
   watch: {
+    open(a) {
+      this.$emit("update:bDrawerOpen", a);
+    },
+    bDrawerOpen(a) {
+      if (a) {
+        this.open = true;
+      }
+    },
   },
   mounted() {
+    this.open = this.bDrawerOpen;
   },
   methods: {
     onEnableScript() {
