@@ -133,7 +133,6 @@ export default {
       }
     },
     zoomNoteBook(a) {
-      if (isMobile()) return;
       let el = document.querySelector(".content");
       let setzoom = (a, el) => {
         if (a == false) {
@@ -161,6 +160,17 @@ export default {
   mounted() {
     if (isMobile()) {
       this.$el.classList.add("mobile");
+      this.zoomNoteBook = true;
+      let { width } = document.querySelector("body").getBoundingClientRect();
+      let el = this.$el.querySelector(".ivu-drawer");
+      el.classList.add("html-drawer-right-mobile");
+      let style = el.style;
+      style.width = width + "px";
+      style.left = 0 + "px";
+      return;
+    } else {
+        this.$el.querySelector(".ivu-drawer")
+        .classList.add("html-drawer-right");
     }
     this.zoomNoteBook = false;
   },
@@ -168,32 +178,31 @@ export default {
 </script>
 
 <style>
-.html-drawer.zoom-out .ivu-drawer.ivu-drawer-right {
+.zoom-out .html-drawer-right {
   left: 0px !important;
   width: 100% !important;
-  height: 40% !important;
-  /* top:60% !important; */
 }
-.html-drawer.zoom-in .ivu-drawer.ivu-drawer-right {
+.zoom-in .html-drawer-right {
   left: 70% !important;
   width: 30% !important;
-  height: 100% !important;
   margin-bottom: 10px !important;
+}
+.zoom-in .ivu-drawer {
+  height: 100% !important;
+}
+.zoom-out .ivu-drawer {
+  height: 320px;
 }
 .open-sidebar.content.zoom-in {
   margin-right: calc(40vh);
 }
+.mobile.open-sidebar.content.zoom-in {
+  margin-right: 0px;
+}
 .open-sidebar.content.zoom-out {
   margin-right: 0px;
-  margin-top: 300px;
+  margin-top: 320px;
 }
-.mobile.html-drawer .ivu-drawer.ivu-drawer-right {
-  left: 0px !important;
-  width: 80% !important;
-  top: 0px !important;
-  bottom: 0px !important;
-}
-
 .html-drawer-toc {
   overflow-x: hidden;
 }
