@@ -34,6 +34,7 @@ const pkg = require("../../package.json");
 import { Drawer } from "iview";
 import Account from "./Account";
 import { getConfig } from "../ANoteConfig";
+import isMobile from "_is-mobile@3.0.0@is-mobile";
 export default {
   name: "SettingSideBar",
   components: { Drawer, Account },
@@ -66,6 +67,9 @@ export default {
   },
   mounted() {
     this.open = this.bDrawerOpen;
+    if (isMobile()) {
+      this.$el.classList.add("mobile");
+    }
   },
   methods: {
     onEnableScript() {
@@ -82,3 +86,12 @@ export default {
   },
 };
 </script>
+<style>
+.mobile.setting-drawer .ivu-drawer-mask {
+  width: 100% im !important;
+}
+.mobile.setting-drawer .ivu-drawer {
+  width: 80% !important;
+  left: 20% !important;
+}
+</style>
