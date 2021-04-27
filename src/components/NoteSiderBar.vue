@@ -19,6 +19,7 @@
           :disabled="disabled"
           placement="bottom-start"
           style="overflow-x: hidden"
+          transfer
         >
           <Button size="small" @click="disabled = !disabled">目录</Button>
           <TocHtml
