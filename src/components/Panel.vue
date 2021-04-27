@@ -90,35 +90,12 @@
         </TabPane>
       </Tabs>
     </Row>
-    <Drawer
-      class="setting-drawer"
-      :closable="false"
-      v-model="bDrawerOpen"
-      :width="drawWidth"
-    >
-      <Account v-if="cloudOn" slot="header" style="width: 280px" />
-      <div style="background: #f8f8f9; width: 280px">
-        <Card :padding="0" shadow>
-          <CellGroup style="">
-            <Cell title="开关" style="">
-              <i-switch :value="checked" @on-change="onChange" slot="extra" />
-            </Cell>
-            <Cell title="执行自定义脚本" style="">
-              <i-switch
-                :value="enableScript"
-                @on-change="onEnableScript"
-                slot="extra"
-              />
-            </Cell>
-            <Cell title="重置">
-              <Button type="primary" @click="ResetAll"> 重置</Button>
-            </Cell>
-            <Cell title="版本" :label="vesion"> </Cell>
-          </CellGroup>
-        </Card>
-      </div>
-      <!-- <ConfigPanel /> -->
-    </Drawer>
+    <SettingSideBar
+      :cloudOn="cloudOn"
+      :checked="checked"
+      :bDrawerOpen.sync="bDrawerOpen"
+      :onChange="onChange"
+    ></SettingSideBar>
     <NoteSiderBar
       :hl="hl"
       :openNoteBook.sync="openNoteBook"
@@ -216,13 +193,12 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-const pkg = require("../../package.json");
 import { Book } from "../store";
+import SettingSideBar from "./SettingSideBar";
 // import { Notification } from "element-ui";
 import { localidstore, downloadFromCloud, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
 import { msg } from "./msgbox";
-import { Drawer } from "iview";
 function funDownload(content, filename) {
   const blob = new Blob([content]);
   FileSaver.saveAs(blob, filename);
@@ -234,12 +210,11 @@ import Bubbling from "./Bubbling";
 import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
-import Account from "./Account";
 import ClickOutside from "vue-click-outside";
-import { getConfig } from "../ANoteConfig";
 var isMobile = require("is-mobile");
 import NoteSiderBar from "./NoteSiderBar";
 import { gotoNote } from "../utils";
+import { getConfig } from "../ANoteConfig";
 export default {
   components: {
     NoteSiderBar,
@@ -248,8 +223,7 @@ export default {
     Bubbling,
     SvgButton,
     BookMarks,
-    Account,
-    Drawer,
+    SettingSideBar,
   },
   name: "Panel",
   directives: {
@@ -298,18 +272,14 @@ export default {
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
-      vesion: pkg.version,
       showexport: isMobile() ? false : true,
-      drawWidth: 320,
-      enableScript: getConfig().load().enableScript,
       bDrawerOpen: false,
       uername: undefined,
       collapsed: false,
       bookmark: false,
     };
   },
-  mounted() {
-  },
+  mounted() {},
   model: {
     prop: "updated",
   },
@@ -338,8 +308,8 @@ export default {
         this.bookmark = store.isBookMarked();
       }
     },
-    openNoteBook(a){
-      if(a){
+    openNoteBook(a) {
+      if (a) {
         this.showdetail = false;
       }
     },
@@ -348,15 +318,16 @@ export default {
     },
   },
   methods: {
+    onChange() {
+      this.checked = this.checked == false;
+      this.hl.enable(this.checked);
+      if (this.checked == false) this.showdetail = false;
+    },
     onClickURL(a) {
       gotoNote(a);
     },
     onClickOpenNote() {
       this.openNoteBook = true;
-    },
-    ResetAll() {
-      window.localStorage.clear();
-      window.location.reload();
     },
     onCollapsed() {
       this.collapsed = this.collapsed == false;
@@ -413,17 +384,6 @@ export default {
         let json = b.exportHtml();
         funDownload(json, window.$docsify.name + ".html");
       }
-    },
-    onEnableScript() {
-      this.enableScript = this.enableScript == false;
-      let { enableScript } = this;
-      getConfig().save({ enableScript });
-      // document.location.reload();
-    },
-    onChange() {
-      this.checked = this.checked == false;
-      this.hl.enable(this.checked);
-      if (this.checked == false) this.showdetail = false;
     },
   },
 };
