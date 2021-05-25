@@ -1,63 +1,63 @@
 <template>
-  <Drawer
-    class="html-drawer zoom-in"
-    title="笔记"
-    :closable="true"
-    v-model="open"
-    scrollable
-    :mask="false"
-  >
-    <Row
-      slot="header"
-      type="flex"
-      justify="space-between"
-      style="margin-right: 20px"
+  <div>
+    <Drawer
+      class="html-drawer zoom-in"
+      title="笔记"
+      :closable="true"
+      v-model="open"
+      scrollable
+      :mask="false"
     >
-      <Col>
-        <Tooltip
-          theme="light"
-          :disabled="disabled"
-          placement="bottom-start"
-          style="overflow-x: hidden"
-          transfer
-        >
-          <Button size="small" @click="disabled = !disabled">目录</Button>
-          <TocHtml
-            slot="content"
-            :charpter="sortedChapter"
-            :click="clickOnToc"
-            class="html-drawer-toc"
+      <Row
+        slot="header"
+        type="flex"
+        justify="space-between"
+        style="margin-right: 20px"
+      >
+        <Col>
+          <Button size="small" @click="openToc = !openToc">目录</Button>
+        </Col>
+        <Col>
+          <h2>笔记</h2>
+        </Col>
+        <Col>
+          <Icon
+            type="ios-expand"
+            size="18"
+            @click="zoomNoteBook = zoomNoteBook != true"
           />
-        </Tooltip>
-      </Col>
-      <Col>
-        <h2>笔记</h2>
-      </Col>
-      <Col>
-        <Icon
-          type="ios-expand"
-          size="18"
-          @click="zoomNoteBook = zoomNoteBook != true"
-        />
-      </Col>
-    </Row>
-    <div class="html-drawer-content">
-      <!-- <div class="backtop">
+        </Col>
+      </Row>
+      <div class="html-drawer-content">
+        <!-- <div class="backtop">
         <Button type="success" size="small" @click="onBackTop">
           <Icon type="md-arrow-up" />
         </Button>
       </div> -->
 
-      <CharptHtml
-        class="charpterhtml"
-        v-for="(charpter, index) in sortedChapter"
-        :charpter="charpter"
-        :onClickURL="onClickURL"
-        :key="index"
-        :hl="hl"
+        <CharptHtml
+          class="charpterhtml"
+          v-for="(charpter, index) in sortedChapter"
+          :charpter="charpter"
+          :onClickURL="onClickURL"
+          :key="index"
+          :hl="hl"
+        />
+      </div>
+    </Drawer>
+    <Drawer
+      class="html-drawer-toc"
+      :closable="true"
+      v-model="openToc"
+      scrollable
+    >
+      <TocHtml
+        :charpter="sortedChapter"
+        :click="clickOnToc"
+        class="html-drawer-toc"
       />
-    </div>
-  </Drawer>
+    </Drawer>
+  </div>
 </template>
 
 <script>
@@ -76,11 +76,15 @@ export default {
   data() {
     return {
       open: undefined,
-      disabled: true,
+      openToc: false,
       zoomNoteBook: undefined,
     };
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
+    onPopperShow(el) {
+      console.log(el);
+    },
     clickoutside() {},
     onBackTop() {
       this.$el.scrollTo(0, 0);
@@ -89,6 +93,7 @@ export default {
       gotoNote(a);
     },
     clickOnToc(a) {
+      this.openToc = false;
       const getPosition = ($node) => {
         let offset = {
           top: 0,
@@ -170,8 +175,10 @@ export default {
       style.left = 0 + "px";
       return;
     } else {
-        this.$el.querySelector(".ivu-drawer")
-        .classList.add("html-drawer-right");
+      var el = this.$el.querySelector(".html-drawer .ivu-drawer");
+      if (el) {
+        el.classList.add("html-drawer-right");
+      }
     }
     this.zoomNoteBook = false;
   },
@@ -196,7 +203,7 @@ export default {
 }
 .open-sidebar.content.zoom-in {
   /* margin-right: calc(40vh); */
-  margin-right:300px;
+  margin-right: 300px;
 }
 .mobile.open-sidebar.content.zoom-in {
   margin-right: 0px;
