@@ -7,6 +7,8 @@
       v-model="open"
       scrollable
       :mask="false"
+      :width="width"
+      class-name="toc-drawer"
     >
       <Row
         slot="header"
@@ -75,6 +77,7 @@ export default {
   },
   data() {
     return {
+      width:undefined,
       open: undefined,
       openToc: false,
       zoomNoteBook: undefined,
@@ -175,10 +178,11 @@ export default {
       style.left = 0 + "px";
       return;
     } else {
-      var el = this.$el.querySelector(".html-drawer .ivu-drawer");
-      if (el) {
-        el.classList.add("html-drawer-right");
-      }
+      this.width = 30;
+      // var el = this.$el.querySelector(".toc-drawer .ivu-drawer");
+      // if (el) {
+      //   el.classList.add("html-drawer-right");
+      // }
     }
     this.zoomNoteBook = false;
   },
