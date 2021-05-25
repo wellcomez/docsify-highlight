@@ -30,7 +30,7 @@ function runScrip() {
     let { enableScript } = getConfig().load();
     if (enableScript != true) return;
     let script = pluginScript()
-    if (script.pre) {
+    if (script&&script.pre) {
         run(script.pre);
     } else {
         run(script)

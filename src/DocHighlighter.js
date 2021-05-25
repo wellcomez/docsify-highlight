@@ -487,57 +487,63 @@ export class DocHighlighter {
         }
         return highlightIdExtra;
     }
-    getHtml = (noteid) => {
+    convertNote2TreeNode=(el,styleList)=>{
+        let { tagName } = el;
+        let style = el.getAttribute("style")
+        if (styleList.indexOf(style) == -1) {
+            styleList.push(style)
+        }
+        style = styleList.indexOf(style)
+        let text = el.innerText;
+        let child = { tagName, text, style }
+        return child
+    }
+    buildTree = (node,styleList) => {
+        let ii = node.children
+        let { tagName } = node;
+        let children = []
+        for (let i = 0; i < ii.length; i++) {
+            let el = ii[i];
+            let a = this.buildTree(el,styleList)
+            if (a.children.length) {
+                children.push(a)
+            }
+            if (el.classList.contains('docsify-highlighter')) {
+                let child = this.convertNote2TreeNode(el,styleList)
+                children.push(child)
+                // console.log(child);
+            }
+        }
+        return { tagName, children }
+    }
+    getHtml = (noteid, checkparent) => {
         let parent = new Set();
-        let doms = this.highlighter.getDoms(noteid);
-        doms.forEach((a) => {
-            console.log(a)
-        })
-        // let html = ""
-        this.highlighter.getDoms(noteid).forEach((node) => {
-            let find = false;
-            parent.forEach((a)=>{
-                a.querySelectorAll(".docsify-highlighter").forEach((b)=>{
-                    if(find==false){
-                        find = b==node;
-                    }
-                })
-            })
-            if(find==false)
-                parent.add(node.parentElement)
-        });
+        let parentNode = document.createElement("div");
         let ret = []
         let styleList = []
-        parent.forEach((node) => {
-            const buildTree = (node) => {
-                let ii = node.children
-                let { tagName } = node;
-                let children = []
-                for (let i = 0; i < ii.length; i++) {
-                    let el = ii[i];
-                    let a = buildTree(el)
-                    if (a.children.length) {
-                        children.push(a)
-                    }
-                    if (el.classList.contains('docsify-highlighter')) {
-                        let { tagName } = el;
-                        let style = el.getAttribute("style")
-                        if (styleList.indexOf(style) == -1) {
-                            styleList.push(style)
+        if (checkparent) {
+            this.highlighter.getDoms(noteid).forEach((node) => {
+                let find = false;
+                parent.forEach((a) => {
+                    a.querySelectorAll(".docsify-highlighter").forEach((b) => {
+                        if (find == false) {
+                            find = b == node;
                         }
-                        style = styleList.indexOf(style)
-                        let text = el.innerText;
-                        let child = { tagName, text, style }
-                        children.push(child)
-                        // console.log(child);
-                    }
+                    })
+                })
+                if (find == false) {
+                    parent.add(node.parentElement)
                 }
-                return { tagName, children }
-            }
-            let a = buildTree(node)
-            //     el.removeAttribute("data-highlight-id")
-            //     el.removeAttribute("data-highlight-split-type")
-            //     el.removeAttribute("data-highlight-id-extra")
+            });
+        } else {
+            this.highlighter.getDoms(noteid).forEach((node) => {
+                let child = this.convertNote2TreeNode(node,styleList)
+                ret.push(child);
+            })
+            parent.add(parentNode)
+        }
+        parent.forEach((node) => {
+            let a = this.buildTree(node,styleList)
             ret.push(a)
         })
         let tree = { nodes: ret, styleList }
@@ -552,7 +558,7 @@ export class DocHighlighter {
         let tree, version = '0.22';
 
         if (highlightIdExtra == undefined) {
-            let a = this.getHtml(noteid)
+            let a = this.getHtml(noteid, false);
             tree = a.tree
             let hsparent = this.store.geths(highlightIdExtra)
             if (hsparent) {
@@ -564,7 +570,7 @@ export class DocHighlighter {
                 }
             }
         } else {
-            let { tree } = this.getHtml(highlightIdExtra)
+            let { tree } = this.getHtml(highlightIdExtra, true)
             this.store.update({ id: highlightIdExtra, tree, version })
         }
 
@@ -602,11 +608,21 @@ export class DocHighlighter {
                     })
                     hs.text = text
                     hs.tags = tags
-                    let base = document.body.getBoundingClientRect().top;
                     let pos = this.getElementPosition(noteid)
                     let top
                     this.procssAllElements(noteid, (a) => {
-                        let t = a.getBoundingClientRect().top - base
+
+                        let getOffset = (el) => {
+                            var _x = 0;
+                            var _y = 0;
+                            while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+                                _x += el.offsetLeft - el.scrollLeft;
+                                _y += el.offsetTop - el.scrollTop;
+                                el = el.offsetParent;
+                            }
+                            return { top: _y, left: _x };
+                        }
+                        let t = getOffset(a).top
                         if (top == undefined || t < top) {
                             top = t
                         }

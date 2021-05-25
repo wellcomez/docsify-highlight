@@ -260,7 +260,8 @@ export function pluginScript() {
   let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
   if (DocHighlighter) {
       let { script } = DocHighlighter
-      return script
+      if(script)
+        return script
   }
   return {}
 }

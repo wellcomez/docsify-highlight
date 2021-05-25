@@ -195,7 +195,8 @@ export default {
   height: 320px;
 }
 .open-sidebar.content.zoom-in {
-  margin-right: calc(40vh);
+  /* margin-right: calc(40vh); */
+  margin-right:300px;
 }
 .mobile.open-sidebar.content.zoom-in {
   margin-right: 0px;

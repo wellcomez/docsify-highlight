@@ -2,7 +2,7 @@ import { colorClassList } from "./colorSelector";
 import { createHtml, getImgSrcUrl, parseurl, pluginScript, rootPath } from "./utils";
 import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
-class BookToc {
+export class BookToc {
   constructor(useridArg) {
     if (window.$docsify)
       this.bookname = window.$docsify.name;
