@@ -119,12 +119,18 @@ export default {
         }
       }
     },
+
   },
   watch: {
     open(a) {
       if (a == false) {
         this.$emit("update:openNoteBook", false);
       }
+    },
+    hl(a){
+      let title =  a.$root.title
+      this.clickOnToc(title)
+      
     },
     openNoteBook(a) {
       if (a) {

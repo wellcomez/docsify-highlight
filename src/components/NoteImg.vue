@@ -24,7 +24,6 @@ export default {
   props: {
     id: { type: String, default: "" },
     note: { type: String, default: undefined },
-    imgsrc: { type: String, default: undefined },
     hl: { type: Object, default: undefined },
     imgElement: { type: HTMLImageElement, default: undefined }
   },

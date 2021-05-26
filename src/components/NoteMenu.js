@@ -338,8 +338,8 @@ export const NoteMenu = {
         onDelete() {
             const id = this.noteid;
             let { hl } = window;
-            // console.log("*click remove-tip*", id);
             hl.deleteId(id);
+            this.removeMenu();
         },
     },
     model: {

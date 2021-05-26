@@ -297,8 +297,10 @@ export class DocHighlighter {
                         let text = ""
                         let hs = { startMeta, endMeta, id, imgsrc, text }
                         let sources = [hs]
-                        let wrap = mountCmp(NoteImg, { id, imgsrc: ele.src, hl: this, imgElement: ele }, ele, true).$el
-                        this.createNoteMenu(wrap, sources)
+                        if (ele) {
+                            let wrap = mountCmp(NoteImg, { id, hl: this, imgElement: ele }, ele, true).$el
+                            this.createNoteMenu(wrap, sources)
+                        }
                     }
                 }
                 // eslint-disable-next-line no-empty
@@ -784,7 +786,8 @@ export class DocHighlighter {
                         let { startMeta, id, note } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
-                        mountCmp(NoteImg, { id, imgsrc: ele.src, note, hl: this, imgElement: ele }, ele, true)
+                        if (ele)
+                            mountCmp(NoteImg, { id, note, hl: this, imgElement: ele }, ele, true)
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
@@ -802,13 +805,15 @@ export class DocHighlighter {
         }
 
     };
-    findTailElement(id) {
+    findTailElement(id, tail = true) {
         let el = this.getElement(id);
         if (el == undefined) return
         let pos = this.getPosition(el)
         this.procssAllElements(id, (node) => {
             let p2 = this.getPosition(node)
-            if (p2.top > pos.top) {
+            let yes = p2.top > pos.top;
+            if (tail == false) yes = !yes;
+            if (yes) {
                 pos = p2;
                 el = node;
             }
