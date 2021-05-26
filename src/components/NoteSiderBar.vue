@@ -92,6 +92,7 @@ export default {
       gotoNote(a);
     },
     clickOnToc(a) {
+      this.disabled = false
       const getPosition = ($node) => {
         let offset = {
           top: 0,
