@@ -394,6 +394,13 @@ export class DocHighlighter {
 
     deleteId(id, store) {
         let { highlighter } = this;
+        this.procssAllElements(id,(a)=>{
+            let n = a.querySelectorAll('.imgzoombtn')
+            for(let i = 0; i < n.length;i++){
+                let b = n[i];
+                b.parentNode.removeChild(b);
+            }
+        })
         this.removeHighLight(id)
         highlighter.removeClass(hl_note, id)
         highlighter.removeClass("highlight-wrap-hover", id);
