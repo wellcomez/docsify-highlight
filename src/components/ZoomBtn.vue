@@ -1,5 +1,11 @@
 <template>
-  <Icon type="md-search" @click="onzoom" />
+  <Icon
+    :custom="btnClass"
+    :type="name"
+    size="20"
+    style="margin-top: 0px;color: #42b983"
+    @click="onzoom"
+  />
 </template>
 <script>
 import { Icon } from "iview";
@@ -13,6 +19,15 @@ export default {
     ele: { type: HTMLImageElement, default: undefined },
   },
   mounted() {},
+  computed: {
+    btnClass() {
+      let ret = "iconfont " + this.name;
+      return ret;
+    },
+  },
+  data() {
+    return { name: "icon-zoom-out" };
+  },
   methods: {
     onzoom() {
       let zoom = mediumZoom(this.ele, {
@@ -22,9 +37,9 @@ export default {
         scrollOffset: 0,
       });
       zoom.open();
-      zoom.on("closed",()=>{
-        zoom.detach()
-      })
+      zoom.on("closed", () => {
+        zoom.detach();
+      });
     },
   },
 };
