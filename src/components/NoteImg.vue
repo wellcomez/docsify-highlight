@@ -36,7 +36,7 @@ export default {
 }
 .i-zoombtn {
   position: absolute;
-  bottom: 50px;
-  left: 10px;
+  bottom: 50%;
+  left: 50%;
 }
 </style>

@@ -5,6 +5,7 @@ import {
     tUl,
     tfontColor,
 } from "../colorSelector";
+import mediumZoom from "medium-zoom";
 
 import { Modal } from "iview";
 const leftPos = () => {
@@ -31,7 +32,7 @@ export const NoteMenu = {
     },
     data() {
         return {
-            notetext:this.hs.note,
+            notetext: this.hs.note,
             noteid: this.hs.id,
             tags: [],
             bookmark: false,
@@ -70,7 +71,7 @@ export const NoteMenu = {
         }
     },
     computed: {
-        notecouter(){return this.notetext? this.notetext.length : 0},
+        notecouter() { return this.notetext ? this.notetext.length : 0 },
         bookmarkiconcolor() {
             if (this.bookmark) {
                 return "var(--theme-color, #42b983)";
@@ -134,6 +135,22 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        zoomoutImg() {
+            let a = this.hl.getElement(this.noteid)
+            let img = a.querySelector("img")
+            if (img) {
+                let zoom = mediumZoom(img, {
+                    //   container: ".markdown-section",
+                    margin: 24,
+                    background: "#838383",
+                    scrollOffset: 0,
+                });
+                zoom.open();
+                zoom.on("closed", () => {
+                    zoom.detach();
+                });
+            }
+        },
         onBookmark() {
             this.bookmark = this.bookmark == false
         },

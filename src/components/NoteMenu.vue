@@ -49,6 +49,13 @@
             :key="hlType"
           />
         </Col>
+        <Col v-else>
+           <SvgButton
+            name="icon-zoom-out"
+            custom
+            @click="zoomoutImg"
+          ></SvgButton> 
+        </Col>
         <Col>
           <SvgButton
             name="icon-tags-fill"
