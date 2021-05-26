@@ -297,13 +297,10 @@ export class DocHighlighter {
                         let text = ""
                         let hs = { startMeta, endMeta, id, imgsrc, text }
                         let sources = [hs]
-                        let wrap = document.createElement('i')
-                        wrap.classList.add('docsify-highlighter')
-                        // wrap.classList.add('highlight-mengshou-wrap')
-                        wrap.dataset['highlightId'] = id
+                        let wrap = this.createImgWrap(id)
                         ele.parentElement.replaceChild(wrap, ele)
-                        mountCmp(ZoomBtn,{ele},wrap)
                         wrap.appendChild(ele)
+                        this.addImgZoomBtn(ele,wrap)
                         this.createNoteMenu(wrap, sources)
                     }
                 }
@@ -783,15 +780,12 @@ export class DocHighlighter {
                         let { startMeta, id } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
-                        let wrap = document.createElement('i')
-                        wrap.classList.add('docsify-highlighter')
-                        // wrap.classList.add('highlight-mengshou-wrap')
-                        wrap.dataset['highlightId'] = id
+                        let wrap = this.createImgWrap(id);
                         if (ele) {
                             ele.parentElement.replaceChild(wrap, ele)
                             wrap.appendChild(ele)
                         }
-                        mountCmp(ZoomBtn,{ele},wrap)
+                        this.addImgZoomBtn(ele,wrap);
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
@@ -809,6 +803,21 @@ export class DocHighlighter {
         }
 
     };
+    createImgWrap(id) {
+        let wrap = document.createElement('i');
+        wrap.style = "position:relative"
+        wrap.classList.add('docsify-highlighter');
+        wrap.classList.add('docsify-highlighter-img');
+        // wrap.classList.add('highlight-mengshou-wrap')
+        wrap.dataset['highlightId'] = id;
+        return wrap;
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    addImgZoomBtn(ele,wrap) {
+        mountCmp(ZoomBtn, { ele }, wrap);
+    }
+
     createMarkNode(id, note) {
         let el = this.getElement(id);
         if (el) {

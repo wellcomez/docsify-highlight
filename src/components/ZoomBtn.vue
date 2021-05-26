@@ -3,7 +3,7 @@
     :custom="btnClass"
     :type="name"
     size="20"
-    style="margin-top: 0px;color: #42b983"
+    style="margin-top: 0px;color: #42b983;bottom: 10px;left: 10px;position:absolute"
     @click="onzoom"
   />
 </template>
