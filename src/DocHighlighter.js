@@ -12,7 +12,7 @@ import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import { UTILS } from './css_path'
-import ZoomBtn from './components/ZoomBtn.vue'
+import NoteImg from './components/NoteImg.vue'
 const copyPasteBoard = require('clipboard-copy')
 
 const removeTips = () => {
@@ -297,10 +297,7 @@ export class DocHighlighter {
                         let text = ""
                         let hs = { startMeta, endMeta, id, imgsrc, text }
                         let sources = [hs]
-                        let wrap = this.createImgWrap(id)
-                        ele.parentElement.replaceChild(wrap, ele)
-                        wrap.appendChild(ele)
-                        this.addImgZoomBtn(ele,wrap)
+                        let wrap = mountCmp(NoteImg, { id, imgsrc: ele.src, hl: this, imgElement: ele }, ele, true).$el
                         this.createNoteMenu(wrap, sources)
                     }
                 }
@@ -394,9 +391,9 @@ export class DocHighlighter {
 
     deleteId(id, store) {
         let { highlighter } = this;
-        this.procssAllElements(id,(a)=>{
+        this.procssAllElements(id, (a) => {
             let n = a.querySelectorAll('.imgzoombtn')
-            for(let i = 0; i < n.length;i++){
+            for (let i = 0; i < n.length; i++) {
                 let b = n[i];
                 b.parentNode.removeChild(b);
             }
@@ -493,7 +490,7 @@ export class DocHighlighter {
         }
         return highlightIdExtra;
     }
-    convertNote2TreeNode=(el,styleList)=>{
+    convertNote2TreeNode = (el, styleList) => {
         let { tagName } = el;
         let style = el.getAttribute("style")
         if (styleList.indexOf(style) == -1) {
@@ -504,18 +501,18 @@ export class DocHighlighter {
         let child = { tagName, text, style }
         return child
     }
-    buildTree = (node,styleList) => {
+    buildTree = (node, styleList) => {
         let ii = node.children
         let { tagName } = node;
         let children = []
         for (let i = 0; i < ii.length; i++) {
             let el = ii[i];
-            let a = this.buildTree(el,styleList)
+            let a = this.buildTree(el, styleList)
             if (a.children.length) {
                 children.push(a)
             }
             if (el.classList.contains('docsify-highlighter')) {
-                let child = this.convertNote2TreeNode(el,styleList)
+                let child = this.convertNote2TreeNode(el, styleList)
                 children.push(child)
                 // console.log(child);
             }
@@ -543,13 +540,13 @@ export class DocHighlighter {
             });
         } else {
             this.highlighter.getDoms(noteid).forEach((node) => {
-                let child = this.convertNote2TreeNode(node,styleList)
+                let child = this.convertNote2TreeNode(node, styleList)
                 ret.push(child);
             })
             parent.add(parentNode)
         }
         parent.forEach((node) => {
-            let a = this.buildTree(node,styleList)
+            let a = this.buildTree(node, styleList)
             ret.push(a)
         })
         let tree = { nodes: ret, styleList }
@@ -784,15 +781,10 @@ export class DocHighlighter {
                     }
                     hs = this.checkHS(hs)
                     if (hs.imgsrc) {
-                        let { startMeta, id } = hs;
+                        let { startMeta, id, note } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
-                        let wrap = this.createImgWrap(id);
-                        if (ele) {
-                            ele.parentElement.replaceChild(wrap, ele)
-                            wrap.appendChild(ele)
-                        }
-                        this.addImgZoomBtn(ele,wrap);
+                        mountCmp(NoteImg, { id, imgsrc: ele.src, note, hl: this, imgElement: ele }, ele, true)
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
@@ -810,20 +802,6 @@ export class DocHighlighter {
         }
 
     };
-    createImgWrap(id) {
-        let wrap = document.createElement('i');
-        wrap.style = "position:relative"
-        wrap.classList.add('docsify-highlighter');
-        wrap.classList.add('docsify-highlighter-img');
-        // wrap.classList.add('highlight-mengshou-wrap')
-        wrap.dataset['highlightId'] = id;
-        return wrap;
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    addImgZoomBtn(ele,wrap) {
-        mountCmp(ZoomBtn, { ele }, wrap);
-    }
 
     createMarkNode(id, note) {
         let el = this.getElement(id);

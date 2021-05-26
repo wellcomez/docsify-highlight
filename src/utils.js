@@ -1,12 +1,18 @@
 import Vue from 'vue';
 
-export function mountCmp(cmp, props, parent) {
+export function mountCmp(cmp, props, parent, replace = false) {
   if (cmp.default) {
     cmp = cmp.default;
   }
   cmp = Vue.extend(cmp);
   let node = document.createElement('div');
-  parent.appendChild(node);
+  if (replace) {
+    let ele = parent;
+    let wrap = node;
+    ele.parentElement.replaceChild(wrap, ele)
+  } else {
+    parent.appendChild(node);
+  }
   let vm = new cmp({
     el: node,
     propsData: props,
@@ -214,7 +220,7 @@ function findSameParts(str1, str2, options = {}) {
 }
 
 export function createHtml(json) {
-  if(json==undefined||json==null)return
+  if (json == undefined || json == null) return
   let { nodes, styleList } = json
   // eslint-disable-next-line no-unused-vars
   function convertNodes(nodes) {
@@ -243,13 +249,13 @@ export function createHtml(json) {
   function convertNodes2(nodes) {
     nodes.forEach((el) => {
       let { tagName, text, style, children } = el
-      if(tagName=="I"){
+      if (tagName == "I") {
         let el = document.createElement(tagName)
         el.setAttribute('style', styleList[style])
         el.innerText = text
         p.appendChild(el)
       }
-      convertNodes2(children?children:[])
+      convertNodes2(children ? children : [])
     })
     return p.innerHTML
   }
@@ -259,9 +265,9 @@ export function createHtml(json) {
 export function pluginScript() {
   let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
   if (DocHighlighter) {
-      let { script } = DocHighlighter
-      if(script)
-        return script
+    let { script } = DocHighlighter
+    if (script)
+      return script
   }
   return {}
 }
