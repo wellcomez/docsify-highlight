@@ -1,5 +1,22 @@
 import Vue from 'vue';
-
+export function insertComponentAfter(cmp, props, nodeExisted,after=true) {
+  if (cmp.default) {
+    cmp = cmp.default;
+  }
+  cmp = Vue.extend(cmp);
+  let node = document.createElement('div');
+  if (after==false) {
+    nodeExisted.insertAdjacentElement("beforebegin",node);
+  } else {
+    nodeExisted.insertAdjacentElement("afterend",node);
+  }
+  let vm = new cmp({
+    el: node,
+    propsData: props,
+    parent: this
+  });
+  return vm
+}
 export function mountCmp(cmp, props, parent, replace = false) {
   if (cmp.default) {
     cmp = cmp.default;

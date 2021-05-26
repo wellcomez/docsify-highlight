@@ -4,7 +4,7 @@ import { User } from "./UserLogin";
 import { log } from "./log";
 import { getIntersection } from "./hl"
 import { getConfig } from './ANoteConfig';
-import { createHtml, mountCmp, parseurl, queryBox } from './utils';
+import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
@@ -802,17 +802,31 @@ export class DocHighlighter {
         }
 
     };
-
-    createMarkNode(id, note) {
+    findTailElement(id) {
         let el = this.getElement(id);
+        if (el == undefined) return
+        let pos = this.getPosition(el)
+        this.procssAllElements(id, (node) => {
+            let p2 = this.getPosition(node)
+            if (p2.top > pos.top) {
+                pos = p2;
+                el = node;
+            }
+        })
+        return el
+    }
+    createMarkNode(id, note) {
+        let el = this.findTailElement(id)
         if (el) {
             let content = note;
             let hl = this;
-            mountCmp(NoteMarker, { noteid: id, content, hl }, el);
+            let marker = document.getElementById(id + "notemarker")
+            if (marker) { return }
+            insertComponentAfter(NoteMarker, { noteid: id, content, hl }, el);
         }
     }
     createBookmarkNode(id) {
-        let el = this.getElement(id);
+        let el = this.findTailElement(id);
         if (el) {
             mountCmp(NoteBookmark, { noteid: id }, el);
         }
@@ -827,6 +841,9 @@ export class DocHighlighter {
                 }
             }
         });
+        let marker = document.getElementById(noteid + "notemarker")
+        if (marker) { marker.parentElement.removeChild(marker); }
+
     }
     removeBookmarkNode(noteid) {
         let cls = "note-bookmark"

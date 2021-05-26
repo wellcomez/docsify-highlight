@@ -41,6 +41,7 @@ export default {
     },
   },
   mounted() {
+    this.$el.setAttribute("id",this.noteid+"notemarker")
     this.updateWithOnStatus();
   },
   props: {
