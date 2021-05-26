@@ -7,7 +7,6 @@
       v-model="open"
       scrollable
       :mask="false"
-      :width="width"
       class-name="toc-drawer"
     >
       <Row
@@ -17,7 +16,7 @@
         style="margin-right: 20px"
       >
         <Col>
-          <Button size="small" @click="openToc = !openToc">目录</Button>
+          <Button size="small" @click="disabled = !disabled">目录</Button>
         </Col>
         <Col>
           <h2>笔记</h2>
@@ -47,12 +46,7 @@
         />
       </div>
     </Drawer>
-    <Drawer
-      class="html-drawer-toc"
-      :closable="true"
-      v-model="openToc"
-      scrollable
-    >
+    <Drawer v-model="disabled">
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -70,23 +64,25 @@ import TocHtml from "./TocHtml";
 import { gotoNote } from "../utils";
 export default {
   name: "NoteSiderBar",
-  components: { CharptHtml, TocHtml, Drawer },
+  components: {
+    CharptHtml,
+    TocHtml,
+    Drawer,
+  },
   computed: {},
   model: {
     prop: "openNoteBook",
   },
   data() {
-    return {
-      width:undefined,
-      open: undefined,
-      openToc: false,
-      zoomNoteBook: undefined,
-    };
+    return { open: undefined, disabled: false, zoomNoteBook: undefined };
   },
   methods: {
-    // eslint-disable-next-line no-unused-vars
-    onPopperShow(el) {
-      console.log(el);
+    rootDrawer() {
+      let aaa = document.querySelector(".html-drawer");
+      return aaa;
+    },
+    tocDrawer() {
+      return document.querySelector(".toc-drawer .ivu-drawer");
     },
     clickoutside() {},
     onBackTop() {
@@ -96,7 +92,6 @@ export default {
       gotoNote(a);
     },
     clickOnToc(a) {
-      this.openToc = false;
       const getPosition = ($node) => {
         let offset = {
           top: 0,
@@ -153,36 +148,39 @@ export default {
         }
       };
       setzoom(a, el);
-      setzoom(a, this.$el);
+      let aaa = document.querySelector(".html-drawer");
+      setzoom(a, aaa);
     },
   },
   props: {
-    hl: { type: Object, default: undefined },
+    hl: {
+      type: Object,
+      default: undefined,
+    },
     sortedChapter: {
       type: Array,
       default: () => {
         return [];
       },
     },
-    openNoteBook: { type: Boolean, default: false },
+    openNoteBook: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
+    let drawer = this.tocDrawer();
     if (isMobile()) {
-      this.$el.classList.add("mobile");
+      this.rootDrawer().classList.add("mobile");
       this.zoomNoteBook = true;
       let { width } = document.querySelector("body").getBoundingClientRect();
-      let el = this.$el.querySelector(".ivu-drawer");
-      el.classList.add("html-drawer-right-mobile");
-      let style = el.style;
+      drawer.classList.add("html-drawer-right-mobile");
+      let style = drawer.style;
       style.width = width + "px";
       style.left = 0 + "px";
       return;
     } else {
-      this.width = 30;
-      // var el = this.$el.querySelector(".toc-drawer .ivu-drawer");
-      // if (el) {
-      //   el.classList.add("html-drawer-right");
-      // }
+      drawer.classList.add("html-drawer-right");
     }
     this.zoomNoteBook = false;
   },
@@ -191,7 +189,7 @@ export default {
 
 <style>
 .zoom-out .html-drawer-right {
-  left: 0px !important;
+  left: 0 !important;
   width: 100% !important;
 }
 .zoom-in .html-drawer-right {
@@ -210,10 +208,10 @@ export default {
   margin-right: 300px;
 }
 .mobile.open-sidebar.content.zoom-in {
-  margin-right: 0px;
+  margin-right: 0;
 }
 .open-sidebar.content.zoom-out {
-  margin-right: 0px;
+  margin-right: 0;
   margin-top: 320px;
 }
 .html-drawer-toc {

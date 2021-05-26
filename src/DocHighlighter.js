@@ -487,7 +487,7 @@ export class DocHighlighter {
         }
         return highlightIdExtra;
     }
-    convertNote2TreeNode=(el,styleList)=>{
+    convertNote2TreeNode = (el, styleList) => {
         let { tagName } = el;
         let style = el.getAttribute("style")
         if (styleList.indexOf(style) == -1) {
@@ -498,18 +498,18 @@ export class DocHighlighter {
         let child = { tagName, text, style }
         return child
     }
-    buildTree = (node,styleList) => {
+    buildTree = (node, styleList) => {
         let ii = node.children
         let { tagName } = node;
         let children = []
         for (let i = 0; i < ii.length; i++) {
             let el = ii[i];
-            let a = this.buildTree(el,styleList)
+            let a = this.buildTree(el, styleList)
             if (a.children.length) {
                 children.push(a)
             }
             if (el.classList.contains('docsify-highlighter')) {
-                let child = this.convertNote2TreeNode(el,styleList)
+                let child = this.convertNote2TreeNode(el, styleList)
                 children.push(child)
                 // console.log(child);
             }
@@ -537,13 +537,13 @@ export class DocHighlighter {
             });
         } else {
             this.highlighter.getDoms(noteid).forEach((node) => {
-                let child = this.convertNote2TreeNode(node,styleList)
+                let child = this.convertNote2TreeNode(node, styleList)
                 ret.push(child);
             })
             parent.add(parentNode)
         }
         parent.forEach((node) => {
-            let a = this.buildTree(node,styleList)
+            let a = this.buildTree(node, styleList)
             ret.push(a)
         })
         let tree = { nodes: ret, styleList }
@@ -778,7 +778,7 @@ export class DocHighlighter {
                     }
                     hs = this.checkHS(hs)
                     if (hs.imgsrc) {
-                        let { startMeta, id } = hs;
+                        let { startMeta, id, note } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
                         let wrap = document.createElement('i')
@@ -789,6 +789,7 @@ export class DocHighlighter {
                             ele.parentElement.replaceChild(wrap, ele)
                             wrap.appendChild(ele)
                         }
+                        this.createMarkNode(id, note)
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
@@ -807,11 +808,13 @@ export class DocHighlighter {
 
     };
     createMarkNode(id, note) {
-        let el = this.getElement(id);
-        if (el) {
-            let content = note;
-            let hl = this;
-            mountCmp(NoteMarker, { noteid: id, content, hl }, el);
+        if (note && note.length) {
+            let el = this.getElement(id);
+            if (el) {
+                let content = note;
+                let hl = this;
+                mountCmp(NoteMarker, { noteid: id, content, hl }, el);
+            }
         }
     }
     createBookmarkNode(id) {

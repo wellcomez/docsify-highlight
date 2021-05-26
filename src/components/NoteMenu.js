@@ -31,7 +31,7 @@ export const NoteMenu = {
     },
     data() {
         return {
-            notetext:this.note,
+            notetext:this.hs.note,
             noteid: this.hs.id,
             tags: [],
             bookmark: false,
@@ -71,7 +71,6 @@ export const NoteMenu = {
     },
     computed: {
         notecouter(){return this.notetext? this.notetext.length : 0},
-        note() { return this.hs.note },
         bookmarkiconcolor() {
             if (this.bookmark) {
                 return "var(--theme-color, #42b983)";
