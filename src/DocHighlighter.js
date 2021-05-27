@@ -96,6 +96,22 @@ export class DocHighlighter {
         let section = document.body
         mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu, hs }, section)
     };
+
+    repairToc() {
+        let { store } = this;
+        const storeInfos = store.getAll();
+        storeInfos.forEach(
+            ({ hs }) => {
+                try {
+                    let pos = this.getTopElementPosition(hs.id);
+                    hs.pos = pos;
+                    // eslint-disable-next-line no-empty
+                } catch (error) {
+                }
+            }
+        );
+        store.jsonToStore(storeInfos)
+    }
     procssAllElements(nodeid, cb) {
         const classname = 'docsify-highlighter'
         let node;
@@ -556,6 +572,7 @@ export class DocHighlighter {
         return { html, tree }
     }
 
+
     saveNoteData = (noteid, data) => {
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
         let change = style != undefined && Object.keys(style).length || note || tags.length || img && img.length || bookmark
@@ -613,26 +630,7 @@ export class DocHighlighter {
                     })
                     hs.text = text
                     hs.tags = tags
-                    let pos = this.getElementPosition(noteid)
-                    let top
-                    this.procssAllElements(noteid, (a) => {
-
-                        let getOffset = (el) => {
-                            var _x = 0;
-                            var _y = 0;
-                            while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
-                                _x += el.offsetLeft - el.scrollLeft;
-                                _y += el.offsetTop - el.scrollTop;
-                                el = el.offsetParent;
-                            }
-                            return { top: _y, left: _x };
-                        }
-                        let t = getOffset(a).top
-                        if (top == undefined || t < top) {
-                            top = t
-                        }
-                    })
-                    pos.top = top
+                    let pos = this.getTopElementPosition(noteid)
                     hs.top = pos;
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
@@ -882,25 +880,25 @@ export class DocHighlighter {
         let csspath = { start, end }
         return csspath
     }
-    getElementPosition(id) {
-        let ret = {};
-        this.procssAllElements(id, (a) => {
-            let pos = this.getPosition(a);
-            if (pos) {
-                let { top } = pos;
-                if (ret.top == undefined) {
-                    ret = pos
-                } else {
-                    if (top < ret.top) {
-                        ret = pos
-                    }
-                }
-            }
-        })
-        return ret;
-    }
+    // getElementPosition(id) {
+    //     let ret = {};
+    //     this.procssAllElements(id, (a) => {
+    //         let pos = this.getPosition(a);
+    //         if (pos) {
+    //             let { top } = pos;
+    //             if (ret.top == undefined) {
+    //                 ret = pos
+    //             } else {
+    //                 if (top < ret.top) {
+    //                     ret = pos
+    //                 }
+    //             }
+    //         }
+    //     })
+    //     return ret;
+    // }
     scollTopID(id) {
-        let { top } = this.getElementPosition(id);
+        let { top } = this.getTopElementPosition(id);
         if (top != undefined) {
             window.scrollTo(0, top - 120);
             let b = document.getElementsByClassName('content')[0]
@@ -920,15 +918,24 @@ export class DocHighlighter {
             height: $node.offsetHeight
         };
         while ($node) {
-            offset.top += $node.offsetTop;
-            offset.left += $node.offsetLeft;
+            offset.top += $node.offsetTop - $node.scrollTop;
+            offset.left += $node.offsetLeft - $node.scrollLeft;
             $node = $node.offsetParent;
         }
         offset.bottom = offset.top + offset.height;
         return offset;
     };
 
-
+    getTopElementPosition = (noteid) => {
+        let top, left, bottom;
+        this.procssAllElements(noteid, (a) => {
+            let pos = this.getPosition(a)
+            top = top ? Math.min(top, pos.top) : pos.top;
+            left = left ? Math.min(left, pos.left) : pos.left;
+            bottom = bottom ? Math.max(bottom, pos.bottom) : pos.bottom;
+        });
+        return { top, left, bottom };
+    };
     turnHighLight(enable) {
         let { highlighter } = this;
         if (enable) {
