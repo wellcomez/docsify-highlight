@@ -110,7 +110,27 @@ export class DocHighlighter {
                 }
             }
         );
+        let stores = storeInfos.sort((a, b) => {
+            let pa = a.hs.pos;
+            let pb = b.hs.pos
+            if (pa.top == pb.top) {
+                return pa.left > pb.left;
+            }
+            return pa.top > pb.top;
+        })
+        let updated;
+        stores.forEach((a, idx) => {
+            let { hs } = a
+            if (hs.idx != idx) {
+                updated = true;
+            }
+            hs.idx = idx;
+        });
+        if (updated) {
+            Book.updated = true;
+        }
         store.jsonToStore(storeInfos)
+        return updated
     }
     procssAllElements(nodeid, cb) {
         const classname = 'docsify-highlighter'
@@ -425,6 +445,7 @@ export class DocHighlighter {
             store = this.store
         }
         store.remove(id);
+        this.repairToc()
         this.updatePanel();
     }
     enable(enable) {
@@ -640,6 +661,7 @@ export class DocHighlighter {
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
+                this.repairToc();
             } else {
                 this.store.update({ id: noteid, note, style, tags, bookmark, tree, version })
             }
