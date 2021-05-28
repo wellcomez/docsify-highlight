@@ -1,13 +1,13 @@
 <template>
   <div>
     <Drawer
-      class="html-drawer zoom-in"
+      :class="root_class"
       title="笔记"
       :closable="true"
       v-model="open"
       scrollable
       :mask="false"
-      class-name="toc-drawer"
+      :class-name="drawer_class_name"
     >
       <Row
         slot="header"
@@ -69,22 +69,35 @@ export default {
     TocHtml,
     Drawer,
   },
-  computed: {},
+  computed: {
+    root_class() {
+      return (
+        (isMobile() ? "mobile" : "") +
+        " " +
+        "html-drawer " +
+        (!this.zoomNoteBook ? "zoom-in" : "zoom-out")
+      );
+    },
+    drawer_class_name() {
+      return isMobile() != true
+        ? "html-drawer-right"
+        : "html-drawer-right-mobile";
+    },
+  },
   model: {
     prop: "openNoteBook",
   },
   data() {
-    return { open: undefined, disabled: false, zoomNoteBook: undefined };
+    return {
+      open: undefined,
+      disabled: false,
+      zoomNoteBook: undefined,
+    };
   },
   methods: {
-    rootDrawer() {
-      let aaa = document.querySelector(".html-drawer");
-      return aaa;
-    },
     tocDrawer() {
-      return document.querySelector(".toc-drawer .ivu-drawer");
+      return document.querySelector(".html-drawer-right .ivu-drawer");
     },
-    clickoutside() {},
     onBackTop() {
       this.$el.scrollTo(0, 0);
     },
@@ -92,7 +105,7 @@ export default {
       gotoNote(a);
     },
     clickOnToc(a) {
-      this.disabled = false
+      this.disabled = false;
       const getPosition = ($node) => {
         let offset = {
           top: 0,
@@ -119,7 +132,6 @@ export default {
         }
       }
     },
-
   },
   watch: {
     open(a) {
@@ -127,10 +139,9 @@ export default {
         this.$emit("update:openNoteBook", false);
       }
     },
-    hl(a){
-      let title =  a.$root.title
-      this.clickOnToc(title)
-      
+    hl(a) {
+      let title = a.$root.title;
+      this.clickOnToc(title);
     },
     openNoteBook(a) {
       if (a) {
@@ -155,8 +166,8 @@ export default {
         }
       };
       setzoom(a, el);
-      let aaa = document.querySelector(".html-drawer");
-      setzoom(a, aaa);
+      // let aaa = document.querySelector(".html-drawer");
+      // setzoom(a, aaa);
     },
   },
   props: {
@@ -176,18 +187,14 @@ export default {
     },
   },
   mounted() {
-    let drawer = this.tocDrawer();
     if (isMobile()) {
-      this.rootDrawer().classList.add("mobile");
       this.zoomNoteBook = true;
       let { width } = document.querySelector("body").getBoundingClientRect();
-      drawer.classList.add("html-drawer-right-mobile");
+      let drawer = this.tocDrawer();
       let style = drawer.style;
       style.width = width + "px";
       style.left = 0 + "px";
       return;
-    } else {
-      drawer.classList.add("html-drawer-right");
     }
     this.zoomNoteBook = false;
   },
@@ -195,11 +202,11 @@ export default {
 </script>
 
 <style>
-.zoom-out .html-drawer-right {
+.zoom-out .html-drawer-right .ivu-drawer {
   left: 0 !important;
   width: 100% !important;
 }
-.zoom-in .html-drawer-right {
+.zoom-in .html-drawer-right .ivu-drawer {
   left: 70% !important;
   width: 30% !important;
   margin-bottom: 10px !important;
