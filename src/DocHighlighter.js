@@ -4,7 +4,7 @@ import { User } from "./UserLogin";
 import { log } from "./log";
 import { getIntersection } from "./hl"
 import { getConfig } from './ANoteConfig';
-import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
+import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox, getImgSrcUrl } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
@@ -344,7 +344,14 @@ export class DocHighlighter {
             }
             console.log(e)
         }
-        document.addEventListener("click", handleImageClick);
+        this.enalbeClickListener = (enable) => {
+            if (enable) {
+                document.addEventListener("click", handleImageClick);
+            } else {
+                document.removeEventListener("click", handleImageClick);
+            }
+        }
+        this.enalbeClickListener(true);
         this.parseurlResult = parseurl();
 
 
@@ -806,8 +813,35 @@ export class DocHighlighter {
                         let { startMeta, id, note } = hs;
                         let { parentTagName, parentIndex } = startMeta
                         let ele = document.querySelectorAll(parentTagName)[parentIndex]
-                        if (ele)
-                            mountCmp(NoteImg, { id, note, hl: this, imgElement: ele }, ele, true)
+                        if (ele) {
+                            let ok = true;
+                            let imgsrc = getEleSrc(ele);
+                            if (imgsrc == hs.imgsrc) {
+                                ok = true;
+                            } else {
+                                let images = document.querySelectorAll(parentTagName);
+                                for (let i = 0; i < images.length; i++) {
+                                    let e = images[i];
+                                    if (getEleSrc(ele) == hs.imgsrc) {
+                                        ele = e;
+                                        startMeta.parentIndex = i;
+                                        hs.startMeta = startMeta
+                                        this.store.update({ id, startMeta })
+                                        ok = true;
+                                        break;
+                                    }
+                                }
+                                let url = store.Chapter().url(id);
+                                let imgsrc = getImgSrcUrl(hs.imgsrc);
+                                console.error("Not-find", 
+                                    "\n" + decodeURI(url),
+                                    "\n" + decodeURI(imgsrc),
+                                    this.store.title, hs)
+                            }
+                            if (ok) {
+                                mountCmp(NoteImg, { id, note, hl: this, imgElement: ele }, ele, true)
+                            } 
+                        }
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
@@ -920,9 +954,13 @@ export class DocHighlighter {
     //     return ret;
     // }
     scollTopID(id) {
-        let { top } = this.getTopElementPosition(id);
+        let { top ,element} = this.getTopElement(id);
         if (top != undefined) {
-            window.scrollTo(0, top - 120);
+          if(element){
+            element.scrollIntoView()
+          }else{
+            window.scrollTo(0, top);
+          }
             let b = document.getElementsByClassName('content')[0]
             let pp = this.getPosition(b)
             mountCmp(ScrollMark, { id, hl: this, left: pp.left + 10, top }, document.body);
@@ -947,16 +985,23 @@ export class DocHighlighter {
         offset.bottom = offset.top + offset.height;
         return offset;
     };
-
-    getTopElementPosition = (noteid) => {
+    getTopElement = (noteid) => {
+        let element
         let top, left, bottom;
         this.procssAllElements(noteid, (a) => {
             let pos = this.getPosition(a)
+            if(top==undefined||top>pos.top){
+              element = a;
+            }
             top = top ? Math.min(top, pos.top) : pos.top;
             left = left ? Math.min(left, pos.left) : pos.left;
             bottom = bottom ? Math.max(bottom, pos.bottom) : pos.bottom;
         });
-        return { top, left, bottom };
+        return { top, left, bottom ,element};
+    };
+    getTopElementPosition = (noteid) => {
+        let {top,left,bottom} = this.getElement(noteid);
+        return {top, left, bottom};
     };
     turnHighLight(enable) {
         let { highlighter } = this;
@@ -965,6 +1010,7 @@ export class DocHighlighter {
         } else {
             highlighter.dispose();
             highlighter.stop();
+            this.enalbeClickListener(false);
         }
         this.load(enable);
     }

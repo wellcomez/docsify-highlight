@@ -78,18 +78,6 @@ export function parseurl(url) {
   let { noteid } = obj;
   return { path, noteid }
 }
-export function checkClickOut(d, cb) {
-  if (d == undefined) {
-    document.removeEventListener("click", cb);
-    return;
-  }
-  d.addEventListener("mouseout", () => {
-    document.addEventListener("click", cb);
-  })
-  d.addEventListener("mouseover", () => {
-    document.removeEventListener("click", cb);
-  })
-}
 
 
 import { Modal } from "iview";

@@ -122,6 +122,10 @@ class LocalStore {
     let { path } = parseurl()
     return path;
   }
+  Chapter(){
+      let c = new Chapter(this);
+      return c;
+  }
   constructor({ path, userid, title } = {}) {
     this.userid = userid
     if (path == undefined && title == undefined) {
