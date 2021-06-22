@@ -63,6 +63,9 @@ export class BookToc {
     let { path } = a;
     if (this.findChapter(path) == undefined) {
       let bookmark = false;
+      if (a.bookmark) {
+        bookmark = a.bookmark
+      }
       a = { ...a, ...{ bookmark } }
       aa.push(a);
       this.save();
@@ -122,9 +125,9 @@ class LocalStore {
     let { path } = parseurl()
     return path;
   }
-  Chapter(){
-      let c = new Chapter(this);
-      return c;
+  Chapter() {
+    let c = new Chapter(this);
+    return c;
   }
   constructor({ path, userid, title } = {}) {
     this.userid = userid
@@ -264,9 +267,9 @@ class Chapter {
       this.store = store;
     }
   }
-  syn2Local(json) {
+  syn2Local(json, toc) {
     let { title, notes, path } = json;
-    let toc = new BookToc()
+    toc = toc ? toc : new BookToc()
     let l = toc.CharpterStorage({ path, title })
     l.save(notes);
   }
@@ -337,7 +340,7 @@ class Chapter {
         img = `![${path}](${imgsrc})`
       }
       let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
-      if(notshowSeq!=true) {
+      if (notshowSeq != true) {
         index++;
       }
       let title = `${index}. [^](${url})${tags}${span}`
@@ -454,7 +457,7 @@ export class Book {
     let { name, bookname, userid, st, data } = toc
     userid = this.userid = User.getUsername()
     charpter.forEach(element => {
-      new Chapter().syn2Local(element)
+      new Chapter().syn2Local(element, tt)
     });
     tt.syn2Local(name, bookname, userid, st, data);
   }
@@ -475,13 +478,13 @@ export class Book {
     let { charpter, toc } = json;
     let tt = new BookToc();
     let { name, bookname, userid, st, data } = toc
-    // if (tt.st > st) {
-    //   return
-    // }
+    tt.data = data;
     charpter.forEach(element => {
-      new Chapter().syn2Local(element)
+      new Chapter().syn2Local(element, tt)
+      let { bookmark, path, title } = element
+      tt.addChapterIndex({ bookmark, path, title });
     });
-    tt.syn2Local(name, bookname, userid, st, data)
+    tt.syn2Local(name, bookname, userid, st, tt.data)
   }
   count() {
     let c = 0;
