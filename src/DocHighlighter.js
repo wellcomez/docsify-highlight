@@ -99,7 +99,7 @@ export class DocHighlighter {
 
     repairToc() {
         let { store } = this;
-        const storeInfos = store.getAll();
+        let storeInfos = store.getAll();
         storeInfos.forEach(
             ({ hs }) => {
                 try {
@@ -110,6 +110,16 @@ export class DocHighlighter {
                 }
             }
         );
+        storeInfos = storeInfos.filter((a) => {
+            let { hs } = a ? a : {};
+            if (hs) {
+                let pa = hs.pos;
+                if (pa) {
+                    return true;
+                }
+            }
+            return false;
+        })
         let stores = storeInfos.sort((a, b) => {
             let pa = a.hs.pos;
             let pb = b.hs.pos
@@ -833,14 +843,14 @@ export class DocHighlighter {
                                 }
                                 let url = store.Chapter().url(id);
                                 let imgsrc = getImgSrcUrl(hs.imgsrc);
-                                console.error("Not-find", 
+                                console.error("Not-find",
                                     "\n" + decodeURI(url),
                                     "\n" + decodeURI(imgsrc),
                                     this.store.title, hs)
                             }
                             if (ok) {
                                 mountCmp(NoteImg, { id, note, hl: this, imgElement: ele }, ele, true)
-                            } 
+                            }
                         }
                     } else {
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
@@ -954,13 +964,13 @@ export class DocHighlighter {
     //     return ret;
     // }
     scollTopID(id) {
-        let { top ,element} = this.getTopElement(id);
+        let { top, element } = this.getTopElement(id);
         if (top != undefined) {
-          if(element){
-            element.scrollIntoView()
-          }else{
-            window.scrollTo(0, top);
-          }
+            if (element) {
+                element.scrollIntoView()
+            } else {
+                window.scrollTo(0, top);
+            }
             let b = document.getElementsByClassName('content')[0]
             let pp = this.getPosition(b)
             mountCmp(ScrollMark, { id, hl: this, left: pp.left + 10, top }, document.body);
@@ -990,18 +1000,18 @@ export class DocHighlighter {
         let top, left, bottom;
         this.procssAllElements(noteid, (a) => {
             let pos = this.getPosition(a)
-            if(top==undefined||top>pos.top){
-              element = a;
+            if (top == undefined || top > pos.top) {
+                element = a;
             }
             top = top ? Math.min(top, pos.top) : pos.top;
             left = left ? Math.min(left, pos.left) : pos.left;
             bottom = bottom ? Math.max(bottom, pos.bottom) : pos.bottom;
         });
-        return { top, left, bottom ,element};
+        return { top, left, bottom, element };
     };
     getTopElementPosition = (noteid) => {
-        let {top,left,bottom} = this.getElement(noteid);
-        return {top, left, bottom};
+        let { top, left, bottom } = this.getElement(noteid);
+        return { top, left, bottom };
     };
     turnHighLight(enable) {
         let { highlighter } = this;

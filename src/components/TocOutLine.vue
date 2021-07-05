@@ -89,7 +89,8 @@ var isMobile = require("is-mobile");
 
 const rgba = require("color-rgba");
 var Colr = require("colr");
-import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
+import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
+const copyPasteBoard = require('clipboard-copy')
 export default {
   name: "TocOutLine",
   data() {
@@ -113,6 +114,15 @@ export default {
           },
         },
         { name: "查看", click: () => {} },
+        {
+          name: "id",
+          click: () => {
+            let { id, charpter } = this.notedata;
+            
+            id = getNoteUrl(id,charpter);
+            copyPasteBoard(id);
+          },
+        },
       ],
       disabledPopMore: true,
       textStyle: {},

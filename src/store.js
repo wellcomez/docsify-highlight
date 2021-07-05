@@ -21,7 +21,8 @@ export class BookToc {
   }
   json() {
     let { name, bookname, userid, st, data } = this;
-    return { name, bookname, userid, st, data };
+    let hostname = window.location.hostname
+    return { name, bookname, userid, st, data ,hostname};
   }
   findChapter(path) {
     let aa = this.charpterTitles();

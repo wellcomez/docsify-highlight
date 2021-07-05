@@ -1,14 +1,14 @@
 import Vue from 'vue';
-export function insertComponentAfter(cmp, props, nodeExisted,after=true) {
+export function insertComponentAfter(cmp, props, nodeExisted, after = true) {
   if (cmp.default) {
     cmp = cmp.default;
   }
   cmp = Vue.extend(cmp);
   let node = document.createElement('div');
-  if (after==false) {
-    nodeExisted.insertAdjacentElement("beforebegin",node);
+  if (after == false) {
+    nodeExisted.insertAdjacentElement("beforebegin", node);
   } else {
-    nodeExisted.insertAdjacentElement("afterend",node);
+    nodeExisted.insertAdjacentElement("afterend", node);
   }
   let vm = new cmp({
     el: node,
@@ -122,6 +122,11 @@ export function getImgSrcUrl(imgsrc, rootpath) {
     rootpath = rootPath()
   }
   return `${rootpath}${path}`
+}
+export function getNoteUrl(id,charpter) {
+  let rootpath = rootPath()
+  let url = charpter.url(id,rootpath)
+  return decodeURI(url)
 }
 export function rootPath() {
   let u = document.location
