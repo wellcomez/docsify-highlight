@@ -814,12 +814,12 @@ export class DocHighlighter {
         storeInfos.forEach(
             ({ hs }) => {
                 let { id } = hs;
-                let pos = this.getTopElementPosition(id)
-                if (pos) {
-                    hs.top = pos
+                let top = this.getTopElementPosition(id)
+                if (top) {
+                    // console.log("update- ", top, hs.text)
+                    store.update({ id, top })
                 }
             });
-        store.forceSave();
     }
     load = (loaded) => {
         if (loaded) {

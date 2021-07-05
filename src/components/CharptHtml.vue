@@ -1,13 +1,13 @@
 <template>
   <div class="charpterhtml">
     <Divider></Divider>
-    <h2 v-if="exporthtml" class="charpterhtml-h2" @tt="title">
+    <h2 v-if="exporthtml" class="charpterhtml-h2" v-bind:tt="title">
       <a :href="hrefa"
         >{{ title }}
         <Icon type="ios-git-compare" v-on:click="onSort" />
       </a>
     </h2>
-    <h2 v-else class="charpterhtml-h2" @tt="title">
+    <h2 v-else class="charpterhtml-h2" v-bind:tt="title">
       {{ title }}
       <Icon type="ios-git-compare" v-on:click="onSort" />
     </h2>
