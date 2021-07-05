@@ -69,10 +69,11 @@ export default {
         offset.bottom = offset.top + offset.height;
         return offset;
       };
-      let h2 = document.querySelectorAll("h2");
+      let h2 = document.querySelectorAll(".charpterhtml-h2");
       for (let i = 0; i < h2.length; i++) {
         let t = h2[i];
-        if (t.innerText == a) {
+        let tt = t.getAttribute("tt");
+        if (tt == a) {
           let { top } = getPosition(t);
           window.scrollTo(0, top - 50);
           return;

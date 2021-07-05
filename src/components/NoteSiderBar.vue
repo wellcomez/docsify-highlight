@@ -123,7 +123,8 @@ export default {
       let h2 = document.querySelectorAll(".charpterhtml h2");
       for (let i = 0; i < h2.length; i++) {
         let t = h2[i];
-        if (t.innerText == a) {
+        let tt = t.getAttribute("tt");
+        if (tt == a) {
           let { top } = getPosition(t);
           document
             .querySelector(".html-drawer .ivu-drawer-body")

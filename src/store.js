@@ -197,7 +197,8 @@ class LocalStore {
 
   forceSave(store) {
     const stores = this.storeToJson();
-    stores.push(store);
+    if(store)
+      stores.push(store);
     this.jsonToStore(stores);
   }
   update(a) {

@@ -1,10 +1,16 @@
 <template>
   <div class="charpterhtml">
     <Divider></Divider>
-    <h2 v-if="exporthtml">
-      <a :href="hrefa">{{ title }}</a>
+    <h2 v-if="exporthtml" class="charpterhtml-h2" @tt="title">
+      <a :href="hrefa"
+        >{{ title }}
+        <Icon type="ios-git-compare" v-on:click="onSort" />
+      </a>
     </h2>
-    <h2 v-else>{{ title }}</h2>
+    <h2 v-else class="charpterhtml-h2" @tt="title">
+      {{ title }}
+      <Icon type="ios-git-compare" v-on:click="onSort" />
+    </h2>
     <div
       v-for="(
         { note, html, imgsrc, tags, url, text, style, notshowSeq }, index
@@ -67,6 +73,7 @@
 <script>
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 import { Divider } from "iview";
+import { msg } from "./msgbox";
 // import { Tooltip } from "iview";
 export default {
   components: { Divider },
@@ -92,6 +99,12 @@ export default {
     },
   },
   methods: {
+    onSort() {
+      let { hl } = this;
+      hl.updateAllPositions();
+      this.charpter =hl.store.Chapter()
+      msg("排序", this.charpter.label);
+    },
     initList(charpter) {
       if (charpter)
         return charpter.mergeChild().map((a) => this.convert(a, charpter));

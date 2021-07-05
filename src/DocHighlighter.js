@@ -473,10 +473,15 @@ export class DocHighlighter {
         this.turnHighLight(enable);
     }
     onCopy(hs) {
-        let { text } = hs ? hs : {}
-        if (text) {
-            copyPasteBoard(text)
+        let { text, id } = hs ? hs : {}
+        let url = "";
+        if (id) {
+            let charpter = this.store.Chapter();
+            id = charpter.url(id)
+            if (id) { url = decodeURI(id) }
         }
+        let ret = url + "\n\n" + (text ? text : "")
+        copyPasteBoard(ret)
     }
     onCreate = (a) => {
         let { sources, type } = a;
@@ -803,6 +808,19 @@ export class DocHighlighter {
     checkHS(hs) {
         return this.replacementHS(hs)
     }
+    updateAllPositions() {
+        let { store } = this;
+        const storeInfos = store.getAll();
+        storeInfos.forEach(
+            ({ hs }) => {
+                let { id } = hs;
+                let pos = this.getTopElementPosition(id)
+                if (pos) {
+                    hs.top = pos
+                }
+            });
+        store.forceSave();
+    }
     load = (loaded) => {
         if (loaded) {
             let { store, highlighter } = this;
@@ -1010,7 +1028,7 @@ export class DocHighlighter {
         return { top, left, bottom, element };
     };
     getTopElementPosition = (noteid) => {
-        let { top, left, bottom } = this.getElement(noteid);
+        let { top, left, bottom } = this.getTopElement(noteid)
         return { top, left, bottom };
     };
     turnHighLight(enable) {
