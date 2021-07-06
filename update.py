@@ -13,4 +13,5 @@ urls = ["https://purge.jsdelivr.net/npm/docsify-highlight@%s/dist/docsify-highli
         ]
 
 for url in urls:
+    print("\n\ncurl %s \n" % (url))
     os.system("curl %s" % (url))
