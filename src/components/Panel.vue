@@ -72,13 +72,20 @@
         <TabPane label="批注">
           <Row type="flex" justify="space-between">
             <Col> <span style="margin-left: 4px">全部</span> </Col>
-            
+
             <Col>
               <Button @click="onClickRepairToc" size="small" style="margin: 4px"
                 >修复</Button
               >
             </Col>
- 
+            <Col>
+              <Button
+                @click="onClickRepairToc2"
+                size="small"
+                style="margin: 4px"
+                >排序</Button
+              >
+            </Col>
             <Col>
               <Button @click="onClickOpenNote" size="small" style="margin: 4px"
                 >打开</Button
@@ -333,12 +340,17 @@ export default {
     onClickURL(a) {
       gotoNote(a);
     },
-    onClickRepairToc(){
+    onClickRepairToc2() {
+      this.hl.updateAllPositions();
+      Book.updated = true;
+      this.hl.updatePanelCb();
+    },
+    onClickRepairToc() {
       let updated = this.hl.repairToc();
-      if(updated){
-        Book.updated =true;
+      if (updated) {
+        Book.updated = true;
         this.hl.updatePanelCb();
-        }
+      }
     },
     onClickOpenNote() {
       this.openNoteBook = true;

@@ -220,7 +220,7 @@ export default {
 }
 .open-sidebar.content.zoom-in {
   /* margin-right: calc(40vh); */
-  margin-right: 300px;
+  margin-right: 400px;
 }
 .mobile.open-sidebar.content.zoom-in {
   margin-right: 0;
