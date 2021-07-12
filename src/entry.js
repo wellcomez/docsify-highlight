@@ -14,7 +14,9 @@ import hlinit from './hl';
 import { registComponet } from './utils'
 import Vue from 'vue';
 import Vue2TouchEvents from 'vue2-touch-events'
+import VueLazyload from 'vue-lazyload'
 Vue.use(Vue2TouchEvents)
+Vue.use(VueLazyload)
 
 import './iviewLoader'
 let component = { ExportHtml,TocHtml, NoteBookmark, NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }

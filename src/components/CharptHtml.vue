@@ -62,7 +62,7 @@
         v-if="imgsrc"
         @mouseover="onImageIn"
         @mouseout="onImageOut"
-        :src="imgsrc"
+        v-lazy="imgsrc"
       />
       <div v-if="note" class="outline-title">
         <p>{{ note }}</p>
@@ -74,6 +74,7 @@
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
+
 // import { Tooltip } from "iview";
 export default {
   components: { Divider },
@@ -102,7 +103,7 @@ export default {
     onSort() {
       let { hl } = this;
       hl.updateAllPositions();
-      this.charpter =hl.store.Chapter()
+      this.charpter = hl.store.Chapter();
       msg("排序", this.charpter.label);
     },
     initList(charpter) {
