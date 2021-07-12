@@ -3,6 +3,7 @@
     <Drawer
       :class="root_class"
       title="笔记"
+      id="notesidebar"
       :closable="true"
       v-model="open"
       scrollable
@@ -98,7 +99,9 @@ export default {
   },
   methods: {
     tocDrawer() {
-      return document.querySelector(".html-drawer-right .ivu-drawer");
+      return document.querySelector("#notesidebar .ivu-drawer")
+      // return document.querySelector(".ivu-drawer.ivu-drawer-right");
+      // return document.querySelector(".html-drawer-right.ivu-drawer");
     },
     onBackTop() {
       this.$el.scrollTo(0, 0);
