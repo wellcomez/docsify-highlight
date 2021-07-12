@@ -6,32 +6,26 @@ import {
     tfontColor,
 } from "../colorSelector";
 import mediumZoom from "medium-zoom";
-
 import { Modal } from "iview";
 const leftPos = () => {
     return document.getElementsByClassName("content")[0].offsetWidth - 300;
 };
 
-const default_green = "#33FF338F";
-const default_red = "#ff336659";
-const default_yellow = "#FFFF3355";
-import α from 'color-alpha'
-let default_color_list = getConfig().color
-if (default_color_list == undefined) {
-    default_color_list = [default_red, default_green, default_yellow];
-}
 import SvgButton from './SvgButton'
 import TagPanel from './TagPanel'
 import BackgroudSelector from './BackgroudSelector'
+import DropColor from './DropColor'
 import { highlightType } from "../highlightType";
-import { getConfig } from "../ANoteConfig";
+
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
-        SvgButton, BackgroudSelector, TagPanel
+        SvgButton, BackgroudSelector, TagPanel, DropColor
     },
     data() {
         return {
+            recommendedColor: recommendedColor,
+            backgroundColorEnable: false,
             notetext: this.hs.note,
             noteid: this.hs.id,
             tags: [],
@@ -41,13 +35,14 @@ export const NoteMenu = {
             img: undefined,
             showfortxt: true,
             showtagPane: true,
-            first3Colors: default_color_list,
+            // first3Colors: default_color_list,
             backgroundColorKey: 1,
             underlineColor: undefined,
             UnderlineEnable: false,
             fontColor: undefined,
             fontColorEnable: false,
             hlStyle: new highlightType(this.hl, this.hs),
+            backGroundstyle: "",
             style: {
             },
             hlType: undefined,
@@ -58,19 +53,34 @@ export const NoteMenu = {
         };
     },
     watch: {
+        color1() {
+            this.colorList = this.hlStyle.getColorList(this.hlType)
+        },
+        hlType(a) {
+            if (a == tUl || a == tfontColor) {
+                this.recommendedColor = recommendedColorNoAlpha
+            } else {
+                this.recommendedColor = recommendedColor
+            }
+            this.colorList = this.hlStyle.getColorList(a)
+        },
         showtagPane() {
             this.updatePos()
         },
-        // eslint-disable-next-line no-unused-vars
         selectedSubColor(val) {
             if (val < 0) return
-            let type = tBackgroundColor, enable = this.selectedSubColor != undefined, colorhex;
-            colorhex = this.first3Colors[this.selectedSubColor];
-            this.hlStyle.setType({ type, enable, colorhex });
-            this.updateSelection(type)
+            this.hlStyle.setColorByIndex(this.hlType, val)
+            this.updateSelection(this.hlType)
         }
     },
     computed: {
+        backgroundClass() {
+            if (this.hlType == tBackgroundColor) {
+                return "backgroundClass"
+            } else {
+                return ""
+            }
+        },
         notecouter() { return this.notetext ? this.notetext.length : 0 },
         bookmarkiconcolor() {
             if (this.bookmark) {
@@ -80,12 +90,6 @@ export const NoteMenu = {
         },
         bookmarkicon() {
             return this.bookmark ? "ios-bookmark" : "ios-bookmark-outline";
-        },
-        recommendedColor() {
-            if (this.hlType == tUl || this.hlStyle == tfontColor) {
-                return recommendedColorNoAlpha
-            }
-            return recommendedColor
         },
         EditTextTips() {
             if (this.notetext.length) return this.notetext;
@@ -128,8 +132,7 @@ export const NoteMenu = {
                 this.imageNeedAdd = true
             }
         }
-        this.colorList = this.getColorList()
-        this.updateSelection();
+        this.initDefaultButton();
         this.updatePos()
         let picker = document.getElementsByClassName("ivu-color-picker-color");
         if (picker.length) picker[0].style.backgroundImage = "none";
@@ -154,6 +157,9 @@ export const NoteMenu = {
         onBookmark() {
             this.bookmark = this.bookmark == false
         },
+        onClickBackGround(e) {
+            this.enableDisableFont(e, tBackgroundColor);
+        },
         updatePos() {
             let top = this.top - (this.showtagPane ? 140 : 80) - window.pageYOffset
             top = Math.max(0, top) + 'px'
@@ -166,59 +172,45 @@ export const NoteMenu = {
             if (window.screen.availWidth < 450) return "0px";
             return Math.min(leftPos(), this.left - 20) + "px"
         },
-        getColorList: function () {
-            let ret = []
-            for (let i = 0; i < 3; i++) {
-                let colorhex = this.first3Colors[i]
-                colorhex = α(colorhex, .8);
-                let style = `background-color: ${colorhex}`
-                ret.push({ style })
+        updateButtonColor(type, enable, colorhex) {
+            if (type == tUl) {
+                this.underlineColor = enable ? colorhex : undefined;
+                this.UnderlineEnable = enable;
+            } else if (type == tfontColor) {
+                this.fontColor = enable ? colorhex : undefined;
+                this.fontColorEnable = enable;
+            } else {
+                this.backGroundstyle
+                    = `background-color:${colorhex}`
+                this.backgroundColorEnable = enable
             }
-            return ret
         },
-        updatePreDefineColor(colorhex) {
-            let index = this.selectedSubColor
-            if (index == undefined || index < 0) return
-            this.first3Colors[index] = colorhex;
-            let color = this.first3Colors;
-            this.colorList = this.getColorList()
-            getConfig().save({ color })
-            this.backgroundColorKey = this.backgroundColorKey + 1
-        },
-        updateSelection(a) {
-            let updateButtonColor = (type, enable, colorhex) => {
-                if (type == tUl) {
-                    this.underlineColor = enable ? colorhex : undefined;
-                    this.UnderlineEnable = enable;
-                } else if (type == tfontColor) {
-                    this.fontColor = enable ? colorhex : undefined;
-                    this.fontColorEnable = enable;
-                } else {
-                    if (enable) {
-                        this.selectedSubColor = this.first3Colors.indexOf(colorhex)
-                    } else {
-                        this.selectedSubColor = undefined;
+        initDefaultButton() {
+            let aaa = [tUl, tfontColor, tBackgroundColor]
+            for (let i = 0; i < aaa.length; i++) {
+                let a = aaa[i]
+                let { enable, colorhex } = this.hlStyle.getType(a)
+                if (colorhex == undefined) {
+                    colorhex = this.hlStyle.getDefaultColor(a)
+                }
+                this.updateButtonColor(a, enable, colorhex)
+                if (enable) {
+                    if (colorhex != undefined) {
+                        this.hlType = a
+                        this.color1 = colorhex
                     }
                 }
             }
-            updateButtonColor = updateButtonColor.bind(this)
+        },
+        updateSelection(a) {
             if (a != undefined) {
                 let { enable, colorhex } = this.hlStyle.getType(a)
-                updateButtonColor(a, enable, colorhex)
+                this.updateButtonColor(a, enable, colorhex)
                 if (colorhex != undefined)
                     this.color1 = colorhex
                 this.hlType = a
                 return
             }
-            [tfontColor, tBackgroundColor, tUl].forEach((a) => {
-                let { enable, colorhex } = this.hlStyle.getType(a)
-                updateButtonColor(a, enable, colorhex)
-                if (enable) {
-                    this.hlType = a
-                    if (colorhex != undefined)
-                        this.color1 = colorhex
-                }
-            })
         },
         col(i) {
             let a = "border-bottom:2px solid white;";
@@ -254,22 +246,26 @@ export const NoteMenu = {
             });
         },
         onFontColor(e) {
-            this.setFontType(e, tfontColor)
+            this.enableDisableFont(e, tfontColor)
         },
 
-        setFontType(e, t) {
+        enableDisableFont(e, t) {
             e.stopPropagation();
             let { enable, colorhex } = this.hlStyle.getType(t)
-            enable = enable == true ? false : true
+            if (this.hlType == t || enable != true) {
+                enable = enable == true ? false : true
+            }
             if (colorhex == undefined || colorhex.length == 0) {
-                colorhex = this.color1
+                if (colorhex == undefined || colorhex.length == 0) {
+                    colorhex = this.hlStyle.getDefaultColor(t);
+                }
             }
             let type = t
             this.hlStyle.setType({ type, enable, colorhex })
             this.updateSelection(t)
         },
         onUnderline(e) {
-            this.setFontType(e, tUl)
+            this.enableDisableFont(e, tUl)
         },
         onSearch() {
             // console.log("xx");
@@ -308,23 +304,9 @@ export const NoteMenu = {
         },
         onChangeColorPicker() {
             let type = this.hlType;
-            let { enable, colorhex } = this.hlStyle.getType(type)
-            colorhex = this.color1
-            if (enable == undefined) {
-                enable = true
-            }
-            if (type == undefined) {
-                type = tBackgroundColor
-            }
-            if (type == tBackgroundColor) {
-                let c = this.first3Colors[this.selectedSubColor]
-                if (c == undefined) {
-                    enable = true
-                }
-            }
-            if (type === tBackgroundColor)
-                this.updatePreDefineColor(colorhex)
-            this.hlStyle.setType({ type, enable, colorhex })
+            let colorhex = this.color1
+            this.hlStyle.addColor(type, colorhex)
+            this.hlStyle.setType({ type, enable: true, colorhex })
             this.updateSelection(type)
             this.saveNoteData()
         },

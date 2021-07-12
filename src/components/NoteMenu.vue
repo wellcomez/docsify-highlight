@@ -31,30 +31,53 @@
             tips="Underline"
           ></SvgButton>
         </Col>
-
-        <Col :style="col(2)" v-if="showfortxt">
+        <!-- <Col :style="col(2)" v-if="showfortxt">
           <BackgroudSelector
             :colorList="colorList"
             :selectedIndex.sync="selectedSubColor"
             :key="backgroundColorKey"
-        /></Col>
-        <Col v-if="showfortxt">
-          <ColorPicker
-            offset="[-1,1]"
-            v-model="color1"
-            alpha
-            :colors="recommendedColor"
-            @on-change="onChangeColorPicker"
-            :class="classColorPicker"
-            :key="hlType"
-          />
+        /></Col> -->
+        <Col>
+          <div :class="backgroundClass">
+            <div class="d1" style="background-color: white">
+              <div
+                class="d1"
+                :style="backGroundstyle"
+                v-on:click="onClickBackGround"
+              >
+                <span v-if="backgroundColorEnable">&#10004;</span>
+              </div>
+            </div>
+          </div>
         </Col>
-        <Col v-else>
-           <SvgButton
+        <Col v-if="showfortxt">
+          <Row type="flex" align="top">
+            <Col>
+              <ColorPicker
+                offset="[-1,1]"
+                v-model="color1"
+                alpha
+                :colors="recommendedColor"
+                @on-change="onChangeColorPicker"
+                :class="classColorPicker"
+                :key="hlType"
+              />
+            </Col>
+            <Col>
+              <DropColor
+                :colorList="colorList"
+                :selectedIndex.sync="selectedSubColor"
+              />
+            </Col>
+          </Row>
+        </Col>
+        <Col v-if="showfortxt"> </Col>
+        <Col v-if="showfortxt == false">
+          <SvgButton
             name="icon-zoom-out"
             custom
             @click="zoomoutImg"
-          ></SvgButton> 
+          ></SvgButton>
         </Col>
         <Col>
           <SvgButton
@@ -112,6 +135,10 @@ export default NoteMenu;
   border: 1px solid var(--theme-color, #42b983)
 }
 <style type="text/css">
+.backgroundClass {
+  border-bottom: 2px solid white;
+  padding-bottom: 1px;
+}
 .my-remove-tip {
   box-sizing: border-box;
   position: absolute;
@@ -133,7 +160,7 @@ export default NoteMenu;
 }
 @media screen and (max-width: 640px) {
   .my-remove-tip {
-    width:100%;
+    width: 100%;
     /* width:360px */
   }
 }

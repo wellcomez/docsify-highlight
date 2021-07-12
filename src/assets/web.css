@@ -15,8 +15,8 @@ div.d1 {
   height       : 32px;
   width        : 32px;
   border-radius: 16px;
-  margin-left  : 2px;
-  border       : 2px solid white;
+  /* margin-left  : 2px; */
+  /* border       : 2px solid white; */
 }
 
 div.d1 span {

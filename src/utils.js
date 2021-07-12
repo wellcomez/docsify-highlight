@@ -123,9 +123,9 @@ export function getImgSrcUrl(imgsrc, rootpath) {
   }
   return `${rootpath}${path}`
 }
-export function getNoteUrl(id,charpter) {
+export function getNoteUrl(id, charpter) {
   let rootpath = rootPath()
-  let url = charpter.url(id,rootpath)
+  let url = charpter.url(id, rootpath)
   return decodeURI(url)
 }
 export function rootPath() {
@@ -280,4 +280,13 @@ export function pluginScript() {
       return script
   }
   return {}
+}
+// import α from 'color-alpha'
+export function getColorList(first3Colors) {
+  return first3Colors.filter((a) => {
+    return a != undefined;
+  }).map((colorhex) => {
+    let style = `background-color: ${colorhex}`
+    return { style };
+  })
 }
