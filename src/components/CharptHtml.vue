@@ -91,7 +91,7 @@ export default {
       return this.charpter.label;
     },
     hrefa() {
-      return "#" + this.title;
+      return  this.charpter.path;
     },
   },
   watch: {
