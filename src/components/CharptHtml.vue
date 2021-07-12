@@ -8,7 +8,7 @@
       </a>
     </h2>
     <h2 v-else class="charpterhtml-h2" v-bind:tt="title">
-      {{ title }}
+      <a :href="hrefa">{{ title }} </a>
       <Icon type="ios-git-compare" v-on:click="onSort" />
     </h2>
     <div
