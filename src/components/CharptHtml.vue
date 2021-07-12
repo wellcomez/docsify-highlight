@@ -91,13 +91,24 @@ export default {
       return this.charpter.label;
     },
     hrefa() {
-      return  this.charpter.path;
+      return this.charpter.path;
     },
   },
   watch: {
     charpter(charpter) {
       this.list = this.initList(charpter);
     },
+    active(a) {
+      if (a) {
+        this.$el.scrollIntoView();
+      }
+    },
+  },
+  mounted() {
+    // console.log("mounted");
+    if (this.active) {
+      this.$el.scrollIntoView();
+    }
   },
   methods: {
     onSort() {
@@ -201,6 +212,7 @@ export default {
   },
 
   props: {
+    active: { type: Boolean, default: false },
     hl: { type: Object, default: undefined },
     rootpath: { type: String, default: undefined },
     exporthtml: { type: Boolean, default: false },

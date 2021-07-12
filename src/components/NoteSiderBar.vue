@@ -30,9 +30,7 @@
           />
         </Col>
       </Row>
-      <div class="html-drawer-content"
-          v-if="openNoteBook"
-      >
+      <div class="html-drawer-content" v-if="openNoteBook">
         <!-- <div class="backtop">
         <Button type="success" size="small" @click="onBackTop">
           <Icon type="md-arrow-up" />
@@ -44,6 +42,7 @@
           v-for="(charpter, index) in sortedChapter"
           :charpter="charpter"
           :onClickURL="onClickURL"
+          :active="charpter.path == current.path"
           :key="index"
           :hl="hl"
         />
@@ -92,6 +91,7 @@ export default {
   },
   data() {
     return {
+      current: this.hl?this.hl.store.Chapter():undefined,
       open: undefined,
       disabled: false,
       zoomNoteBook: undefined,
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     tocDrawer() {
-      return document.querySelector("#notesidebar .ivu-drawer")
+      return document.querySelector("#notesidebar .ivu-drawer");
       // return document.querySelector(".ivu-drawer.ivu-drawer-right");
       // return document.querySelector(".html-drawer-right.ivu-drawer");
     },
@@ -146,8 +146,7 @@ export default {
       }
     },
     hl(a) {
-      let title = a.$root.title;
-      this.clickOnToc(title);
+      this.current = a.store.Chapter();
     },
     openNoteBook(a) {
       if (a) {
