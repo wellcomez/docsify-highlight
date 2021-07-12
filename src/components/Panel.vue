@@ -66,6 +66,11 @@
       <Col>
         <SvgButton @click="bDrawerOpen = true" name="md-settings" />
       </Col>
+      <Col>
+        <Button @click="openNoteBook = !openNoteBook" >
+          <Icon type="md-text" color="#42b983" />
+        </Button>
+      </Col>
     </Row>
     <Row class="contenttable" v-if="showdetail">
       <Tabs type="line" size="small" class="tabs">
