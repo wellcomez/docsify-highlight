@@ -29,7 +29,9 @@
           />
         </Col>
       </Row>
-      <div class="html-drawer-content">
+      <div class="html-drawer-content"
+          v-if="openNoteBook"
+      >
         <!-- <div class="backtop">
         <Button type="success" size="small" @click="onBackTop">
           <Icon type="md-arrow-up" />
