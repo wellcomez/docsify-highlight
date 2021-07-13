@@ -2,8 +2,16 @@
   <Tooltip theme="light" :disabled="false" width="60px">
     <!-- <Icon type="md-more" /> -->
     <Badge :count="count">
-      <Button>
-        <Icon type="md-more" :size="20" />
+      <Button style="height: 32px; padding-left: 2px; padding-right: 2px">
+        <ul>
+          <li
+            class="prevline"
+            :key="index"
+            v-for="({ style }, index) in colorListStyle"
+            :style="prevStyle(style)"
+          ></li>
+        </ul>
+        <!-- <Icon type="md-more" :size="20" /> -->
       </Button>
     </Badge>
     <ul slot="content" class="dropcolor">
@@ -69,6 +77,10 @@ export default {
     },
   },
   methods: {
+    prevStyle(style) {
+      let x = 24 / this.count;
+      return `${style};height:${x}px`;
+    },
     onClick(a) {
       this.currentIndex = parseInt(a);
       this.$emit("update:selectedIndex", this.currentIndex);
@@ -110,15 +122,25 @@ export default {
 }
 .dropcolor li {
   margin: 0;
+  height: 24px;
   line-height: normal;
-  padding: 7px 16px;
+  padding: 1px 2px;
   clear: both;
   color: #515a6e;
-  font-size: 12px !important;
+  font-size: 8px !important;
   white-space: nowrap;
   list-style: none;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+}
+li.prevline {
+  width: 20px;
+  padding-left: 1px;
+  padding-right: 1px;
+  margin-left: 0px;
+  margin-right: 0px;
+  cursor: pointer;
+  list-style: none;
 }
 .dropcolor li div {
   width: 40px;

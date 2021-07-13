@@ -19,13 +19,12 @@ class colorSettings {
         if (xxx) {
             values = xxx
         }
-        this.defaultColor = values
         this.colorList = values;
         this.colorListSet = new Set(this.colorList)
     }
     getDefaultColor() {
         if (this.colorList == undefined || this.colorList.length == 0) {
-            this.colorList = this.defaultColorList;
+            this.colorList = defaultColor[this.type];
         }
         return this.colorList[0];
     }
@@ -36,16 +35,26 @@ class colorSettings {
         this.colorList = this.colorList.filter((a, index) => {
             return i != index;
         })
+        if(this.colorList.length==0){
+            this.colorList = defaultColor[this.type];
+        }
+        this.save()
     }
     addColor(a) {
-        if (this.colorListSet.has(a)) {
-            return;
+        if (a && a.length) {
+            if (this.colorListSet.has(a)) {
+                return;
+            }
+            this.colorListSet.add(a);
+            this.colorList = Array.from(this.colorListSet)
+            this.save();
         }
-        this.colorListSet.add(a);
-        this.colorList = Array.from(this.colorListSet)
-        let config = {}
+    }
+
+    save() {
+        let config = {};
         config[this.name()] = this.colorList;
-        getConfig().save(config)
+        getConfig().save(config);
     }
 }
 // eslint-disable-next-line no-unused-vars
@@ -80,7 +89,7 @@ export class highlightType {
     hlSettings(type) {
         return this.colorSettings[type]
     }
-    getDefaultColor(type){
+    getDefaultColor(type) {
         return this.hlSettings(type).getDefaultColor()
     }
     setColorByIndex(type, index) {
