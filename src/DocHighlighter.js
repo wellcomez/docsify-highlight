@@ -200,7 +200,8 @@ export class DocHighlighter {
 
     constructor() {
         this.$root = document
-        this.innerText = document.querySelector("body").innerText
+        this.innerText =document.querySelector('article').innerText
+        // this.innerText = document.querySelector("body").innerText
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
