@@ -67,6 +67,7 @@
               <DropColor
                 :colorList="colorList"
                 :selectedIndex.sync="selectedSubColor"
+                :onClickDelete="onClickDelete"
               />
             </Col>
           </Row>

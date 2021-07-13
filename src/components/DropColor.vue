@@ -1,10 +1,29 @@
 <template>
-  <!-- <Badge :count="count" id="badgedrop"> -->
-  <Tooltip theme="light" :disabled="open == false" width="60px">
-    <Button size="small">s</Button>
+  <Tooltip theme="light" :disabled="false" width="60px">
+    <!-- <Icon type="md-more" /> -->
+    <Badge :count="count">
+      <Button>
+        <Icon type="md-more" :size="20" />
+      </Button>
+    </Badge>
     <ul slot="content" class="dropcolor">
-      <li :key="index" v-for="({ style }, index) in colorListStyle" :style="style">
-        <Icon type="ios-close" size="large" class="dropcolor-delete"/>
+      <li
+        :key="index"
+        v-for="({ style }, index) in colorListStyle"
+        :style="style"
+        @click="onClick(index)"
+      >
+        <Row type="flex">
+          <Col span="1"></Col>
+          <Col span="4">
+            <Icon
+              type="ios-close"
+              size="24"
+              class="dropcolor-delete"
+              @click="onClickDelete2(index)"
+            />
+          </Col>
+        </Row>
       </li>
     </ul>
   </Tooltip>
@@ -54,6 +73,11 @@ export default {
       this.currentIndex = parseInt(a);
       this.$emit("update:selectedIndex", this.currentIndex);
     },
+    onClickDelete2(index) {
+      if (this.onClickDelete) {
+        this.onClickDelete(index);
+      }
+    },
     convert(a) {
       this.colorListStyle = getColorList(a).map((a) => {
         return a;
@@ -69,6 +93,7 @@ export default {
     },
   },
   props: {
+    onClickDelete: { type: Function, default: undefined },
     selectedIndex: { type: Number, default: 0 },
     colorList: {
       type: Array,
@@ -80,8 +105,8 @@ export default {
 };
 </script>
 <style >
-.dropcolor-delete{
-  margin-right:2px;
+.dropcolor-delete {
+  margin-right: 2px;
 }
 .dropcolor li {
   margin: 0;

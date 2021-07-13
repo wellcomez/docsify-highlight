@@ -49,12 +49,13 @@ export const NoteMenu = {
             selectedSubColor: undefined,
             color1: "",
             newnote: this.sources != undefined,
-            colorList: []
+            colorList: [],
+            hlSettings: undefined
         };
     },
     watch: {
         color1() {
-            this.colorList = this.hlStyle.getColorList(this.hlType)
+            this.colorList = this.hlSettings?this.hlSettings.colorList:[];
         },
         hlType(a) {
             if (a == tUl || a == tfontColor) {
@@ -62,7 +63,11 @@ export const NoteMenu = {
             } else {
                 this.recommendedColor = recommendedColor
             }
-            this.colorList = this.hlStyle.getColorList(a)
+            this.hlSettings = this.hlStyle.hlSettings(a)
+        },
+        hlSettings(a) {
+            if (a)
+                this.colorList = a.colorList
         },
         showtagPane() {
             this.updatePos()
@@ -138,6 +143,10 @@ export const NoteMenu = {
         if (picker.length) picker[0].style.backgroundImage = "none";
     },
     methods: {
+        onClickDelete(index) {
+            this.hlSettings.deleteIndex(index);
+            this.colorList = this.hlSettings.colorList;
+        },
         zoomoutImg() {
             let a = this.hl.getElement(this.noteid)
             let img = a.querySelector("img")
@@ -305,7 +314,7 @@ export const NoteMenu = {
         onChangeColorPicker() {
             let type = this.hlType;
             let colorhex = this.color1
-            this.hlStyle.addColor(type, colorhex)
+            this.hlSettings.addColor(colorhex)
             this.hlStyle.setType({ type, enable: true, colorhex })
             this.updateSelection(type)
             this.saveNoteData()

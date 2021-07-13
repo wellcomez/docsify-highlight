@@ -68,7 +68,7 @@
       </Col>
       <Col>
         <Button @click="openNoteBook = !openNoteBook" >
-          <Icon type="md-text" color="#42b983" />
+          <Icon type="md-text" color="#42b983" :size="20" />
         </Button>
       </Col>
     </Row>

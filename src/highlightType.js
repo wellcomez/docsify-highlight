@@ -9,21 +9,33 @@ const default_yellow = "#FFFF33";
 
 import { getConfig } from "./ANoteConfig";
 const defaultColor = {};
-defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)",default_red, default_yellow];
+defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)", default_red, default_yellow];
 defaultColor[tUl] = ["green", "red", "yellow"];
 defaultColor[tfontColor] = ["black", "green", "red", "white"];
 class colorSettings {
     constructor(type, values = undefined) {
         this.type = type
         let xxx = getConfig().load()[this.name()]
-        if(xxx){
+        if (xxx) {
             values = xxx
         }
+        this.defaultColor = values
         this.colorList = values;
         this.colorListSet = new Set(this.colorList)
     }
-    name(){
-        return "colorList"+this.type
+    getDefaultColor() {
+        if (this.colorList == undefined || this.colorList.length == 0) {
+            this.colorList = this.defaultColorList;
+        }
+        return this.colorList[0];
+    }
+    name() {
+        return "colorList" + this.type
+    }
+    deleteIndex(i) {
+        this.colorList = this.colorList.filter((a, index) => {
+            return i != index;
+        })
     }
     addColor(a) {
         if (this.colorListSet.has(a)) {
@@ -31,7 +43,7 @@ class colorSettings {
         }
         this.colorListSet.add(a);
         this.colorList = Array.from(this.colorListSet)
-        let config ={}
+        let config = {}
         config[this.name()] = this.colorList;
         getConfig().save(config)
     }
@@ -65,17 +77,15 @@ export class highlightType {
             }
         }
     }
-    getDefaultColor(type) {
-        return this.getColorList(type)[0]
+    hlSettings(type) {
+        return this.colorSettings[type]
     }
-    getColorList(type) {
-        return this.colorSettings[type].colorList;
-    }
-    addColor(type, color) {
-        this.colorSettings[type].addColor(color);
+    getDefaultColor(type){
+        return this.hlSettings(type).getDefaultColor()
     }
     setColorByIndex(type, index) {
-        let colorlist = this.getColorList(type);
+        let hl = this.hlSettings(type)
+        let colorlist = hl.colorList;
         let enable = true;
         let colorhex = colorlist[index]
         this.setType({ type, enable, colorhex })
