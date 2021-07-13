@@ -1,8 +1,19 @@
 <template>
-  <Tooltip theme="light" :disabled="disabled" width="60px" v-click-outside="clickoutside">
-    <SvgButton name="ios-download" tips="Export" @click="disabled=disabled==false" onOff :on="disabled"/>
+  <Tooltip
+    theme="light"
+    :disabled="disabled"
+    width="60px"
+    v-click-outside="clickoutside"
+  >
+    <SvgButton
+      name="ios-download"
+      tips="Export"
+      @click="disabled = disabled == false"
+      onOff
+      :on="disabled"
+    />
     <ButtonGroup slot="content" vertical>
-      <Button v-for="{ name } in list" :key="name" @click="onOption(name)">{{
+      <Button v-for="name in list" :key="name" @click="onOption(name)">{{
         name
       }}</Button>
     </ButtonGroup>
@@ -14,23 +25,20 @@ import ClickOutside from "vue-click-outside";
 export default {
   name: "Bubbling",
   components: { SvgButton },
-  directives:{ClickOutside},
+  directives: { ClickOutside },
   data() {
     return {
       disabled: true,
-      list: [
-        {
-          name: "json",
-        },
-        {
-          name: "md",
-        },
-        { name: "html" },
-      ],
       expanded: false,
     };
   },
   props: {
+    list: {
+      type: Array,
+      default: () => {
+        return ["json", "md", "html"];
+      },
+    },
     content: {
       type: String,
       default: "btn",
@@ -41,16 +49,15 @@ export default {
     },
   },
   methods: {
-    clickoutside(){
-      this.disabled = true
+    clickoutside() {
+      this.disabled = true;
     },
     onOption(name) {
-      this.disabled = true
+      this.disabled = true;
       if (this.onSelect) {
         this.onSelect(name);
       }
-      if(this.closeButtons)
-      this.closeButtons();
+      if (this.closeButtons) this.closeButtons();
     },
   },
 };

@@ -41,7 +41,7 @@
         theme="light"
         :disabled="disabled"
         :placement="placement"
-        :transfer=true
+        :transfer="true"
         :always="always"
       >
         <Icon :type="icon" size="18"></Icon>
@@ -69,7 +69,7 @@
         placement="left-start"
         :disabled="disabledPopMore"
         class="morebtn"
-        :transfer=true
+        :transfer="true"
       >
         <Icon type="ios-more-outline" @click="onClickMore" size="18"></Icon>
         <ButtonGroup slot="content" vertical>
@@ -91,7 +91,8 @@ var isMobile = require("is-mobile");
 const rgba = require("color-rgba");
 var Colr = require("colr");
 import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
-const copyPasteBoard = require('clipboard-copy')
+import { funDownload } from "./Panel.vue";
+const copyPasteBoard = require("clipboard-copy");
 export default {
   name: "TocOutLine",
   data() {
@@ -106,6 +107,15 @@ export default {
       showiconRight: isMobile() != true,
       list: [
         {
+          name: "导出",
+          click: () => {
+            let { hl } = window;
+            const newLocal=hl.store.Chapter();
+            let md = newLocal.md();
+            funDownload(md,newLocal.label + ".md");
+          },
+        },
+        {
           name: "删除",
           click: () => {
             let { hl } = window;
@@ -119,8 +129,8 @@ export default {
           name: "id",
           click: () => {
             let { id, charpter } = this.notedata;
-            
-            id = getNoteUrl(id,charpter);
+
+            id = getNoteUrl(id, charpter);
             copyPasteBoard(id);
           },
         },

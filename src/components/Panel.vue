@@ -29,6 +29,7 @@
           v-if="collapsed == false && checked"
           :onSelect="onSelect"
           content="Export"
+          :list="explortList"
         />
       </Col>
       <Col>
@@ -67,7 +68,7 @@
         <SvgButton @click="bDrawerOpen = true" name="md-settings" />
       </Col>
       <Col>
-        <Button @click="openNoteBook = !openNoteBook" >
+        <Button @click="openNoteBook = !openNoteBook">
           <Icon type="md-text" color="#42b983" :size="20" />
         </Button>
       </Col>
@@ -212,7 +213,7 @@ import SettingSideBar from "./SettingSideBar";
 import { localidstore, downloadFromCloud, updateBookOnLean } from "../leanweb";
 import FileSaver from "file-saver";
 import { msg } from "./msgbox";
-function funDownload(content, filename) {
+export function funDownload(content, filename) {
   const blob = new Blob([content]);
   FileSaver.saveAs(blob, filename);
   msg("导出", "保存到 " + filename);
@@ -282,6 +283,7 @@ export default {
   },
   data() {
     return {
+      explortList: ["json", "md", "md(css)", "html"],
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
@@ -393,7 +395,9 @@ export default {
       let b = new Book();
       if (name == "md") {
         let md = b.md();
-        // console.log(md);
+        funDownload(md, window.$docsify.name + ".md");
+      } else if (name == "md(css)") {
+        let md = b.md(true);
         funDownload(md, window.$docsify.name + ".md");
       } else if (name == "json") {
         let json = b.jsonstr();

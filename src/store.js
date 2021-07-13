@@ -22,7 +22,7 @@ export class BookToc {
   json() {
     let { name, bookname, userid, st, data } = this;
     let hostname = window.location.hostname
-    return { name, bookname, userid, st, data ,hostname};
+    return { name, bookname, userid, st, data, hostname };
   }
   findChapter(path) {
     let aa = this.charpterTitles();
@@ -197,7 +197,7 @@ class LocalStore {
 
   forceSave(store) {
     const stores = this.storeToJson();
-    if(store)
+    if (store)
       stores.push(store);
     this.jsonToStore(stores);
   }
@@ -262,9 +262,9 @@ class Chapter {
         return { ...hs, ...{ idx, textOffset, label, key, top } }
       });
       let aa = this.children.sort((a, b) => {
-        if(a.textIndex!=undefined&&b.textIndex!=undefined) {
-        if (a.textIndex== b.textIndex) return 0;
-        return a.textIndex> b.textIndex? 1 : -1;
+        if (a.textIndex != undefined && b.textIndex != undefined) {
+          if (a.textIndex == b.textIndex) return 0;
+          return a.textIndex > b.textIndex ? 1 : -1;
         }
         if (a.top == b.top) return 0;
         return a.top > b.top ? 1 : -1;
@@ -315,52 +315,84 @@ class Chapter {
     }
     return `${rootpath}${hash}`
   }
-  md() {
+  tilte() {
+    return this.label
+  }
+  md(css, chapterIndex) {
+    if (chapterIndex == undefined) {
+      chapterIndex = ''
+    }
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
     let index = 0;
     let items = this.children.map((a, idx) => {
       let { label, style, note, imgsrc, tags, id, notshowSeq } = a;
-      tags = tags ? tags.map((tag) => {
+      if (tags) {
+        tags = new Set(tags)
+        tags = Array.from(tags);
+      } else {
+        tags = []
+      }
+      tags = tags.map((tag) => {
         return "`" + `${tag}` + "`"
-      }).join(' ') : ""
-      let hlyellow = ''
-      for (let color in style) {
-        let { enable, colorhex } = style[color];
-        if (enable) {
-          let classname = colorClassList.getClass(color, colorhex);
-          hlyellow = `${hlyellow} ${classname}`
+      }).join('  ')
+      label = label ? label : ""
+      let hlyellow
+      if (css) {
+        hlyellow = ''
+        for (let color in style) {
+          let { enable, colorhex } = style[color];
+          if (enable) {
+            let classname = colorClassList.getClass(color, colorhex);
+            hlyellow = `${hlyellow} ${classname}`
+          }
         }
       }
+      let space = notshowSeq ? '   ' : ''
       if (note) {
-        note = `>${note}`
+        note = `${space}>${note}`
       } else {
         note = ""
       }
-      // let tile = `"${label.substring(0, Math.min(20, label.length))}..."`
-      let img = ''
-      let url = this.url(id);
+      let img
+      let ref = this.url(id);
+      ref = ref ? `<sup>[[${chapterIndex}-${idx}]](${ref})</sup>` : "";
       if (imgsrc) {
         imgsrc = getImgSrcUrl(imgsrc)
         let { path } = parseurl(imgsrc)
-        img = `![${path}](${imgsrc})`
+        img = `${ref}\n![${path}](${imgsrc})`
       }
-      let span = label ? `<span class="${hlyellow}"> ${label}</span>` : "";
+      let content = label ? (hlyellow ? `<span class="${hlyellow}"> ${label}</span>` : label) : "";
+      if (note.length) {
+        content = `<b>${content}</b>`
+      }
+      if (content.length)
+        content = content + ref
+      let title = ''
       if (notshowSeq != true) {
         index++;
-      }
-      let title = `${index}. [^](${url})${tags}${span}`
-      if (notshowSeq) {
-        title = `<span>&#8195;&#8195;</span>[^](${url})${tags}${span}`
-      }
-      let divider
-      if (notshowSeq) {
-        let a = this.children[idx + 1]
-        if (a && a.notshowSeq != true) {
-          divider = '---'
+        let pre = index + '. '
+        pre = '- '
+        if (img) {
+          content = img
+          img = undefined
+        }
+        title = `${pre} ${tags}${content}`
+      } else {
+        if (img) {
+          img = `${space}>${img}`
+        }else{
+          title = `${space}${tags}${content}`
         }
       }
-      return [divider, title, img, note].filter((a) => a && a.length > 0).join('\n')
+      // let divider =""
+      // if (notshowSeq) {
+      //   let a = this.children[idx + 1]
+      //   if (a && a.notshowSeq != true) {
+      //     // divider = '---'
+      //   }
+      // }
+      return [title, img, note].filter((a) => a && a.length > 0).join('\n')
     });
     return title.concat(items).join("\n\n");
   }
@@ -509,14 +541,21 @@ export class Book {
   jsonstr() {
     return JSON.stringify(this.json());
   }
-  md() {
-    let tilte = "# " + window.$docsify.name;
+  md(css = false) {
+    let bookname = window.$docsify.name
+    let tilte = `# ${bookname}`
+    let toc1 = `- [${bookname}](#${bookname})`
+    let toc = this.sortedChapter().map((a) => {
+      a = a.label
+      return `  - [${a}](#${a})`
+    }).join("\n")
 
-    let content = this.sortedChapter().map((a) => {
-      return a.md();
+    toc = toc1 + "\n" + toc;
+    let content = this.sortedChapter().map((a, idx) => {
+      return a.md(css, idx);
     });
-    let styles = "<style>" + colorClassList.str() + "</style>";
-    return [tilte]
+    let styles = css ? ("<style>" + colorClassList.str() + "</style>") : "";
+    return [toc, tilte]
       .concat([styles])
       .concat(content)
       .join("\n\n");
