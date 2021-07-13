@@ -1,6 +1,6 @@
 import Panel from './components/Panel.vue'
 import NoteMenu from './components/NoteMenu.vue'
-import TocNote from './components/TocNote.vue'
+// import TocNote from './components/TocNote.vue'
 import Bubbling from './components/Bubbling.vue'
 import SvgButton from './components/SvgButton.vue'
 import PopSvgButton from './components/PopSvgButton.vue'
@@ -19,7 +19,7 @@ Vue.use(Vue2TouchEvents)
 Vue.use(VueLazyload)
 
 import './iviewLoader'
-let component = { ExportHtml,TocHtml, NoteBookmark, NoteMarker, Panel, BookMarks, NoteMenu, TocNote, Bubbling, SvgButton, PopSvgButton, TocOutLine }
+let component = { ExportHtml,TocHtml, NoteBookmark, NoteMarker, Panel, BookMarks, NoteMenu, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)
 
 // eslint-disable-next-line no-unused-vars
