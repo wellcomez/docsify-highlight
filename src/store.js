@@ -262,6 +262,10 @@ class Chapter {
         return { ...hs, ...{ idx, textOffset, label, key, top } }
       });
       let aa = this.children.sort((a, b) => {
+        if(a.textIndex!=undefined&&b.textIndex!=undefined) {
+        if (a.textIndex== b.textIndex) return 0;
+        return a.textIndex> b.textIndex? 1 : -1;
+        }
         if (a.top == b.top) return 0;
         return a.top > b.top ? 1 : -1;
       });

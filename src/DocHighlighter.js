@@ -97,51 +97,6 @@ export class DocHighlighter {
         mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu, hs }, section)
     };
 
-    repairToc() {
-        let { store } = this;
-        let storeInfos = store.getAll();
-        storeInfos.forEach(
-            ({ hs }) => {
-                try {
-                    let pos = this.getTopElementPosition(hs.id);
-                    hs.pos = pos;
-                    // eslint-disable-next-line no-empty
-                } catch (error) {
-                }
-            }
-        );
-        storeInfos = storeInfos.filter((a) => {
-            let { hs } = a ? a : {};
-            if (hs) {
-                let pa = hs.pos;
-                if (pa) {
-                    return true;
-                }
-            }
-            return false;
-        })
-        let stores = storeInfos.sort((a, b) => {
-            let pa = a.hs.pos;
-            let pb = b.hs.pos
-            if (pa.top == pb.top) {
-                return pa.left > pb.left;
-            }
-            return pa.top > pb.top;
-        })
-        let updated;
-        stores.forEach((a, idx) => {
-            let { hs } = a
-            if (hs.idx != idx) {
-                updated = true;
-            }
-            hs.idx = idx;
-        });
-        if (updated) {
-            Book.updated = true;
-        }
-        store.jsonToStore(storeInfos)
-        return updated
-    }
     procssAllElements(nodeid, cb) {
         const classname = 'docsify-highlighter'
         let node;
@@ -245,6 +200,7 @@ export class DocHighlighter {
 
     constructor() {
         this.$root = document
+        this.innerText = document.querySelector("body").innerText
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
@@ -462,7 +418,7 @@ export class DocHighlighter {
             store = this.store
         }
         store.remove(id);
-        this.repairToc()
+        // this.repairToc()
         this.updatePanel();
     }
     enable(enable) {
@@ -614,7 +570,17 @@ export class DocHighlighter {
         let html = createHtml(tree)
         return { html, tree }
     }
-
+    getTextIndex(noteid) {
+        let index;
+        this.highlighter.getDoms(noteid).forEach((a) => {
+            if (a.innerText) {
+                const newLocal = this.innerText.indexOf(a.innerText);
+                if (newLocal != undefined)
+                    index = Math.min(index == undefined ? 0 : index, newLocal)
+            }
+        })
+        return index
+    }
 
     saveNoteData = (noteid, data) => {
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
@@ -675,6 +641,7 @@ export class DocHighlighter {
                     hs.tags = tags
                     let pos = this.getTopElementPosition(noteid)
                     hs.top = pos;
+                    hs.textIndex = this.getTextIndex(noteid);
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
                     hs.tree = tree
@@ -683,7 +650,7 @@ export class DocHighlighter {
                 })
                 sources2 = sources2.map(hs => ({ hs }));
                 this.store.save(sources2);
-                this.repairToc();
+                // this.repairToc();
             } else {
                 this.store.update({ id: noteid, note, style, tags, bookmark, tree, version })
             }
@@ -815,14 +782,16 @@ export class DocHighlighter {
             ({ hs }) => {
                 let { id } = hs;
                 let top = this.getTopElementPosition(id)
+                let textIndex = this.getTextIndex(id)
                 if (top) {
                     // console.log("update- ", top, hs.text)
-                    store.update({ id, top })
+                    store.update({ id, top, textIndex })
                 }
             });
     }
     load = (loaded) => {
         if (loaded) {
+            this.updateAllPositions();
             let { store, highlighter } = this;
             const storeInfos = store.getAll();
             storeInfos.forEach(
@@ -891,7 +860,33 @@ export class DocHighlighter {
         let el = this.getElement(id);
         if (el == undefined) return
         let pos = this.getPosition(el)
+        let index
+        // var str = "[微笑][微笑][微笑][微笑][微笑][微笑]"
+        // eslint-disable-next-line no-unused-vars
+        let findRexpr = (str, rstr) => {
+            var regstr = new RegExp(rstr, "g");
+            return str.search(regstr)
+        }
         this.procssAllElements(id, (node) => {
+            let { innerText } = node
+            if (innerText && innerText.length) {
+                //            let css = `:contains("${innerText}")`
+                //document.querySelectorAll(css)
+                let a = this.innerText.indexOf(innerText);
+                if (index == undefined) index = a;
+                else if (tail) {
+                    if (a > index) {
+                        el = node
+                        index = a;
+                    }
+                } else {
+                    if (a < index) {
+                        el = node
+                        index = a;
+                    }
+                }
+                return;
+            }
             let p2 = this.getPosition(node)
             let yes = p2.top > pos.top;
             if (tail == false) yes = !yes;

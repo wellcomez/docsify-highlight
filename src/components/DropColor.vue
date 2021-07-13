@@ -1,30 +1,28 @@
 <template>
-  <Badge :count="count" id="badgedrop">
-    <Dropdown class="colorroot" @on-click="onClick" trigger="custom" :visible="open">
-      <DropdownMenu slot="list" class="colordrop-menu">
-        <DropdownItem
-          :name="index"
-          :style="style"
-          v-for="({ style }, index) in colorListStyle"
-          :key="index"
-        ></DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-  </Badge>
+  <!-- <Badge :count="count" id="badgedrop"> -->
+  <Tooltip theme="light" :disabled="open == false" width="60px">
+    <Button size="small">s</Button>
+    <ul slot="content" class="dropcolor">
+      <li :key="index" v-for="({ style }, index) in colorListStyle" :style="style">
+        <Icon type="ios-close" size="large" class="dropcolor-delete"/>
+      </li>
+    </ul>
+  </Tooltip>
+  <!-- </Badge> -->
 </template>
 <script>
-import { Dropdown, DropdownMenu, DropdownItem } from "iview";
+// import { Dropdown, DropdownMenu, DropdownItem } from "iview";
 import { getColorList } from "../utils";
 export default {
   name: "DropColor",
   components: {
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
+    // Dropdown,
+    // DropdownMenu,
+    // DropdownItem,
   },
   data() {
     return {
-      open:false,
+      open: false,
       colorListStyle: [],
       currentIndex: this.selectedIndex,
     };
@@ -32,7 +30,7 @@ export default {
   mounted() {
     this.convert(this.colorList);
     let handleImageClick = () => {
-      this.open = this.open!=true;
+      this.open = this.open != true;
     };
     this.$el.addEventListener("click", handleImageClick);
   },
@@ -82,6 +80,27 @@ export default {
 };
 </script>
 <style >
+.dropcolor-delete{
+  margin-right:2px;
+}
+.dropcolor li {
+  margin: 0;
+  line-height: normal;
+  padding: 7px 16px;
+  clear: both;
+  color: #515a6e;
+  font-size: 12px !important;
+  white-space: nowrap;
+  list-style: none;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+.dropcolor li div {
+  width: 40px;
+}
+.dropcolor-deleteicon {
+  margin-right: 2px;
+}
 .drop-active {
   margin-top: 1px;
   width: 16px;

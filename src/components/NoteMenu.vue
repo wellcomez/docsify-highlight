@@ -37,7 +37,7 @@
             :selectedIndex.sync="selectedSubColor"
             :key="backgroundColorKey"
         /></Col> -->
-        <Col>
+        <Col v-if="showfortxt">
           <div :class="backgroundClass">
             <div class="d1" style="background-color: white">
               <div
