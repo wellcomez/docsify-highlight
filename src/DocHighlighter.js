@@ -576,8 +576,12 @@ export class DocHighlighter {
         this.highlighter.getDoms(noteid).forEach((a) => {
             if (a.innerText) {
                 const newLocal = this.innerText.indexOf(a.innerText);
-                if (newLocal != undefined)
-                    index = Math.min(index == undefined ? 0 : index, newLocal)
+                if (newLocal != undefined){
+                    if(index==undefined){
+                        index = newLocal
+                    }
+                    index = Math.min(newLocal,index)
+                }
             }
         })
         return index
