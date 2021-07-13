@@ -93,7 +93,7 @@
           </Row>
           <TocNotePanel
             v-bind:close="closedetail"
-            v-bind:key="count2"
+            v-bind:countkey="count2"
             :book="book"
             class="tabpanel"
           ></TocNotePanel>

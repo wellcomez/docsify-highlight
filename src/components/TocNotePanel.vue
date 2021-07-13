@@ -34,8 +34,12 @@ export default {
       let ret = this.getBookOutLine(b);
       this.pannel = ret;
     },
+    countkey() {
+      this.pannel = this.getBookOutLine(this.book);
+    },
   },
   props: {
+    countkey: { type: Number, default: undefined },
     close: {
       type: Function,
       default: undefined,

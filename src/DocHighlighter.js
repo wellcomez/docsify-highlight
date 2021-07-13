@@ -652,7 +652,8 @@ export class DocHighlighter {
                 this.store.save(sources2);
                 // this.repairToc();
             } else {
-                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version })
+                let textIndex = this.getTextIndex(noteid);
+                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version,textIndex })
             }
         } else {
             this.removeHighLight(noteid);

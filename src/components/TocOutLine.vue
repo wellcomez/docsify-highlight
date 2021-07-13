@@ -40,8 +40,8 @@
         :max-width="maxWidth"
         theme="light"
         :disabled="disabled"
-        transfer
         :placement="placement"
+        :transfer=true
         :always="always"
       >
         <Icon :type="icon" size="18"></Icon>
@@ -69,6 +69,7 @@
         placement="left-start"
         :disabled="disabledPopMore"
         class="morebtn"
+        :transfer=true
       >
         <Icon type="ios-more-outline" @click="onClickMore" size="18"></Icon>
         <ButtonGroup slot="content" vertical>
