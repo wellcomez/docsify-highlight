@@ -199,9 +199,8 @@ export class DocHighlighter {
 
 
     constructor() {
-        this.$root = document
-        this.innerText =document.querySelector('article').innerText
-        // this.innerText = document.querySelector("body").innerText
+        this.$root = document.querySelector('article')
+        this.innerText = document.querySelector('article').innerText
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
@@ -261,7 +260,7 @@ export class DocHighlighter {
 
                 let ele = e.target
                 let find = false
-                let ssss = document.querySelectorAll('.markdown-section img')
+                let ssss = this.$root.querySelectorAll('.markdown-section img')
                 for (let i = 0; i < ssss.length; i++) {
                     if (ele == ssss[i]) {
                         find = true;
@@ -287,7 +286,7 @@ export class DocHighlighter {
                         let parentTagName = 'img'
                         let parentIndex
                         let textOffset = 0
-                        let imgs = document.querySelectorAll(parentTagName)
+                        let imgs = this.$root.querySelectorAll(parentTagName)
                         for (let i = 0; i < imgs.length; i++) {
                             if (ele == imgs[i]) {
                                 parentIndex = i
@@ -429,6 +428,52 @@ export class DocHighlighter {
         getConfig().save({ on: enable })
         this.turnHighLight(enable);
     }
+    searchInDom(text, trim) {
+        if (this.textNodes == undefined) {
+            let nodeIterator = document.createNodeIterator(
+                this.$root,
+                NodeFilter.SHOW_TEXT,
+                {
+                    // eslint-disable-next-line no-unused-vars
+                    acceptNode(node) {
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                }
+            );
+            let currentNode;
+            currentNode = nodeIterator.nextNode();
+            this.textNodes = []
+            while (currentNode) {
+                let trim = currentNode.wholeText.replace(/\u3000| |\t/g, '')
+                if (trim != "\n") {
+                    let parentElement = currentNode.parentElement
+                    if (parentElement) {
+                        this.textNodes.push({ currentNode, trim, parentElement })
+                    }
+                    // console.log(trim)
+                }
+                currentNode = nodeIterator.nextNode()
+            }
+        }
+        const pars = [];
+        this.textNodes.forEach((n) => {
+            let a = n.trim.indexOf(trim)
+            if (a >= 0) {
+                let { currentNode } = n;
+                let element = currentNode.parentElement
+                if (element) {
+                    let textOffset = element.innerText.indexOf(text)
+                    if (textOffset == -1) {
+                        textOffset = element.innerText.indexOf(trim)
+                    }
+                    pars.push({ element, textOffset, text });
+                }
+            }
+        })
+        if (pars.length)
+            return pars
+        return
+    }
     onCopy(hs) {
         let { text, id } = hs ? hs : {}
         let url = "";
@@ -450,13 +495,14 @@ export class DocHighlighter {
             }
         })
         if (type == "from-store") {
-            this.store.getAll()
             let creatFromStore = (hs) => {
                 let hhs = this.store.geths(hs.id)
                 let { id, style, note, bookmark, tree } = hhs
                 let a = new highlightType(this, hhs)
                 a.showHighlight()
                 let parentNodeId = this.parentNodeId(id)
+                let pos = this.getHSPostion(hs)
+                this.store.update({ ...{ id }, ...pos })
                 if (parentNodeId == undefined) {
                     if (tree == undefined) {
                         tree = this.getHtml(id).tree
@@ -571,20 +617,53 @@ export class DocHighlighter {
         let html = createHtml(tree)
         return { html, tree }
     }
-    getTextIndex(noteid) {
-        let index;
-        this.highlighter.getDoms(noteid).forEach((a) => {
-            if (a.innerText) {
-                const newLocal = this.innerText.indexOf(a.innerText);
-                if (newLocal != undefined){
-                    if(index==undefined){
-                        index = newLocal
-                    }
-                    index = Math.min(newLocal,index)
+    search = (text, ptns) => {
+        let maxlen = 0;
+        ptns.forEach((a) => {
+            maxlen = a.length + maxlen;
+        })
+        let findstr = (str, ptn) => {
+            // let re = new RegExp(ptn, "g")
+            // return [...str.matchAll(re)]
+            let hacker = [];
+            let i = 0;
+            while (~(i = str.indexOf(ptn, i + ptn.length))) hacker.push(i);
+            return hacker.map((a) => {
+                let ret = { index: a }
+                ret[0] = ptn
+                return ret
+            })
+        }
+        let keyResult
+        let allResult = []
+        ptns.forEach((a) => {
+            let r = findstr(text, a)
+            if (r.length == 1) {
+                if (keyResult == undefined) {
+                    keyResult = r[0];
+                } else if (keyResult.index < r[0].index) {
+                    keyResult = r[0];
                 }
             }
+            r.forEach((a) => {
+                allResult.push(a)
+            })
         })
-        return index
+        if (keyResult) {
+            let ret = Math.max(0, keyResult.index - maxlen + keyResult[0].length)
+            // console.log(ptns.join(""), ret)
+            return ret
+        }
+        return
+    }
+    getTextIndex(noteid) {
+        let ptns = this.highlighter.getDoms(noteid).map((a) => {
+            if (a.innerText.length) {
+                return a.innerText
+            }
+            return
+        }).filter((a) => a != undefined)
+        return this.search(this.innerText, ptns)
     }
 
     saveNoteData = (noteid, data) => {
@@ -644,13 +723,11 @@ export class DocHighlighter {
                     })
                     hs.text = text
                     hs.tags = tags
-                    let pos = this.getTopElementPosition(noteid)
-                    hs.top = pos;
-                    hs.textIndex = this.getTextIndex(noteid);
                     hs.csspath = this.getElementCssPath(hs)
                     hs.bookmark = bookmark
                     hs.tree = tree
                     hs.version = version
+                    hs = { ...hs, ...this.getHSPostion(hs) }
                     return hs
                 })
                 sources2 = sources2.map(hs => ({ hs }));
@@ -658,7 +735,7 @@ export class DocHighlighter {
                 // this.repairToc();
             } else {
                 let textIndex = this.getTextIndex(noteid);
-                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version,textIndex })
+                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version, textIndex })
             }
         } else {
             this.removeHighLight(noteid);
@@ -667,6 +744,53 @@ export class DocHighlighter {
         Book.updated = true;
         this.updatePanel();
     };
+    getHSPostion(hs) {
+        let noteid = hs.id
+        let top = this.getTopElementPosition(noteid);
+
+        let textIndex = this.getTextIndex(noteid);
+
+        if (textIndex == undefined) {
+            let ptns = this.getHSText(hs);
+            if (ptns) {
+                textIndex = this.search(this.innerText, ptns)
+            }
+        }
+        if (textIndex == undefined)
+            textIndex = hs.textIndex
+        if (top == undefined) {
+            top = hs.top
+        }
+        return { top, textIndex }
+    }
+
+    getHSText(hs) {
+        let { tree } = hs;
+        const concatchild = (children) => {
+            return children.map((a) => {
+                let { text, children } = a;
+                if (children) {
+                    return concatchild(children);
+                }
+                if (text == undefined || text == null) { return "" }
+                return text;
+            }).join("")
+        }
+        if (tree && tree.nodes) {
+            return tree.nodes.map((a) => {
+                let { text, children } = a;
+                if (children)
+                    return concatchild(children)
+                if (text == undefined || text == null) { return "" }
+                return text;
+            }).filter((a) => {
+                let yes = a && a.length;
+                return yes;
+            });
+        }
+        return undefined;
+    }
+
     addTagBackground(hs, noteid) {
         let { tags, style } = hs
         let need = (tags && tags.length);
@@ -679,27 +803,160 @@ export class DocHighlighter {
             this.highlighter.addClass('highlight-tags', noteid);
         }
     }
+    getMetaElement(meta) {
+        let nodes = this.$root.querySelectorAll(meta.parentTagName)
+        try {
+            nodes[meta.parentIndex]
+        } catch (error) {
+            return
+        }
+    }
+    fixMeta = (hs) => {
+        const { text } = hs
+        let trimstring = (s) => {
+            return s.replace(/\u3000| |\t/g, '');
+        }
+        let textTrimed = trimstring(text)
+        let ptns = this.getHSText(hs);
+        if (ptns == undefined) return
+        let xxx = ptns.map((a) => {
+            let trim = trimstring(a);
+            let textOffset = textTrimed.indexOf(trim);
+            return { value: a, trim, index: textOffset }
+        }).sort((a, b) => {
+            return a.textOffset - b.textOffset;
+        })
+        // let e1 = this.getMetaElement(startMeta)
+        // let e2 = this.getMetaElement(endMeta)
+        // const findTextInElement = (e1, { value, trim }) => {
+        //     if (e1) {
+        //         let t = trimstring(e1.innerText)
+        //         if (e1.innerText.indexOf(value) != -1) return true;
+        //         if (t.indexOf(trim) != -1) return true;
+        //     }
+        //     return
+        // }
+        // if (findTextInElement(e1, ptns[0]) && findTextInElement(e2, ptns[ptns.length - 1])) {
+        //     return hs;
+        // }
+        let beginTag = trimstring(xxx[0].value)
+        let endTag = trimstring(xxx[xxx.length - 1].value)
+        console.log(beginTag, endTag)
+        let searchResult = xxx.map((a) => {
+            let { value, trim } = a
+            return this.searchInDom(value, trim)
+        })
 
+
+        let node1 = searchResult[0];
+        let node2 = searchResult[searchResult.length - 1];
+
+        if (node1 == undefined || node1.length > 1 || node2 == undefined || node2.length > 1) {
+            let begin, end;
+            searchResult.forEach((a, idx) => {
+                if (a.length == 1) {
+                    if (begin == undefined) {
+                        begin = idx
+                    }
+                    end = idx;
+                }
+            })
+            if (begin != undefined) {
+                let node = searchResult[begin][0]
+                for (let i = begin - 1; i >= 0; i--) {
+                    let prev = searchResult[i].filter((a) => {
+                        let { element } = a;
+                        if (element == node.element) return true;
+                        let ret = node.element.compareDocumentPosition(element)
+                        if (ret & (Node.DOCUMENT_POSITION_PRECEDING + Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+                            return true;
+                        }
+                    })
+                    prev = prev.sort((a, b) => {
+                        let ret = a.element.compareDocumentPosition(b.element)
+                        if (ret & Node.DOCUMENT_POSITION_FOLLOWING) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    })
+                    node = prev[prev.length - 1]
+                    searchResult[i] = [node]
+                }
+                // console.log('begin', node, node.element.innerText);
+                node1 = node
+            }
+            if (end != undefined) {
+                let node = searchResult[end][0]
+                for (let i = end + 1; i < searchResult.length; i++) {
+                    let prev = searchResult[i].filter((a) => {
+                        let { element } = a;
+                        if (element == node.element) return true;
+                        let ret = node.element.compareDocumentPosition(element)
+                        if (ret & Node.DOCUMENT_POSITION_FOLLOWING + Node.DOCUMENT_POSITION_CONTAINED_BY) {
+                            return true;
+                        }
+                    })
+                    prev = prev.sort((a, b) => {
+                        let ret = a.element.compareDocumentPosition(b.element)
+                        if (ret & (Node.DOCUMENT_POSITION_FOLLOWING)) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+
+                    })[0];
+                    node = prev;
+                    searchResult[i] = [node]
+                    // console.log(prev);
+                }
+                // console.log('end', node, node.element.innerText);
+                node2 = node
+            }
+        } else {
+            node1 = node1[0]
+            node2 = node2[0]
+        }
+        let dom2meta = (e) => {
+            let { element, textOffset } = e
+            let parentTagName = element.tagName
+            let { parentIndex } = this.getParentIndex({ parentTagName }, element)
+            let startMeta = { parentTagName, parentIndex, textOffset }
+            return startMeta
+        }
+
+        if (node1 && node2) {
+            let startMeta = dom2meta(node1)
+            let endMeta = dom2meta(node2)
+            let { text } = searchResult[searchResult.length - 1][0]
+            endMeta.textOffset = text.length
+            return { ...hs, ...{ startMeta, endMeta } }
+        }
+    }
+    getParentIndex = (endMeta, node) => {
+        let { parentTagName, parentIndex } = endMeta
+        let nn = this.$root.querySelectorAll(parentTagName)
+        for (let i = 0; i < nn.length; i++) {
+            let x = nn[i]
+            if (node == x) {
+                parentIndex = i;
+                return { parentIndex }
+            }
+        }
+        return {}
+    }
     replacementHS(hs) {
+
         let { startMeta, endMeta, text, csspath } = hs;
         if (csspath == undefined) {
             csspath = {}
         }
+
+
+
         let begin = startMeta.textOffset;
         let end = endMeta.textOffset;
-        let nodes = document.querySelectorAll(startMeta.parentTagName)
-        let getParentIndex = (endMeta, node) => {
-            let { parentTagName, parentIndex } = endMeta
-            let nn = this.$root.querySelectorAll(parentTagName)
-            for (let i = 0; i < nn.length; i++) {
-                let x = nn[i]
-                if (node == x) {
-                    parentIndex = i;
-                    return { parentIndex }
-                }
-            }
-            return {}
-        }
+        let nodes = this.$root.querySelectorAll(startMeta.parentTagName)
         for (let idx = 0; idx < nodes.length; idx++) {
             let node = nodes[idx]
             let { innerText } = node;
@@ -734,7 +991,7 @@ export class DocHighlighter {
             } else {
                 if (endMeta.parentTagName == startMeta.parentTagName) {
                     let index = startMeta.parentIndex
-                    startMeta = { ...startMeta, ...getParentIndex(node) }
+                    startMeta = { ...startMeta, ...this.getParentIndex(node) }
                     let { parentIndex } = endMeta;
                     parentIndex = parentIndex + index - startMeta.parentIndex
                     endMeta = { ...endMeta, ...{ parentIndex } }
@@ -754,8 +1011,8 @@ export class DocHighlighter {
             }
             if (endElement) {
 
-                endMeta = { ...endMeta, ...getParentIndex(endMeta, endElement) }
-                startMeta = { ...startMeta, ...getParentIndex(startMeta, node) }
+                endMeta = { ...endMeta, ...this.getParentIndex(endMeta, endElement) }
+                startMeta = { ...startMeta, ...this.getParentIndex(startMeta, node) }
                 // console.log('find end')
                 return { ...hs, ...{ startMeta, endMeta } }
             } else {
@@ -774,6 +1031,14 @@ export class DocHighlighter {
             }
         }
         if (hs.startMeta.parentTagName != 'img') {
+            try {
+                let xxx = this.fixMeta(hs)
+                if (xxx) {
+                    return xxx
+                }
+            } catch (error) {
+                console.error(error)
+            }
             console.warn('not find ', hs)
         }
         return hs
@@ -787,12 +1052,8 @@ export class DocHighlighter {
         storeInfos.forEach(
             ({ hs }) => {
                 let { id } = hs;
-                let top = this.getTopElementPosition(id)
-                let textIndex = this.getTextIndex(id)
-                if (top) {
-                    // console.log("update- ", top, hs.text)
-                    store.update({ id, top, textIndex })
-                }
+                let pos = this.getHSPostion(hs)
+                store.update({ ...{ id }, ...pos })
             });
     }
     load = (loaded) => {
@@ -815,14 +1076,14 @@ export class DocHighlighter {
                     if (hs.imgsrc) {
                         let { startMeta, id, note } = hs;
                         let { parentTagName, parentIndex } = startMeta
-                        let ele = document.querySelectorAll(parentTagName)[parentIndex]
+                        let ele = this.$root.querySelectorAll(parentTagName)[parentIndex]
                         if (ele) {
                             let ok = true;
                             let imgsrc = getEleSrc(ele);
                             if (imgsrc == hs.imgsrc) {
                                 ok = true;
                             } else {
-                                let images = document.querySelectorAll(parentTagName);
+                                let images = this.$root.querySelectorAll(parentTagName);
                                 for (let i = 0; i < images.length; i++) {
                                     let e = images[i];
                                     if (getEleSrc(ele) == hs.imgsrc) {
@@ -876,8 +1137,6 @@ export class DocHighlighter {
         this.procssAllElements(id, (node) => {
             let { innerText } = node
             if (innerText && innerText.length) {
-                //            let css = `:contains("${innerText}")`
-                //document.querySelectorAll(css)
                 let a = this.innerText.indexOf(innerText);
                 if (index == undefined) index = a;
                 else if (tail) {
@@ -954,7 +1213,7 @@ export class DocHighlighter {
         function getEle(startMeta) {
             try {
                 let { parentIndex, parentTagName } = startMeta
-                let ele = document.querySelectorAll(parentTagName)[parentIndex]
+                let ele = this.$root.querySelectorAll(parentTagName)[parentIndex]
                 return ele
             } catch (error) {
                 return

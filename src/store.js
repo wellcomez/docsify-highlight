@@ -250,24 +250,22 @@ class Chapter {
       let { key } = store;
       this.children = store.getAll().map(({ hs }, idx) => {
         // let { id, text: label, top, style, note, tags } = hs;
-        let { text: label, top, tags } = hs;
-        top = top.top;
+        let { text: label, tags } = hs;
         let textOffset = hs.startMeta.textOffset;
-        // return { idx, id, label, key, textOffset, top, style, note, tags };
         if (tags) {
           tags.forEach((a) => {
             this.tags.add(a)
           })
         }
-        return { ...hs, ...{ idx, textOffset, label, key, top } }
+        return { ...hs, ...{ idx, textOffset, label, key } }
       });
       let aa = this.children.sort((a, b) => {
         if (a.textIndex != undefined && b.textIndex != undefined) {
-          if (a.textIndex == b.textIndex) return 0;
-          return a.textIndex > b.textIndex ? 1 : -1;
+          return a.textIndex - b.textIndex;
         }
-        if (a.top == b.top) return 0;
-        return a.top > b.top ? 1 : -1;
+        if (a.top != undefined && b.top != undefined)
+          return a.top.top - b.top.top ? 1 : -1;
+        return -1
       });
       this.children = aa;
       this.store = store;
@@ -381,7 +379,7 @@ class Chapter {
       } else {
         if (img) {
           img = `${space}>${img}`
-        }else{
+        } else {
           title = `${space}${tags}${content}`
         }
       }
