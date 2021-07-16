@@ -744,8 +744,7 @@ export class DocHighlighter {
     }
 
     replacementHS(hs) {
-        this.hsPlacement.replacementHS(hs)
-        return hs
+        return this.hsPlacement.replacementHS(hs)
     }
     checkHS(hs) {
         return this.replacementHS(hs)

@@ -2,6 +2,54 @@ import { UTILS } from './css_path'
 let trimstring = (s) => {
     return s.replace(/\u3000| |\t/g, '');
 }
+function longestCommonSubstring(str1, str2) {
+    if (!str1 || !str2) {
+        return {
+            length: 0,
+            sequence: '',
+            offset: 0
+        }
+    }
+
+    var sequence = ''
+    var str1Length = str1.length
+    var str2Length = str2.length
+    var num = new Array(str1Length)
+    var maxlen = 0
+    var lastSubsBegin = 0
+
+    for (var i = 0; i < str1Length; i++) {
+        var subArray = new Array(str2Length)
+        for (var j = 0; j < str2Length; j++) { subArray[j] = 0 }
+        num[i] = subArray
+    }
+    var thisSubsBegin = null
+    for (i = 0; i < str1Length; i++) {
+        for (j = 0; j < str2Length; j++) {
+            if (str1[i] !== str2[j]) { num[i][j] = 0 } else {
+                if ((i === 0) || (j === 0)) { num[i][j] = 1 } else { num[i][j] = 1 + num[i - 1][j - 1] }
+
+                if (num[i][j] > maxlen) {
+                    maxlen = num[i][j]
+                    thisSubsBegin = i - num[i][j] + 1
+                    if (lastSubsBegin === thisSubsBegin) { // if the current LCS is the same as the last time this block ran
+                        sequence += str1[i]
+                    } else { // this block resets the string builder if a different LCS is found
+                        lastSubsBegin = thisSubsBegin
+                        sequence = '' // clear it
+                        sequence += str1.substr(lastSubsBegin, (i + 1) - lastSubsBegin)
+                    }
+                }
+            }
+        }
+    }
+    return {
+        length: maxlen,
+        sequence: sequence,
+        offset: thisSubsBegin
+    }
+}
+
 export let getHSText = (hs) => {
     let { tree } = hs;
     const concatchild = (children) => {
@@ -104,52 +152,52 @@ export class hlPlacement {
             return
         }
     }
-    searchInDom(text, trim) {
-        if (this.textNodes == undefined) {
-            let nodeIterator = document.createNodeIterator(
-                this.$root,
-                NodeFilter.SHOW_TEXT,
-                {
-                    // eslint-disable-next-line no-unused-vars
-                    acceptNode(node) {
-                        return NodeFilter.FILTER_ACCEPT;
-                    }
-                }
-            );
-            let currentNode;
-            currentNode = nodeIterator.nextNode();
-            this.textNodes = []
-            while (currentNode) {
-                let trim = currentNode.wholeText.replace(/\u3000| |\t/g, '')
-                if (trim != "\n") {
-                    let parentElement = currentNode.parentElement
-                    if (parentElement) {
-                        this.textNodes.push({ currentNode, trim, parentElement })
-                    }
-                    // console.log(trim)
-                }
-                currentNode = nodeIterator.nextNode()
-            }
-        }
-        const pars = [];
-        this.textNodes.forEach((n) => {
-            let a = n.trim.indexOf(trim)
-            if (a >= 0) {
-                let { currentNode } = n;
-                let element = currentNode.parentElement
-                if (element) {
-                    let textOffset = element.innerText.indexOf(text)
-                    if (textOffset == -1) {
-                        textOffset = element.innerText.indexOf(trim)
-                    }
-                    pars.push({ element, textOffset, text });
-                }
-            }
-        })
-        if (pars.length)
-            return pars
-        return
-    }
+    // searchInDom(text, trim) {
+    //     if (this.textNodes == undefined) {
+    //         let nodeIterator = document.createNodeIterator(
+    //             this.$root,
+    //             NodeFilter.SHOW_TEXT,
+    //             {
+    //                 // eslint-disable-next-line no-unused-vars
+    //                 acceptNode(node) {
+    //                     return NodeFilter.FILTER_ACCEPT;
+    //                 }
+    //             }
+    //         );
+    //         let currentNode;
+    //         currentNode = nodeIterator.nextNode();
+    //         this.textNodes = []
+    //         while (currentNode) {
+    //             let trim = currentNode.wholeText.replace(/\u3000| |\t/g, '')
+    //             if (trim != "\n") {
+    //                 let parentElement = currentNode.parentElement
+    //                 if (parentElement) {
+    //                     this.textNodes.push({ currentNode, trim, parentElement })
+    //                 }
+    //                 // console.log(trim)
+    //             }
+    //             currentNode = nodeIterator.nextNode()
+    //         }
+    //     }
+    //     const pars = [];
+    //     this.textNodes.forEach((n) => {
+    //         let a = n.trim.indexOf(trim)
+    //         if (a >= 0) {
+    //             let { currentNode } = n;
+    //             let element = currentNode.parentElement
+    //             if (element) {
+    //                 let textOffset = element.innerText.indexOf(text)
+    //                 if (textOffset == -1) {
+    //                     textOffset = element.innerText.indexOf(trim)
+    //                 }
+    //                 pars.push({ element, textOffset, text });
+    //             }
+    //         }
+    //     })
+    //     if (pars.length)
+    //         return pars
+    //     return
+    // }
     hsNodetree(id, hs) {
         let csspath = this.getElementCssPath(hs)
         let { startMeta, endMeta } = hs ? hs : {}
@@ -175,7 +223,7 @@ export class hlPlacement {
             if (b.parentTagName == "article".toUpperCase()) {
                 continue
             }
-            if (c.parentIndex == b.parentIndex && c.parentTagName == b.parentTagName) {
+            if (sameNodeTreeElement(c, b)) {
                 continue
             }
             a.push(b)
@@ -191,125 +239,125 @@ export class hlPlacement {
         }
         return { nodetree, ...csspath };
     }
-    fixMeta = (hs) => {
-        const { text } = hs
-        let textTrimed = trimstring(text)
-        let ptns = getHSText(hs);
-        if (ptns == undefined) return
-        let xxx = ptns.map((a) => {
-            let trim = trimstring(a);
-            let textOffset = textTrimed.indexOf(trim);
-            return { value: a, trim, index: textOffset }
-        }).sort((a, b) => {
-            return a.textOffset - b.textOffset;
-        })
-        // let e1 = this.getMetaElement(startMeta)
-        // let e2 = this.getMetaElement(endMeta)
-        // const findTextInElement = (e1, { value, trim }) => {
-        //     if (e1) {
-        //         let t = trimstring(e1.innerText)
-        //         if (e1.innerText.indexOf(value) != -1) return true;
-        //         if (t.indexOf(trim) != -1) return true;
-        //     }
-        //     return
-        // }
-        // if (findTextInElement(e1, ptns[0]) && findTextInElement(e2, ptns[ptns.length - 1])) {
-        //     return hs;
-        // }
-        let beginTag = trimstring(xxx[0].value)
-        let endTag = trimstring(xxx[xxx.length - 1].value)
-        console.log(beginTag, endTag)
-        let searchResult = xxx.map((a) => {
-            let { value, trim } = a
-            return this.searchInDom(value, trim)
-        })
+    // fixMeta = (hs) => {
+    //     const { text } = hs
+    //     let textTrimed = trimstring(text)
+    //     let ptns = getHSText(hs);
+    //     if (ptns == undefined) return
+    //     let xxx = ptns.map((a) => {
+    //         let trim = trimstring(a);
+    //         let textOffset = textTrimed.indexOf(trim);
+    //         return { value: a, trim, index: textOffset }
+    //     }).sort((a, b) => {
+    //         return a.textOffset - b.textOffset;
+    //     })
+    //     // let e1 = this.getMetaElement(startMeta)
+    //     // let e2 = this.getMetaElement(endMeta)
+    //     // const findTextInElement = (e1, { value, trim }) => {
+    //     //     if (e1) {
+    //     //         let t = trimstring(e1.innerText)
+    //     //         if (e1.innerText.indexOf(value) != -1) return true;
+    //     //         if (t.indexOf(trim) != -1) return true;
+    //     //     }
+    //     //     return
+    //     // }
+    //     // if (findTextInElement(e1, ptns[0]) && findTextInElement(e2, ptns[ptns.length - 1])) {
+    //     //     return hs;
+    //     // }
+    //     let beginTag = trimstring(xxx[0].value)
+    //     let endTag = trimstring(xxx[xxx.length - 1].value)
+    //     console.log(beginTag, endTag)
+    //     let searchResult = xxx.map((a) => {
+    //         let { value, trim } = a
+    //         return this.searchInDom(value, trim)
+    //     })
 
 
-        let node1 = searchResult[0];
-        let node2 = searchResult[searchResult.length - 1];
+    //     let node1 = searchResult[0];
+    //     let node2 = searchResult[searchResult.length - 1];
 
-        if (node1 == undefined || node1.length > 1 || node2 == undefined || node2.length > 1) {
-            let begin, end;
-            searchResult.forEach((a, idx) => {
-                if (a.length == 1) {
-                    if (begin == undefined) {
-                        begin = idx
-                    }
-                    end = idx;
-                }
-            })
-            if (begin != undefined) {
-                let node = searchResult[begin][0]
-                for (let i = begin - 1; i >= 0; i--) {
-                    let prev = searchResult[i].filter((a) => {
-                        let { element } = a;
-                        if (element == node.element) return true;
-                        let ret = node.element.compareDocumentPosition(element)
-                        if (ret & (Node.DOCUMENT_POSITION_PRECEDING + Node.DOCUMENT_POSITION_CONTAINED_BY)) {
-                            return true;
-                        }
-                    })
-                    prev = prev.sort((a, b) => {
-                        let ret = a.element.compareDocumentPosition(b.element)
-                        if (ret & Node.DOCUMENT_POSITION_FOLLOWING) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    })
-                    node = prev[prev.length - 1]
-                    searchResult[i] = [node]
-                }
-                // console.log('begin', node, node.element.innerText);
-                node1 = node
-            }
-            if (end != undefined) {
-                let node = searchResult[end][0]
-                for (let i = end + 1; i < searchResult.length; i++) {
-                    let prev = searchResult[i].filter((a) => {
-                        let { element } = a;
-                        if (element == node.element) return true;
-                        let ret = node.element.compareDocumentPosition(element)
-                        if (ret & Node.DOCUMENT_POSITION_FOLLOWING + Node.DOCUMENT_POSITION_CONTAINED_BY) {
-                            return true;
-                        }
-                    })
-                    prev = prev.sort((a, b) => {
-                        let ret = a.element.compareDocumentPosition(b.element)
-                        if (ret & (Node.DOCUMENT_POSITION_FOLLOWING)) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
+    //     if (node1 == undefined || node1.length > 1 || node2 == undefined || node2.length > 1) {
+    //         let begin, end;
+    //         searchResult.forEach((a, idx) => {
+    //             if (a.length == 1) {
+    //                 if (begin == undefined) {
+    //                     begin = idx
+    //                 }
+    //                 end = idx;
+    //             }
+    //         })
+    //         if (begin != undefined) {
+    //             let node = searchResult[begin][0]
+    //             for (let i = begin - 1; i >= 0; i--) {
+    //                 let prev = searchResult[i].filter((a) => {
+    //                     let { element } = a;
+    //                     if (element == node.element) return true;
+    //                     let ret = node.element.compareDocumentPosition(element)
+    //                     if (ret & (Node.DOCUMENT_POSITION_PRECEDING + Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+    //                         return true;
+    //                     }
+    //                 })
+    //                 prev = prev.sort((a, b) => {
+    //                     let ret = a.element.compareDocumentPosition(b.element)
+    //                     if (ret & Node.DOCUMENT_POSITION_FOLLOWING) {
+    //                         return -1;
+    //                     } else {
+    //                         return 1;
+    //                     }
+    //                 })
+    //                 node = prev[prev.length - 1]
+    //                 searchResult[i] = [node]
+    //             }
+    //             // console.log('begin', node, node.element.innerText);
+    //             node1 = node
+    //         }
+    //         if (end != undefined) {
+    //             let node = searchResult[end][0]
+    //             for (let i = end + 1; i < searchResult.length; i++) {
+    //                 let prev = searchResult[i].filter((a) => {
+    //                     let { element } = a;
+    //                     if (element == node.element) return true;
+    //                     let ret = node.element.compareDocumentPosition(element)
+    //                     if (ret & Node.DOCUMENT_POSITION_FOLLOWING + Node.DOCUMENT_POSITION_CONTAINED_BY) {
+    //                         return true;
+    //                     }
+    //                 })
+    //                 prev = prev.sort((a, b) => {
+    //                     let ret = a.element.compareDocumentPosition(b.element)
+    //                     if (ret & (Node.DOCUMENT_POSITION_FOLLOWING)) {
+    //                         return -1;
+    //                     } else {
+    //                         return 1;
+    //                     }
 
-                    })[0];
-                    node = prev;
-                    searchResult[i] = [node]
-                    // console.log(prev);
-                }
-                // console.log('end', node, node.element.innerText);
-                node2 = node
-            }
-        } else {
-            node1 = node1[0]
-            node2 = node2[0]
-        }
-        let dom2meta = (e) => {
-            let { element, textOffset } = e
-            let parentTagName = element.tagName
-            let { parentIndex } = this.getParentIndex({ parentTagName }, element)
-            let startMeta = { parentTagName, parentIndex, textOffset }
-            return startMeta
-        }
+    //                 })[0];
+    //                 node = prev;
+    //                 searchResult[i] = [node]
+    //                 // console.log(prev);
+    //             }
+    //             // console.log('end', node, node.element.innerText);
+    //             node2 = node
+    //         }
+    //     } else {
+    //         node1 = node1[0]
+    //         node2 = node2[0]
+    //     }
+    //     let dom2meta = (e) => {
+    //         let { element, textOffset } = e
+    //         let parentTagName = element.tagName
+    //         let { parentIndex } = this.getParentIndex({ parentTagName }, element)
+    //         let startMeta = { parentTagName, parentIndex, textOffset }
+    //         return startMeta
+    //     }
 
-        if (node1 && node2) {
-            let startMeta = dom2meta(node1)
-            let endMeta = dom2meta(node2)
-            let { text } = searchResult[searchResult.length - 1][0]
-            endMeta.textOffset = text.length
-            return { ...hs, ...{ startMeta, endMeta } }
-        }
-    }
+    //     if (node1 && node2) {
+    //         let startMeta = dom2meta(node1)
+    //         let endMeta = dom2meta(node2)
+    //         let { text } = searchResult[searchResult.length - 1][0]
+    //         endMeta.textOffset = text.length
+    //         return { ...hs, ...{ startMeta, endMeta } }
+    //     }
+    // }
     getParentIndex = (endMeta, node) => {
         let { parentTagName, parentIndex } = endMeta
         let nn = this.$root.querySelectorAll(parentTagName)
@@ -324,9 +372,15 @@ export class hlPlacement {
     }
     convertDom2Nodetree(a) {
         let element = a;
-        let { innerText } = a;
+        let { innerText, nodeType, wholeText } = a;
+        if (innerText == undefined) {
+            innerText = wholeText
+            if (innerText) {
+                innerText = innerText.replaceAll("\n", '')
+            }
+        }
         let parentTagName = a.tagName;
-        if (a.tagName == 'I') {
+        if (a.tagName == 'I' || nodeType == 3) {
             element = a.parentElement;
             parentTagName = element.tagName;
         }
@@ -334,7 +388,7 @@ export class hlPlacement {
         if ((id && id.length) == false) {
             id = undefined;
         }
-        let { parentIndex } = this.getParentIndex({ parentTagName }, element);
+        let { parentIndex } = parentTagName ? this.getParentIndex({ parentTagName }, element) : {};
         let textOffset = element.innerText.indexOf(innerText);
         return { parentTagName, parentIndex, innerText, id, textOffset };
     }
@@ -432,7 +486,7 @@ export class hlPlacement {
 
             let result = [nodetree[0]]
             for (let i = 1, len = nodetree.length; i < len; i++) {
-                (nodetree[i].parentIndex !== nodetree[i - 1].parentIndex || nodetree[i].parentTagName !== nodetree[i - 1].parentTagName) && result.push(nodetree[i])
+                sameNodeTreeElement(nodetree[i], nodetree[i-1])==false&& result.push(nodetree[i])
             }
             nodetree = result.filter((a) => a.innerText && a.innerText.length)
             let text = trimstring(hs.text)
@@ -521,41 +575,41 @@ export class hlPlacement {
 
 
     fix(hs) {
-        let { startMeta, endMeta } = hs
-        this.replacementHS3(hs);
+        // let { startMeta, endMeta } = hs
+        // this.replacementHS3(hs);
         this.replacementHS(hs)
-        let { tree } = rebuildTree(hs.tree)
-        this.searchByNodetree({ nodetree: tree, startMeta, endMeta })
-        let all = this.hl.allhs().map(({ hs }) => {
-            let { text, tree, id } = hs
-            return { text, tree, id, trim: trimstring(text) }
-        })
-        let findhs = (text) => {
-            let trim = trimstring(text)
-            let ret = new Set()
-            all.forEach((hs) => {
-                if (trim == hs.trim) return true;
-                if (hs.trim.indexOf(trim) != -1) {
-                    ret.add(hs.id)
-                }
-            })
-            return Array.from(ret)
-        }
-        let check2 = (a) => {
-            let { children, innerText } = a
-            if (children && children.length) {
-                children.forEach(child => {
-                    check2(child)
-                })
-                return
-            }
-            let ret = findhs(innerText)
-            return ret
+        // let { tree } = rebuildTree(hs.tree)
+        // this.searchByNodetree({ nodetree: tree, startMeta, endMeta })
+        // let all = this.hl.allhs().map(({ hs }) => {
+        //     let { text, tree, id } = hs
+        //     return { text, tree, id, trim: trimstring(text) }
+        // })
+        // let findhs = (text) => {
+        //     let trim = trimstring(text)
+        //     let ret = new Set()
+        //     all.forEach((hs) => {
+        //         if (trim == hs.trim) return true;
+        //         if (hs.trim.indexOf(trim) != -1) {
+        //             ret.add(hs.id)
+        //         }
+        //     })
+        //     return Array.from(ret)
+        // }
+        // let check2 = (a) => {
+        //     let { children, innerText } = a
+        //     if (children && children.length) {
+        //         children.forEach(child => {
+        //             check2(child)
+        //         })
+        //         return
+        //     }
+        //     let ret = findhs(innerText)
+        //     return ret
 
-        }
-        tree.forEach((a) => {
-            check2(a)
-        })
+        // }
+        // tree.forEach((a) => {
+        //     check2(a)
+        // })
     }
     replacementHS(hs) {
         let { csspath, imgsrc } = hs;
@@ -573,7 +627,8 @@ export class hlPlacement {
         if (ret) {
             return { ...hs, ...ret }
         }
-        console.warn('not find ' + hs.id + '   ' + hs.text, hs)
+        if(this.hl.store.title==hs.title)
+            console.warn('not find ' + hs.id + '   ' + hs.text, hs)
         return hs
     }
     isOneElement(hs) {
@@ -581,6 +636,91 @@ export class hlPlacement {
         if (startMeta.parentTagName != endMeta.parentTagName) return false;
         if (startMeta.parentIndex != endMeta.parentIndex) return false;
         return true;
+    }
+
+
+
+    filterText(node, cls = 'hl-ignored') {
+        let ret = node.innerText
+        let a = node.querySelectorAll('.' + cls)
+        for (let i = 0; i < a.length; i++) {
+            let c = a[i]
+            ret = ret.replaceAll(c.innerText, '')
+        }
+        return ret
+    }
+    cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
+    checkParent = (parentElement, text) => {
+        let begin, end, next = 0, endMeta, startMeta;
+        let nodetree = []
+        let nodec
+        if (this.cancheck(parentElement)) {
+            let { children } = parentElement
+            let ccc = [parentElement.firstChild]
+            let nextElement = ccc[0].nextSibling
+            while (nextElement) {
+                ccc.push(nextElement)
+                nextElement = nextElement.nextSibling
+            }
+            children = ccc
+
+            if (children.length == 0) {
+                children = [parentElement]
+            }
+            for (let j = 0; j < children.length; j++) {
+                nodec = undefined
+                let c = children[j]
+                if (c.classList && c.classList.contains('hl-ignored')) {
+                    // continue
+                }
+                nodec = this.convertDom2Nodetree(c)
+                nodetree.push(nodec)
+                let t = trimstring(nodec.innerText)
+                if (t.length == 0) continue
+                let index = text.substring(next).indexOf(t) + next
+                if (index != -1) {
+                    if (begin == undefined) {
+                        begin = index
+                        startMeta = { ...nodec }
+                    }
+                    if (end != undefined) {
+                        if (next != index) {
+                            begin=undefined, end=undefined, endMeta=undefined, startMeta=undefined
+                            continue
+                        }
+                    }
+                    end = index + t.length - 1
+                    next = end + 1
+                    if (next == text.length) {
+                        endMeta = { ...nodec }
+                        break
+                    }
+                } else if (end != undefined) {
+                    text = text.substring(next)
+                    if (t.indexOf(text) == 0) {
+                        endMeta = { ...nodec }
+                        endMeta.textOffset = t.length
+                    }
+                    break;
+                } else {
+                    if (begin == undefined) {
+                        let lcs = longestCommonSubstring(t, text)
+                        // { length: 9, sequence: ' common s', offset: 7 }
+                        let { sequence } = lcs
+                        if (sequence) {
+                            begin = text.indexOf(sequence)
+                        }
+                        if (begin != -1) {
+                            end = sequence.length - 1
+                            startMeta = { ...nodec, textOffset: begin }
+                            endMeta = { ...nodec, textOffset: end }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        return { begin, end, endMeta, startMeta, nodetree }
     }
     replacementHS3(hs) {
         let { endMeta } = hs;
@@ -593,52 +733,7 @@ export class hlPlacement {
             this.queryNodes[meta.parentTagName] = nodes
         }
         let isOneElement = this.isOneElement(hs)
-        const checkParent = (parentElement, text) => {
-            let begin, end, endMeta, startMeta;
-            let nodetree = []
-            let nodec
-            if (parentElement && parentElement.tagName != "article".toUpperCase()) {
-                let { children } = parentElement
-                for (let j = 0; j < children.length; j++) {
-                    nodec = undefined
-                    let c = children[j]
-                    if (c.classList.contains('hl-ignored')) {
-                        continue
-                    }
-                    nodec = this.convertDom2Nodetree(c)
-                    nodetree.push(nodec)
-                    let t = trimstring(nodec.innerText)
-                    if (t.length == 0) continue
-                    let index = text.indexOf(t)
-                    if (index != -1) {
-                        if (begin == undefined) {
-                            begin = index
-                            startMeta = { ...nodec }
-                        }
-                        if (end != undefined) {
-                            if (end + 1 != index) {
-                                break
-                            }
-                        }
-                        end = index + t.length - 1
-                        if (end + 1 == text.length) {
-                            endMeta = { ...nodec }
-                            break
-                        }
-                    } else if (end != undefined) {
-                        text = text.substring(end + 1)
-                        if (t.indexOf(text) == 0) {
-                            endMeta = { ...nodec }
-                            endMeta.textOffset = t.length
-                        }
-                        break;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            return { begin, end, endMeta, startMeta, nodetree }
-        }
+
         let rc;
         for (let i = 0; i < nodes.length; i++) {
             let el = nodes[i]
@@ -647,6 +742,16 @@ export class hlPlacement {
             if (yes == false) { continue }
             let includeT
             let include = el.innerText.indexOf(prefix) != -1
+            if (include == false) {
+                if (el.tagName.toUpperCase() == 'P' && el.querySelector(".hl-ignored")) {
+                    let { filterText } = el
+                    if (filterText == undefined) {
+                        filterText = trimstring(this.filterText(el))
+                        el.filterText = filterText
+                    }
+                    include = filterText.indexOf(prefixTrim) != -1;
+                }
+            }
             if (include == false) {
                 let { innerTextTrim } = el
                 if (innerTextTrim == undefined) {
@@ -668,15 +773,16 @@ export class hlPlacement {
                     continue
                 }
                 let text = trimstring(hs.text)
-                let { begin, endMeta, startMeta } = checkParent(el.parentElement, text)
+                let parent = el.parentElement
+                parent = this.cancheck(parent) ? parent : el
+                let { begin, endMeta, startMeta } = this.checkParent(parent, text)
                 if (endMeta && startMeta) {
                     return { startMeta, endMeta }
                 }
-                let parent = el.parentElement
                 while (begin > 0) {
                     parent = parent.previousElementSibling
                     text = text.substring(0, begin)
-                    let a = checkParent(parent, text)
+                    let a = this.checkParent(parent, text)
                     begin = a.begin
                     startMeta = a.startMeta
                     if (startMeta) {
@@ -768,7 +874,6 @@ export class hlPlacement {
             }
         }
         if (hs.startMeta.parentTagName != 'img') {
-            // try {
             //     let xxx = this.fixMeta(hs)
             //     if (xxx) {
             //         return xxx
@@ -781,125 +886,125 @@ export class hlPlacement {
         return hs
     }
 
-    fixMeta = (hs) => {
-        const { text } = hs
-        let textTrimed = trimstring(text)
-        let ptns = getHSText(hs);
-        if (ptns == undefined) return
-        let xxx = ptns.map((a) => {
-            let trim = trimstring(a);
-            let textOffset = textTrimed.indexOf(trim);
-            return { value: a, trim, index: textOffset }
-        }).sort((a, b) => {
-            return a.textOffset - b.textOffset;
-        })
-        // let e1 = this.getMetaElement(startMeta)
-        // let e2 = this.getMetaElement(endMeta)
-        // const findTextInElement = (e1, { value, trim }) => {
-        //     if (e1) {
-        //         let t = trimstring(e1.innerText)
-        //         if (e1.innerText.indexOf(value) != -1) return true;
-        //         if (t.indexOf(trim) != -1) return true;
-        //     }
-        //     return
-        // }
-        // if (findTextInElement(e1, ptns[0]) && findTextInElement(e2, ptns[ptns.length - 1])) {
-        //     return hs;
-        // }
-        let beginTag = trimstring(xxx[0].value)
-        let endTag = trimstring(xxx[xxx.length - 1].value)
-        console.log(beginTag, endTag)
-        let searchResult = xxx.map((a) => {
-            let { value, trim } = a
-            return this.searchInDom(value, trim)
-        })
+    // fixMeta = (hs) => {
+    //     const { text } = hs
+    //     let textTrimed = trimstring(text)
+    //     let ptns = getHSText(hs);
+    //     if (ptns == undefined) return
+    //     let xxx = ptns.map((a) => {
+    //         let trim = trimstring(a);
+    //         let textOffset = textTrimed.indexOf(trim);
+    //         return { value: a, trim, index: textOffset }
+    //     }).sort((a, b) => {
+    //         return a.textOffset - b.textOffset;
+    //     })
+    //     // let e1 = this.getMetaElement(startMeta)
+    //     // let e2 = this.getMetaElement(endMeta)
+    //     // const findTextInElement = (e1, { value, trim }) => {
+    //     //     if (e1) {
+    //     //         let t = trimstring(e1.innerText)
+    //     //         if (e1.innerText.indexOf(value) != -1) return true;
+    //     //         if (t.indexOf(trim) != -1) return true;
+    //     //     }
+    //     //     return
+    //     // }
+    //     // if (findTextInElement(e1, ptns[0]) && findTextInElement(e2, ptns[ptns.length - 1])) {
+    //     //     return hs;
+    //     // }
+    //     let beginTag = trimstring(xxx[0].value)
+    //     let endTag = trimstring(xxx[xxx.length - 1].value)
+    //     console.log(beginTag, endTag)
+    //     let searchResult = xxx.map((a) => {
+    //         let { value, trim } = a
+    //         return this.searchInDom(value, trim)
+    //     })
 
 
-        let node1 = searchResult[0];
-        let node2 = searchResult[searchResult.length - 1];
+    //     let node1 = searchResult[0];
+    //     let node2 = searchResult[searchResult.length - 1];
 
-        if (node1 == undefined || node1.length > 1 || node2 == undefined || node2.length > 1) {
-            let begin, end;
-            searchResult.forEach((a, idx) => {
-                if (a.length == 1) {
-                    if (begin == undefined) {
-                        begin = idx
-                    }
-                    end = idx;
-                }
-            })
-            if (begin != undefined) {
-                let node = searchResult[begin][0]
-                for (let i = begin - 1; i >= 0; i--) {
-                    let prev = searchResult[i].filter((a) => {
-                        let { element } = a;
-                        if (element == node.element) return true;
-                        let ret = node.element.compareDocumentPosition(element)
-                        if (ret & (Node.DOCUMENT_POSITION_PRECEDING + Node.DOCUMENT_POSITION_CONTAINED_BY)) {
-                            return true;
-                        }
-                    })
-                    prev = prev.sort((a, b) => {
-                        let ret = a.element.compareDocumentPosition(b.element)
-                        if (ret & Node.DOCUMENT_POSITION_FOLLOWING) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    })
-                    node = prev[prev.length - 1]
-                    searchResult[i] = [node]
-                }
-                // console.log('begin', node, node.element.innerText);
-                node1 = node
-            }
-            if (end != undefined) {
-                let node = searchResult[end][0]
-                for (let i = end + 1; i < searchResult.length; i++) {
-                    let prev = searchResult[i].filter((a) => {
-                        let { element } = a;
-                        if (element == node.element) return true;
-                        let ret = node.element.compareDocumentPosition(element)
-                        if (ret & Node.DOCUMENT_POSITION_FOLLOWING + Node.DOCUMENT_POSITION_CONTAINED_BY) {
-                            return true;
-                        }
-                    })
-                    prev = prev.sort((a, b) => {
-                        let ret = a.element.compareDocumentPosition(b.element)
-                        if (ret & (Node.DOCUMENT_POSITION_FOLLOWING)) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
+    //     if (node1 == undefined || node1.length > 1 || node2 == undefined || node2.length > 1) {
+    //         let begin, end;
+    //         searchResult.forEach((a, idx) => {
+    //             if (a.length == 1) {
+    //                 if (begin == undefined) {
+    //                     begin = idx
+    //                 }
+    //                 end = idx;
+    //             }
+    //         })
+    //         if (begin != undefined) {
+    //             let node = searchResult[begin][0]
+    //             for (let i = begin - 1; i >= 0; i--) {
+    //                 let prev = searchResult[i].filter((a) => {
+    //                     let { element } = a;
+    //                     if (element == node.element) return true;
+    //                     let ret = node.element.compareDocumentPosition(element)
+    //                     if (ret & (Node.DOCUMENT_POSITION_PRECEDING + Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+    //                         return true;
+    //                     }
+    //                 })
+    //                 prev = prev.sort((a, b) => {
+    //                     let ret = a.element.compareDocumentPosition(b.element)
+    //                     if (ret & Node.DOCUMENT_POSITION_FOLLOWING) {
+    //                         return -1;
+    //                     } else {
+    //                         return 1;
+    //                     }
+    //                 })
+    //                 node = prev[prev.length - 1]
+    //                 searchResult[i] = [node]
+    //             }
+    //             // console.log('begin', node, node.element.innerText);
+    //             node1 = node
+    //         }
+    //         if (end != undefined) {
+    //             let node = searchResult[end][0]
+    //             for (let i = end + 1; i < searchResult.length; i++) {
+    //                 let prev = searchResult[i].filter((a) => {
+    //                     let { element } = a;
+    //                     if (element == node.element) return true;
+    //                     let ret = node.element.compareDocumentPosition(element)
+    //                     if (ret & Node.DOCUMENT_POSITION_FOLLOWING + Node.DOCUMENT_POSITION_CONTAINED_BY) {
+    //                         return true;
+    //                     }
+    //                 })
+    //                 prev = prev.sort((a, b) => {
+    //                     let ret = a.element.compareDocumentPosition(b.element)
+    //                     if (ret & (Node.DOCUMENT_POSITION_FOLLOWING)) {
+    //                         return -1;
+    //                     } else {
+    //                         return 1;
+    //                     }
 
-                    })[0];
-                    node = prev;
-                    searchResult[i] = [node]
-                    // console.log(prev);
-                }
-                // console.log('end', node, node.element.innerText);
-                node2 = node
-            }
-        } else {
-            node1 = node1[0]
-            node2 = node2[0]
-        }
-        let dom2meta = (e) => {
-            let { element, textOffset } = e
-            let parentTagName = element.tagName
-            let { parentIndex } = this.getParentIndex({ parentTagName }, element)
-            let startMeta = { parentTagName, parentIndex, textOffset }
-            return startMeta
-        }
+    //                 })[0];
+    //                 node = prev;
+    //                 searchResult[i] = [node]
+    //                 // console.log(prev);
+    //             }
+    //             // console.log('end', node, node.element.innerText);
+    //             node2 = node
+    //         }
+    //     } else {
+    //         node1 = node1[0]
+    //         node2 = node2[0]
+    //     }
+    //     let dom2meta = (e) => {
+    //         let { element, textOffset } = e
+    //         let parentTagName = element.tagName
+    //         let { parentIndex } = this.getParentIndex({ parentTagName }, element)
+    //         let startMeta = { parentTagName, parentIndex, textOffset }
+    //         return startMeta
+    //     }
 
-        if (node1 && node2) {
-            let startMeta = dom2meta(node1)
-            let endMeta = dom2meta(node2)
-            let { text } = searchResult[searchResult.length - 1][0]
-            endMeta.textOffset = text.length
-            return { ...hs, ...{ startMeta, endMeta } }
-        }
-    }
+    //     if (node1 && node2) {
+    //         let startMeta = dom2meta(node1)
+    //         let endMeta = dom2meta(node2)
+    //         let { text } = searchResult[searchResult.length - 1][0]
+    //         endMeta.textOffset = text.length
+    //         return { ...hs, ...{ startMeta, endMeta } }
+    //     }
+    // }
     getParentIndex = (endMeta, node) => {
         let { parentTagName, parentIndex } = endMeta
         let nn = this.$root.querySelectorAll(parentTagName)
@@ -912,4 +1017,8 @@ export class hlPlacement {
         }
         return {}
     }
+}
+
+function sameNodeTreeElement(c, b) {
+    return c.parentIndex == b.parentIndex && c.parentTagName == b.parentTagName && c.textOffset == b.textOffset;
 }
