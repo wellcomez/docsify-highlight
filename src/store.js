@@ -396,15 +396,15 @@ class Chapter {
   }
   mergeChild() {
     let { children } = this
-    let bbb = children.filter((a) => {
-      let { tree, version, imgsrc, text, html } = a
-      if (version) {
-        return tree != undefined || html != undefined
-      }
-      return imgsrc || text;
+    // let bbb = children.filter((a) => {
+    //   let { tree, version, imgsrc, text, html } = a
+    //   if (version) {
+    //     return tree != undefined || html != undefined
+    //   }
+    //   return imgsrc || text;
 
-    })
-    children = bbb
+    // })
+    // children = bbb
     return children
   }
 }

@@ -110,9 +110,9 @@ export default {
           name: "导出",
           click: () => {
             let { hl } = window;
-            const newLocal=hl.store.Chapter();
+            const newLocal = hl.store.Chapter();
             let md = newLocal.md();
-            funDownload(md,newLocal.label + ".md");
+            funDownload(md, newLocal.label + ".md");
           },
         },
         {
@@ -132,6 +132,14 @@ export default {
 
             id = getNoteUrl(id, charpter);
             copyPasteBoard(id);
+          },
+        },
+        {
+          name: "fix",
+          click: () => {
+            let { id} = this.notedata;
+            let { hl } = window;
+            hl.fixid(id) 
           },
         },
       ],
