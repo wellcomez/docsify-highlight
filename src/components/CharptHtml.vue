@@ -13,11 +13,12 @@
     </h2>
     <div
       v-for="(
-        { note, imgsrc, tags, url, text, style, notshowSeq, tabn ,html}, index
+        { note, imgsrc, tags, url, text, style, notshowSeq, tabn, html }, index
       ) in list"
       :key="index"
       :class="lineClass(index)"
       @click="onSelectRow(index)"
+      @mouseover="onChangeFocuse(index)"
     >
       <div
         v-if="exporthtml == false && focusline == index"
@@ -121,6 +122,11 @@ export default {
     }
   },
   methods: {
+    onChangeFocuse(index) {
+      if (index != this.focusline && this.focusline != undefined) {
+        this.focusline = undefined;
+      }
+    },
     headNumer(aIndex) {
       let cout = 0;
       for (let i = 0; i <= aIndex; i++) {
