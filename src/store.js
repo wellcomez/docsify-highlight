@@ -510,6 +510,9 @@ export class Book {
     })
     return ret
   }
+  importFromJson(data) {
+    this.syn2Local(data)
+  }
   syn2Local(json) {
     let { charpter, toc } = json;
     let tt = new BookToc();

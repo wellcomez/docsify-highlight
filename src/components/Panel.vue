@@ -65,12 +65,10 @@
         <i-switch :value="checked" @on-change="onChange" />
       </Col> -->
       <Col>
-        <SvgButton @click="bDrawerOpen = true" name="md-settings" />
+        <SvgButton @click="openNoteBook = !openNoteBook" name="md-text"/>
       </Col>
       <Col>
-        <Button @click="openNoteBook = !openNoteBook">
-          <Icon type="md-text" color="#42b983" :size="20" />
-        </Button>
+        <SvgButton @click="bDrawerOpen = true" name="md-settings" />
       </Col>
     </Row>
     <Row class="contenttable" v-if="showdetail">

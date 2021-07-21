@@ -22,6 +22,13 @@
           <Cell title="重置">
             <Button type="primary" @click="ResetAll"> 重置</Button>
           </Cell>
+          <Cell title="导入">
+            <Upload :before-upload="onImportData" action="">
+              <Button type="primary" icon="ios-cloud-upload-outline"
+                >导入</Button
+              >
+            </Upload>
+          </Cell>
           <Cell title="版本" :label="vesion"> </Cell>
         </CellGroup>
       </Card>
@@ -31,13 +38,18 @@
 </template>
 <script>
 const pkg = require("../../package.json");
+import hlinit from "../hl";
 import { Drawer } from "iview";
 import Account from "./Account";
 import { getConfig } from "../ANoteConfig";
 import isMobile from "_is-mobile@3.0.0@is-mobile";
+import { Upload } from "iview";
+import { Book } from "../store";
+import { msg } from "./msgbox";
+// var request = require("request");
 export default {
   name: "SettingSideBar",
-  components: { Drawer, Account },
+  components: { Drawer, Account, Upload },
   model: {
     props: "bDrawerOpen",
   },
@@ -72,6 +84,26 @@ export default {
     }
   },
   methods: {
+    onImportData(file) {
+      const handlePreview = () => {
+        //  const self = this;
+        const reader = new FileReader();
+        reader.readAsText(file);
+        // eslint-disable-next-line no-unused-vars
+        reader.onloadend = (a) => {
+          let json = JSON.parse(reader.result);
+          let b = new Book();
+          // if (toc.name == b.name) {
+          b.syn2Local(json);
+          msg("导入", b.toc.bookname);
+          hlinit();
+          // }
+        };
+      };
+      console.log(file);
+      handlePreview(file);
+      return false;
+    },
     onEnableScript() {
       this.enableScript = this.enableScript == false;
       let { enableScript } = this;
