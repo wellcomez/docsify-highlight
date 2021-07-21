@@ -196,6 +196,7 @@ export class DocHighlighter {
 
     constructor() {
         this.$root = document.querySelector('article')
+        // this.$root = document.querySelector('article')
         this.innerText = document.querySelector('article').innerText
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
@@ -329,14 +330,24 @@ export class DocHighlighter {
         const onClick = (noteid, a, b) => {
             // const classname = 'docsify-highlighter'
             let { id } = noteid;
-            let node = this.getElement(id)
+            let node;
+            try {
+                if (b.target.dataset.highlightId == noteid) {
+                    node = b.target
+                }
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+            if (node == undefined) {
+                node = this.getElement(id)
+            }
             this.createNoteMenu(node)
         };
         let { $root } = this;
         this.highlighter = new Highlighter({
             $root,
             wrapTag: 'i',
-            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.hl-ignored', '.charpterhtml'],
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
             style: {
                 className: 'docsify-highlighter'
             }
@@ -349,23 +360,22 @@ export class DocHighlighter {
         this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
             return selectedNodes
         });
-
+        let self = this
         this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
             if (selectedNodes.length === 0) {
                 return [];
             }
-            let last = selectedNodes[selectedNodes.length - 1]
-            if (last.splitType != 'tail') {
-                if (last.splitType == 'both' && selectedNodes.length == 1) {
-                    return selectedNodes
-                }
-                console.error("selectedNodes", selectedNodes.length, last.splitType);
-                return []
-            }
             selectedNodes = selectedNodes.filter((selected) => {
                 try {
                     let parent = selected.$node.parentNode;
-                    if (parent.style.display == 'none' || parent.classList.contains('hl-ignored')) {
+                    const ingoreElement = (parent) => {
+                        if (parent) {
+                            if (parent.style.display == 'none' || parent.classList.contains('hl-ignored'))
+                                return true
+                        }
+                        return false;
+                    }
+                    if (ingoreElement(parent) || ingoreElement(selected.$node)) {
                         return false;
                     }
                     // eslint-disable-next-line no-empty
@@ -373,6 +383,27 @@ export class DocHighlighter {
                 }
                 return true
             })
+            if (selectedNodes.length) {
+                let last = selectedNodes[selectedNodes.length - 1]
+                if (selectedNodes.length > 1) {
+                    if (last.splitType != 'tail') {
+                        if (last.splitType == 'both' && selectedNodes.length == 1) {
+                            return selectedNodes
+                        }
+                        let hs = self.store.geths(id)
+                        selectedNodes = this.hsPlacement.filterSelectedNotes(selectedNodes, hs)
+                        if (selectedNodes.length == 0) {
+                            console.error("selectedNodes", selectedNodes.length, last.splitType, hs);
+                            return []
+                        } else {
+                            return selectedNodes
+                        }
+                    }
+                } else {
+                    let hs = self.store.geths(id)
+                    console.warn("selectedNodes-length==1", selectedNodes.length, last.splitType, hs);
+                }
+            }
             const candidates = selectedNodes.slice(1).reduce(
                 (left, selected) => getIntersection(left, this.getIds(selected)),
                 this.getIds(selectedNodes[0])
@@ -701,11 +732,10 @@ export class DocHighlighter {
         Book.updated = true;
         this.updatePanel();
     };
-
     fixid(id) {
         let hs = this.hsbyid(id)
-        this.hsPlacement.fix(hs);
-        // this.highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+        hs = this.hsPlacement.fix(hs);
+        this.highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
     }
     hsNodetree(id, hs) {
         return this.hsPlacement.hsNodetree(id, hs)
@@ -749,7 +779,7 @@ export class DocHighlighter {
     checkHS(hs) {
         return this.replacementHS(hs)
     }
-    hsbyid(id){
+    hsbyid(id) {
         return this.store.geths(id)
     }
     allhs() {
