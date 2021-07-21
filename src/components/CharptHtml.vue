@@ -13,48 +13,57 @@
     </h2>
     <div
       v-for="(
-        { note, html, imgsrc, tags, url, text, style, notshowSeq }, index
+        { note, imgsrc, tags, url, text, style, notshowSeq, tabn ,html}, index
       ) in list"
       :key="index"
+      :class="lineClass(index)"
+      @click="onSelectRow(index)"
     >
-      <Divider v-if="notshowSeq != true && index != 0"></Divider>
-      <div v-else><br /><br /></div>
+      <div
+        v-if="exporthtml == false && focusline == index"
+        style="display: flex"
+      >
+        <Icon
+          :size="24"
+          v-if="exporthtml == false"
+          type="ios-close"
+          @click="onDelete(index)"
+        />
+        <Icon
+          :size="24"
+          v-if="notshowSeq || tabn > 0"
+          type="md-arrow-dropleft"
+          @click="onIcon(index, false)"
+        />
+        <Icon
+          :size="24"
+          type="md-arrow-dropright"
+          @click="onIcon(index, true)"
+        />
+      </div>
       <div class="sub-title">
         <a
-          v-if="notshowSeq != true"
+          v-if="notshowSeq != true || tabn == 0"
           style="text-decoration: none; color: black"
         >
-          {{ index + 1 }}.</a
+          {{ headNumer(index) }}.</a
         >
-        <div v-if="exporthtml == false" style="display: inline">
-          <Icon
-            v-if="notshowSeq"
-            style="margin-left: 20px"
-            type="md-arrow-dropleft"
-            @click="onIcon(index)"
-          />
-          <Icon v-else type="md-arrow-dropright" @click="onIcon(index)" />
-          <Icon
-            v-if="exporthtml == false"
-            type="ios-close"
-            @click="onDelete(index)"
-            size="18"
-          />
-        </div>
-        <div v-if="tags" style="display: inline-block">
+        <p
+          @click="onClick({ index, url })"
+          v-if="html"
+          :style="tabN(tabn, {})"
+          v-html="html"
+        >
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
             a
           }}</span>
-        </div>
-        <div
-          @click="onClick({ index, url })"
-          v-if="html"
-          style="display: inline"
-          v-html="html"
-        ></div>
-        <div @click="onClick({ index, url })" v-else style="display: inline">
+        </p>
+        <p @click="onClick({ index, url })" v-else :style="tabN(tabn, {})">
           <span :style="style">{{ text }}</span>
-        </div>
+          <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
+            a
+          }}</span>
+        </p>
       </div>
       <img
         class="html-img"
@@ -80,6 +89,7 @@ export default {
   components: { Divider },
   data() {
     return {
+      focusline: undefined,
       list: this.initList(this.charpter),
       showMerge: false,
       showSelected: {},
@@ -111,6 +121,39 @@ export default {
     }
   },
   methods: {
+    headNumer(aIndex) {
+      let cout = 0;
+      for (let i = 0; i <= aIndex; i++) {
+        let c = this.list[i];
+        let { notshowSeq, tabn } = c;
+        if (tabn == undefined || isNaN(tabn)) {
+          tabn = notshowSeq ? 1 : 0;
+        }
+        if (tabn == 0) {
+          cout++;
+        }
+        if (aIndex == i) {
+          return cout;
+        }
+      }
+      return "";
+    },
+    onSelectRow(index) {
+      let { focusline } = this;
+      this.focusline = focusline != index ? index : undefined;
+    },
+    lineClass(index) {
+      return index == this.focusline ? "linefocus" : "";
+    },
+    tabN(tabn, s) {
+      tabn = tabn > 0 ? tabn : 0;
+      let style = "";
+      if (tabn) style = `padding-left:${tabn * 20 + 20}px`;
+      for (let a in s) {
+        style = style + ";" + a + ":" + s[a];
+      }
+      return style;
+    },
     onSort() {
       let { hl } = this;
       hl.updateAllPositions();
@@ -159,27 +202,41 @@ export default {
         }
       };
       return this.list.map((a, idx) => {
-        let { notshowSeq, id } = a;
+        let { notshowSeq, id, tabn } = a;
         let rootid = getrootid(notshowSeq, idx);
-        if (rootid == undefined) {
-          notshowSeq = false;
-        }
-        this.charpter.store.update({ id, notshowSeq, rootid });
+        // if (rootid == undefined) {
+        //   notshowSeq = false;
+        // }
+        // if (notshowSeq == false) tabn = 0;
+        this.charpter.store.update({ id, notshowSeq, rootid, tabn });
         return { ...a, ...{ rootid, notshowSeq } };
       });
     },
-    onIcon(index) {
-      let { notshowSeq } = this.list[index];
-      notshowSeq = notshowSeq != true;
-      let pre = this.list[index - 1];
-      if (pre != undefined && notshowSeq == true) {
-        if (pre.notshowSeq) {
-          notshowSeq = true;
-        }
+    onIcon(index, right) {
+      let { notshowSeq, tabn } = this.list[index];
+      if ((tabn == undefined || isNaN(tabn)) && notshowSeq) {
+        tabn = 1;
       }
-
+      if (right) {
+        tabn++;
+      } else {
+        tabn--;
+      }
+      if (tabn < 1) {
+        tabn = 0;
+        notshowSeq = false;
+      } else {
+        notshowSeq = true;
+      }
+      // let pre = this.list[index - 1];
+      // if (pre != undefined && notshowSeq == true) {
+      //   if (pre.notshowSeq) {
+      //     notshowSeq = true;
+      //   }
+      // }
+      this.focusline = undefined;
       let l = this.list[index];
-      this.list[index] = { ...l, ...{ notshowSeq } };
+      this.list[index] = { ...l, ...{ notshowSeq, tabn } };
       this.list = this.updateList();
     },
     convert(a, charpter) {
@@ -222,6 +279,14 @@ export default {
 };
 </script>
 <style >
+.charpterhtml .linefocus {
+  border: 1px solid #42b983;
+  padding: 4px;
+  border-radius: 2px;
+  background-color: white;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+  transform: translateY(-10px) scale(1.02);
+}
 .charpterhtml {
   margin-left: 10%;
   margin-right: 10%;
@@ -244,11 +309,12 @@ html-img-hover {
   margin: 2px;
 }
 .sub-title {
+  display: flex;
   margin-top: 4px;
   margin-bottom: 4px;
   font-size: small;
   font-weight: normal;
-  display: inline-block;
+  /* display: inline-block; */
 }
 span.sub-tag {
   margin: 4px;

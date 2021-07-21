@@ -38,7 +38,7 @@ export default {
     };
   },
   created() {
-    if (this.exporthtml) {
+    if (this.exporthtml&&this.$el&&this.$el.classList) {
       this.$el.classList.add("exporthtml");
     }
     this.newFunction();
