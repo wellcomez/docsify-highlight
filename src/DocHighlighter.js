@@ -797,18 +797,57 @@ export class DocHighlighter {
         return []
     }
     updateAllPositions() {
-        let { store } = this;
-        const storeInfos = this.allhs();
-        storeInfos.forEach(
+        // eslint-disable-next-line no-unused-vars
+        let storeInfos = this.allhs();
+        let cmp = (node, othernode) => {
+            if (node == undefined) {
+                return 1
+            }
+            if (othernode == undefined) {
+                return -1
+            }
+            let cmp = node.compareDocumentPosition(othernode)
+            if (node == othernode) return 0;
+            if (Node.DOCUMENT_POSITION_PRECEDING & cmp) {
+                return 1
+            }
+            if (cmp & Node.DOCUMENT_POSITION_FOLLOWING) {
+                return -1
+            }
+            if (cmp & Node.DOCUMENT_POSITION_CONTAINS) {
+                return 1;
+            }
+            if (cmp & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+                return -1
+            }
+            return 0
+        }
+        let images = this.$root.querySelectorAll('img');
+        storeInfos = storeInfos.map(
             ({ hs }) => {
-                let { id } = hs;
-                let pos = this.getHSPostion(hs)
-                store.update({ ...{ id }, ...pos })
-            });
+                let { id } = hs
+                if (hs.imgsrc) {
+                    for (let i = 0; i < images.length; i++) {
+                        let e = images[i];
+                        if (getEleSrc(e) == hs.imgsrc) {
+                            return { hs, el: e }
+                        }
+                    }
+                }
+                let nodes = this.highlighter.getDoms(id)
+                nodes = nodes.sort(cmp)
+                return { hs, el: nodes.length ? nodes[0] : undefined }
+            }).sort((a, b) => {
+                return cmp(a.el, b.el)
+            }).map((a, idx) => {
+                let { hs } = a
+                hs.domidx = idx
+                return { hs }
+            })
+        this.store.jsonToStore(storeInfos)
     }
     load = (loaded) => {
         if (loaded) {
-            this.updateAllPositions();
             let { store, highlighter } = this;
             const storeInfos = this.allhs();
             storeInfos.forEach(

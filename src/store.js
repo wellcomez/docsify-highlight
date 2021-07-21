@@ -260,6 +260,9 @@ class Chapter {
         return { ...hs, ...{ idx, textOffset, label, key } }
       });
       let aa = this.children.sort((a, b) => {
+        if (a.domidx != undefined && b.domidx != undefined) {
+          return a.domidx- b.domidx;
+        }
         if (a.textIndex != undefined && b.textIndex != undefined) {
           return a.textIndex - b.textIndex;
         }
