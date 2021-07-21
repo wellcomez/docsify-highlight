@@ -399,9 +399,6 @@ export class DocHighlighter {
                             return selectedNodes
                         }
                     }
-                } else {
-                    let hs = self.store.geths(id)
-                    console.warn("selectedNodes-length==1", selectedNodes.length, last.splitType, hs);
                 }
             }
             const candidates = selectedNodes.slice(1).reduce(
@@ -410,10 +407,14 @@ export class DocHighlighter {
             );
             for (let i = 0; i < candidates.length; i++) {
                 if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
-                    return [];
+                    selectedNodes = [];
+                    break;
                 }
             }
-
+            if (selectedNodes.length == 0) {
+                let hs = self.store.geths(id)
+                console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+            }
             return selectedNodes;
         });
         this.hsPlacement = new hlPlacement(this)
@@ -484,19 +485,22 @@ export class DocHighlighter {
                 let { style, note, bookmark, tree, nodetree } = hhs
                 let a = new highlightType(this, hhs)
                 a.showHighlight()
-                let parentNodeId = this.parentNodeId(id)
                 let pos = this.getHSPostion(hhs)
                 if (nodetree == undefined) {
                     nodetree = this.hlPlacement.hsNodetree(hhs)
                     this.store.update({ ...{ id }, ...nodetree })
                 }
                 this.store.update({ ...{ id }, ...pos })
+
+
+                let parentNodeId = this.parentNodeId(id)
                 if (parentNodeId == undefined) {
                     if (tree == undefined) {
                         tree = this.getHtml(id).tree
                         this.store.update({ id, tree, version: '0.22' })
                     }
                 }
+
                 if (note && note.length) {
                     this.createMarkNode(id, note);
                 }
@@ -539,6 +543,9 @@ export class DocHighlighter {
             })
             // eslint-disable-next-line no-empty
         } catch (error) {
+        }
+        if (highlightIdExtra) {
+            return highlightIdExtra.split(':')
         }
         return highlightIdExtra;
     }
@@ -657,10 +664,9 @@ export class DocHighlighter {
     saveNoteData = (noteid, data) => {
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
         let change = style != undefined && Object.keys(style).length || note || tags.length || img && img.length || bookmark
-        let highlightIdExtra = this.parentNodeId(noteid)
+        let highlightIdExtras = this.parentNodeId(noteid)
         let tree, version = '0.22';
-
-        if (highlightIdExtra == undefined) {
+        highlightIdExtras && highlightIdExtras.forEach((highlightIdExtra) => {
             let a = this.getHtml(noteid, false);
             tree = a.tree
             let hsparent = this.hsbyid(highlightIdExtra)
@@ -672,9 +678,10 @@ export class DocHighlighter {
                     style = { ...styleparent, ...style }
                 }
             }
-        } else {
-            let { tree } = this.getHtml(highlightIdExtra, true)
-            this.store.update({ id: highlightIdExtra, tree, version })
+        })
+        if (highlightIdExtras == undefined) {
+            let { tree } = this.getHtml(highlightIdExtras, true)
+            this.store.update({ id: highlightIdExtras, tree, version })
         }
 
         if (note) {
@@ -829,7 +836,7 @@ export class DocHighlighter {
                                 let images = this.$root.querySelectorAll(parentTagName);
                                 for (let i = 0; i < images.length; i++) {
                                     let e = images[i];
-                                    if (getEleSrc(ele) == hs.imgsrc) {
+                                    if (getEleSrc(e) == hs.imgsrc) {
                                         ele = e;
                                         startMeta.parentIndex = i;
                                         hs.startMeta = startMeta
@@ -840,10 +847,10 @@ export class DocHighlighter {
                                 }
                                 let url = store.Chapter().url(id);
                                 let imgsrc = getImgSrcUrl(hs.imgsrc);
-                                console.error("Not-find",
+                                console.info("Not-find",
                                     "\n" + decodeURI(url),
                                     "\n" + decodeURI(imgsrc),
-                                    this.store.title, hs)
+                                    this.store.title)
                             }
                             if (ok) {
                                 mountCmp(NoteImg, { id, note, hl: this, imgElement: ele }, ele, true)

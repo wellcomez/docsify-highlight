@@ -2,6 +2,46 @@ import { UTILS } from './css_path'
 let trimstring = (s) => {
     return s.replace(/\u3000| |\t/g, '');
 }
+
+export const getTextChildByOffset = ($parent, offset) => {
+    const nodeStack = [$parent];
+
+    let $curNode = null;
+    let curOffset = 0;
+    let startOffset = 0;
+
+    while (($curNode = nodeStack.pop())) {
+        const children = $curNode.childNodes;
+
+        for (let i = children.length - 1; i >= 0; i--) {
+            nodeStack.push(children[i]);
+        }
+
+        if ($curNode.nodeType === 3) {
+            startOffset = offset - curOffset;
+            curOffset += $curNode.textContent.length;
+
+            if (curOffset >= offset) {
+                break;
+            }
+        }
+    }
+
+    if (!$curNode) {
+        $curNode = $parent;
+    }
+
+    return {
+        $node: $curNode,
+        offset: startOffset,
+    };
+};
+
+export const getMetaNode = (root, { parentTagName, parentIndex, textOffset }) => {
+    let node = root.querySelectorAll(parentTagName)[parentIndex]
+    return getTextChildByOffset(node, textOffset)
+}
+
 function longestCommonSubstring(str1, str2) {
     if (!str1 || !str2) {
         return {
@@ -261,9 +301,23 @@ export class hlPlacement {
         }
         return -1
     }
-
-    searchNode = (meta, root) => {
+    _indexOfNodes(nodes, node) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i] == node) { return i }
+        }
+        return undefined
+    }
+    _searchNode = (meta, root) => {
         let { parentTagName, innerText, prevElement, parentIndex } = meta
+
+        const getTagNodes = (parentTagName) => {
+            let nodes = parentTagName != "I" ? this.queryNodes[parentTagName] : undefined
+            if (nodes == undefined) {
+                nodes = this.$root.querySelectorAll(parentTagName)
+                this.queryNodes[parentTagName] = nodes
+            }
+            return nodes
+        }
         let nullRet = { findel: undefined, findIndex: undefined }
         const _check = (el, i = 0) => {
             let index = this.findElementText(el, innerText)
@@ -281,15 +335,33 @@ export class hlPlacement {
             }
         }
         if (root) {
-            let ret = _check(root, 0)
-            if (ret == undefined) { ret = nullRet }
-            return { ...meta, ...ret }
+            let subNodes = root.nodeType != 3 ? root.querySelectorAll(parentTagName) : []
+            for (let i = 0; i < subNodes.length; i++) {
+                let el = subNodes[i]
+                let out = _check(el, i)
+                if (out) {
+                    let ret = { ...meta, ...out }
+                    let nodes = getTagNodes(parentTagName)
+                    ret.parentIndex = this._indexOfNodes(nodes, ret.findel)
+                    return ret
+                }
+            }
+            try {
+                let out = _check(root)
+                if (out) {
+                    out = { ...meta, ...out }
+                    let nodes = getTagNodes(root.tagName)
+                    out.parentTagName = root.tagName
+                    out.parentIndex = this._indexOfNodes(nodes, out.findel)
+                    out.findIndex = out.parentIndex
+                    return out
+                }
+            } catch (error) {
+                console.error(error)
+            }
+            return { ...meta, ...nullRet }
         }
-        let nodes = parentTagName != "I" ? this.queryNodes[parentTagName] : undefined
-        if (nodes == undefined) {
-            nodes = this.$root.querySelectorAll(parentTagName)
-            this.queryNodes[parentTagName] = nodes
-        }
+        let nodes = getTagNodes(parentTagName)
         let idx = meta.findIndex
         if (idx == undefined) {
             idx = parentIndex
@@ -303,10 +375,11 @@ export class hlPlacement {
         for (let i = idx; i < nodes.length; i++) {
             let el = nodes[i]
             ret = _check(el, i)
-            if (ret) break
+            if (ret) {
+                return { ...meta, ...ret }
+            }
         }
-        if (ret == undefined) { ret = nullRet }
-        return { ...meta, ...ret }
+        return { ...meta, ...nullRet }
     }
     updateParentIndex(nodetree, hs) {
         let first = nodetree[0]
@@ -326,6 +399,47 @@ export class hlPlacement {
             }
         }
     }
+    hsNodetree(id, hs) {
+        let csspath = this.getElementCssPath(hs)
+        let { startMeta, endMeta } = hs ? hs : {}
+        let nodetree = this.highlighter.getDoms(id)
+            .sort((a, b) => {
+                if (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                    return -1;
+                }
+                return 1;
+            })
+            .filter((a) => {
+                let { innerText } = a
+                return innerText && innerText.length > 0
+            })
+            .map((a) => {
+                return this.convertDom2Nodetree(a);
+            })
+
+        let a = [];
+        for (let i = 0; i < nodetree.length; i++) {
+            let b = nodetree[i];
+            let c = a.length ? a[a.length - 1] : {}
+            if (b.parentTagName == "article".toUpperCase()) {
+                continue
+            }
+            if (sameNodeTreeElement(c, b)) {
+                continue
+            }
+            a.push(b)
+        }
+        nodetree = a
+        if (nodetree == undefined || nodetree.length == 0) {
+            nodetree = {}
+        } else {
+            if (startMeta && endMeta) {
+                console.log(startMeta, nodetree[0])
+                console.log(endMeta, nodetree[nodetree.length - 1])
+            }
+        }
+        return { nodetree, ...csspath };
+    }
     searchByNodetree(hs) {
         const rc_ok = 1
         const rc_wrong = -1
@@ -334,7 +448,7 @@ export class hlPlacement {
             let slide = findel
             let rc = rc_no_found
             while (slide) {
-                let a = this.searchNode(next, slide)
+                let a = this._searchNode(next, slide)
                 if (a.findIndex != undefined) {
                     // nodetree[i] = next = a
                     rc = rc_ok
@@ -399,10 +513,11 @@ export class hlPlacement {
             }
             let { startMeta, endMeta } = hs
             let beginMeta = nodetree[0]
-            nodetree[0] = beginMeta = this.searchNode(beginMeta)
+            let nodetreeOrig = nodetree.map((a) => a)
+            nodetree[0] = beginMeta = this._searchNode(beginMeta)
             if (beginMeta.findIndex === undefined) {
                 beginMeta.parentIndex = undefined;
-                nodetree[0] = beginMeta = this.searchNode(beginMeta)
+                nodetree[0] = beginMeta = this._searchNode(beginMeta)
             }
             if (nodetree.length == 1 && beginMeta.findIndex != undefined) {
                 let first = nodetree[0]
@@ -447,25 +562,32 @@ export class hlPlacement {
                     i = i + 1
                 } else {
                     beginMeta = nodetree[0]
-                    nodetree[0] = beginMeta = this.searchNode(beginMeta)
+                    nodetree = nodetreeOrig.map((a) => a)
+                    nodetree[0] = beginMeta = this._searchNode(beginMeta)
+                    i = 1
                     continue
                 }
             }
 
             let last = nodetree[nodetree.length - 1]
             if (last.findIndex != undefined) {
-                let ret = this.updateParentIndex(nodetree, hs)
-                if (ret) {
-                    return ret
+                let rr = this.updateParentIndex(nodetree, hs)
+                if (rr) {
+                    return rr
                 }
-                console.log("find")
+                // console.log("find")
             }
 
         }
 
 
     }
-
+    getMetaNode(rr) {
+        let { startMeta, endMeta } = rr
+        let a = getMetaNode(this.$root, startMeta)
+        let b = getMetaNode(this.$root, endMeta)
+        console.log(a, b)
+    }
     // eslint-disable-next-line no-unused-vars
     filterSelectedNotes(selectedNodes, hs) {
         // return []
