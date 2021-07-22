@@ -719,28 +719,23 @@ export class hlPlacement {
         node.filterText = filterText
         return filterText
     }
+    isTextNode(node) { let { NodeType } = node; return NodeType == 1 || NodeType == 3 }
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     checkParent = (parentElement, text, findstart = false) => {
         let begin, end, next = 0, endMeta, startMeta;
         let parentElementText = parentElement.innerText
-        if(parentElementText==undefined){
+        if (parentElementText == undefined) {
             parentElementText = parentElement.wholeText.replaceAll("\n", '')
         }
         let nodetree = []
         let nodec
         if (this.cancheck(parentElement)) {
-            let { children } = parentElement
-            let ccc = parentElement.firstChild ? [parentElement.firstChild] : []
-            let nextElement = ccc.length ? ccc[0].nextSibling : null
-            while (nextElement) {
-                ccc.push(nextElement)
-                nextElement = nextElement.nextSibling
-            }
-            children = ccc
+            let { childNodes } = parentElement
+            childNodes = Array.prototype.slice.call(childNodes);
+            let children = childNodes.filter((a) => this.isTextNode(a))
             if (children.length == 0) {
                 children = [parentElement]
             }
-            // eslint-disable-next-line no-unused-vars
             const setEndMeta = (endMeta, node, lastchar) => {
                 let { textOffset } = endMeta
                 let nodec = this.convertDom2Nodetree(node)
@@ -904,7 +899,13 @@ export class hlPlacement {
                     const getPrevOrPrevParent = (parent) => {
                         if (parent) {
                             let ret = parent.previousSibling
-                            if (ret) return notRoot(ret) ? ret : undefined
+                            if (ret&&notRoot(ret)) 
+                            {
+                                if(this.isTextNode(ret)==false){
+                                    return getPrevOrPrevParent(ret)
+                                }
+                                return ret
+                            }
                             return getPrevOrPrevParent(parent.parentNode)
                         }
                     }
