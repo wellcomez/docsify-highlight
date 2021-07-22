@@ -19,15 +19,18 @@
               slot="extra"
             />
           </Cell>
-          <Cell title="重置">
-            <Button type="primary" @click="ResetAll"> 重置</Button>
-          </Cell>
-          <Cell title="导入">
-            <Upload :before-upload="onImportData" action="">
-              <Button type="primary" icon="ios-cloud-upload-outline"
-                >导入</Button
-              >
-            </Upload>
+          <Cell title="杂项" selected></Cell>
+          <Cell title="杂项">
+            <ButtonGroup>
+              <Button type="primary" @click="onClickRepairStore">修复</Button>
+              <Button type="primary" @click="onClickRepairToc2">排序</Button>
+              <Button type="primary" @click="ResetAll"> 重置</Button>
+              <Upload :before-upload="onImportData" action="">
+                <Button type="primary" icon="ios-cloud-upload-outline"
+                  >导入</Button
+                >
+              </Upload>
+            </ButtonGroup>
           </Cell>
           <Cell title="版本" :label="vesion"> </Cell>
         </CellGroup>
@@ -54,6 +57,8 @@ export default {
     props: "bDrawerOpen",
   },
   props: {
+    hl: { type: Object, default: undefined },
+    book: { type: Object, default: undefined },
     cloudOn: { type: Boolean, default: undefined },
     checked: { type: Boolean, default: undefined },
     bDrawerOpen: { type: Boolean, default: undefined },
@@ -84,6 +89,16 @@ export default {
     }
   },
   methods: {
+    onClickRepairStore() {
+      this.book && this.book.toc.fixWrongTitles();
+    },
+    onClickRepairToc2() {
+      if (this.hl) {
+        this.hl.updateAllPositions();
+        Book.updated = true;
+        this.hl.updatePanelCb();
+      }
+    },
     onImportData(file) {
       const handlePreview = () => {
         //  const self = this;
@@ -105,7 +120,8 @@ export default {
       return false;
     },
     onEnableScript() {
-      this.enableScript = this.enableScript == false;
+      let enable = this.enableScript == true;
+      this.enableScript = !enable;
       let { enableScript } = this;
       getConfig().save({ enableScript });
       // document.location.reload();

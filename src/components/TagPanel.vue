@@ -13,8 +13,9 @@
         @on-change="handleChange(index, txt)"
         >{{ txt }}</Tag
       >
-      <Button icon="ios-add" type="dashed" size="small" @click="onAdd">添加标签</Button>
-
+      <Button icon="ios-add" type="dashed" size="small" @click="onAdd"
+        >添加标签</Button
+      >
     </div>
     <!-- <Button size="small" class="add-btn" style="display:in" type="primary" @click="onAdd">Add</Button> -->
   </div>
@@ -26,7 +27,6 @@
 
 .tagpane .input {
   margin-left: 4px;
-  /* float: right; */
   width: 100%;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -35,6 +35,8 @@
   background: white;
   border: 1px solid #3fb07c;
   border-radius: 3px;
+  height: 300px;
+  overflow: scroll;
 }
 .tagpane .input-panel {
   background: grayscale;
@@ -43,7 +45,8 @@
   height: 24px;
   line-height: 24px;
 }
-.tagClass,.tagClass-empty{
+.tagClass,
+.tagClass-empty {
   margin: 4px;
 }
 .tagClass-empty {
@@ -92,7 +95,7 @@ export default {
         let a = { color, txt, enable };
         ret.push(a);
       });
-      return ret.sort(function compareFunction(param1, param2) {
+      return ret.filter((a)=>a.txt).sort((param1, param2)=> {
         return param1.txt.localeCompare(param2.txt, "zh");
       });
     },

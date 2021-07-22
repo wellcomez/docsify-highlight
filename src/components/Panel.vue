@@ -76,27 +76,6 @@
         <TabPane label="批注">
           <Row type="flex" justify="space-between">
             <Col> <span style="margin-left: 4px">全部</span> </Col>
-            <Col>
-              <Button
-                @click="onClickRepairToc2"
-                size="small"
-                style="margin: 4px"
-                >排序</Button
-              >
-            </Col>
-            <Col>
-              <Button
-                @click="onClickRepairStore"
-                size="small"
-                style="margin: 4px"
-                >修复</Button
-              >
-            </Col>
-            <Col>
-              <Button @click="onClickOpenNote" size="small" style="margin: 4px"
-                >打开</Button
-              >
-            </Col>
           </Row>
           <TocNotePanel
             v-bind:close="closedetail"
@@ -115,6 +94,8 @@
       :checked="checked"
       :bDrawerOpen.sync="bDrawerOpen"
       :onChange="onChange"
+      :hl="hl"
+      :book="book"
     ></SettingSideBar>
     <NoteSiderBar
       :hl="hl"
@@ -347,14 +328,7 @@ export default {
     onClickURL(a) {
       gotoNote(a);
     },
-    onClickRepairStore(){
-      this.book.toc.fixWrongTitles()
-    },
-    onClickRepairToc2() {
-      this.hl.updateAllPositions();
-      Book.updated = true;
-      this.hl.updatePanelCb();
-    },
+
     onClickOpenNote() {
       this.openNoteBook = true;
     },
