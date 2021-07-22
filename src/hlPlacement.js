@@ -670,6 +670,10 @@ export class hlPlacement {
             if (imgsrc) return hs;
             let { nodetree } = hs
             let ret
+            ret = this.replacementHS3(hs)
+            if (ret) {
+                return { ...hs, ...ret }
+            }
             if (nodetree) {
                 ret = this.searchByNodetree(hs)
             } else {
@@ -677,11 +681,6 @@ export class hlPlacement {
                 ret = this.searchByNodetree({ ...hs, ...{ nodetree: tree } })
             }
             if (ret) return ret
-
-            ret = this.replacementHS3(hs)
-            if (ret) {
-                return { ...hs, ...ret }
-            }
             console.warn('not find ' + hs.id + '   ' + hs.text, hs)
         }
         return hs
@@ -899,9 +898,8 @@ export class hlPlacement {
                     const getPrevOrPrevParent = (parent) => {
                         if (parent) {
                             let ret = parent.previousSibling
-                            if (ret&&notRoot(ret)) 
-                            {
-                                if(this.isTextNode(ret)==false){
+                            if (ret && notRoot(ret)) {
+                                if (this.isTextNode(ret) == false) {
                                     return getPrevOrPrevParent(ret)
                                 }
                                 return ret
