@@ -13,68 +13,54 @@
     </h2>
     <div
       v-for="(
-        { note, imgsrc, tags, url, text, style, notshowSeq, tabn, html }, index
+        { note, imgsrc, tags, url, text, style, notshowSeq, tabn, html, key },
+        index
       ) in list"
-      :key="index"
+      :key="key"
       :class="lineClass(index)"
       @click="onSelectRow(index)"
       @mouseover="onChangeFocuse(index)"
     >
-      <div
+      <ButtonGroup
         v-if="exporthtml == false && focusline == index"
         style="display: flex"
       >
-        <Icon
-          :size="24"
+        <Button
+          size="small"
           v-if="exporthtml == false"
-          type="ios-close"
+          icon="ios-trash"
           @click="onDelete(index)"
         />
-        <Icon
-          :size="24"
+        <Button
+          size="small"
           v-if="notshowSeq || tabn > 0"
-          type="md-arrow-dropleft"
+          icon="ios-arrow-dropleft-circle"
           @click="onIcon(index, false)"
         />
-        <Icon
-          :size="24"
-          type="md-arrow-dropright"
+        <Button
+          size="small"
+          icon="ios-arrow-dropright-circle"
           @click="onIcon(index, true)"
         />
-      </div>
-      <div class="sub-title">
-        <!-- <p
-          @click="onClick({ index, url })"
-          v-if="html"
-          :style="tabN(tabn, {})"
-          v-html="html"
-        >
-          <a
-            v-if="notshowSeq != true || tabn == 0"
-            style="text-decoration: none; color: black"
-          >
-            {{ headNumer(index) }}.</a
-          >
-          <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
-            a
-          }}</span>
-        </p> -->
+      </ButtonGroup>
+      <div
+        class="sub-title"
+        @click="onClick({ index, url })"
+        :style="tabN(tabn)"
+      >
         <a
           v-if="notshowSeq != true || tabn == 0"
           style="text-decoration: none; color: black"
         >
           {{ headNumer(index) }}.</a
         >
-        <p
-          @click="onClick({ index, url })"
-          v-html="html"
-          :style="tabN(tabn, {})"
-        >
-          <span v-if="!html" :style="style">{{ text }}</span>
-          <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
-            a
-          }}</span>
+        <p style="display: inline" v-if="html" v-html="html"></p>
+        <p style="display: inline" v-else>
+          <span :style="style">{{ text }}</span>
         </p>
+        <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
+          a
+        }}</span>
       </div>
       <img
         class="html-img"
@@ -91,6 +77,7 @@
   </div>
 </template>
 <script>
+// eslint-disable-next-line no-unused-vars
 import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
@@ -121,12 +108,13 @@ export default {
     },
     active(a) {
       if (a) {
+        this.Sort();
         this.$el.scrollIntoView();
       }
       this.focusline = undefined;
     },
     focusline() {
-      this.list = this.updateList();
+      // this.list = this.updateList();
     },
   },
   mounted() {
@@ -165,26 +153,32 @@ export default {
     lineClass(index) {
       return index == this.focusline ? "linefocus" : "";
     },
-    tabN(tabn, s) {
+    // "display: inline;";
+    tabN(tabn) {
       tabn = tabn > 0 ? tabn : 0;
       let style = "";
-      if (tabn) style = `padding-left:${tabn * 20 + 20}px`;
-      for (let a in s) {
-        style = style + ";" + a + ":" + s[a];
-      }
+      if (tabn) style = style + `margin-left:${tabn * 2}em`;
       return style;
     },
-    onSort() {
+    Sort() {
       let { hl } = this;
-      hl.updateAllPositions();
-      let charpter = hl.store.Chapter();
-      this.list = this.initList(charpter)
-      this.list = this.updateList()
-      msg("排序", charpter.label);
+      let { store } = hl;
+      if (this.charpter.label == store.title) {
+        hl.updateAllPositions();
+        let charpter = hl.store.Chapter();
+        this.list = this.initList(charpter);
+        return charpter;
+      }
+    },
+    onSort() {
+      let charpter = this.Sort();
+      if (charpter) msg("排序", charpter.label);
     },
     initList(charpter) {
       if (charpter)
-        return charpter.mergeChild().map((a) => this.convert(a, charpter));
+        return charpter
+          .mergeChild()
+          .map((a, idx) => this.convert(a, charpter, idx));
       return [{ name: "" }];
     },
     onImageOut(e) {
@@ -209,35 +203,10 @@ export default {
       let { store } = charpter;
       hl.deleteId(id, store);
     },
-    updateList() {
-      let getrootid = (notshowSeq, index) => {
-        if (notshowSeq) {
-          let end = index > 0 ? 0 : index + 1;
-          for (let i = index; i >= end; i--) {
-            let l = this.list[i];
-            let { notshowSeq, id } = l;
-            if (notshowSeq != true) {
-              return id;
-            }
-          }
-          return;
-        }
-      };
-      return this.list.map((a, idx) => {
-        let { notshowSeq, id, tabn } = a;
-        let rootid = getrootid(notshowSeq, idx);
-        // if (rootid == undefined) {
-        //   notshowSeq = false;
-        // }
-        // if (notshowSeq == false) tabn = 0;
-        this.charpter.store.update({ id, notshowSeq, rootid, tabn });
-        return { ...a, ...{ rootid, notshowSeq } };
-      });
-    },
     onIcon(index, right) {
       let { notshowSeq, tabn } = this.list[index];
       if ((tabn == undefined || isNaN(tabn)) && notshowSeq) {
-        tabn = 1;
+        tabn = 0;
       }
       if (right) {
         tabn++;
@@ -250,27 +219,26 @@ export default {
       } else {
         notshowSeq = true;
       }
-      // let pre = this.list[index - 1];
-      // if (pre != undefined && notshowSeq == true) {
-      //   if (pre.notshowSeq) {
-      //     notshowSeq = true;
-      //   }
-      // }
       this.focusline = undefined;
       let l = this.list[index];
-      this.list[index] = { ...l, ...{ notshowSeq, tabn } };
-      this.list = this.updateList();
+      let key = new Date() * 1 + "-" + index;
+      let a = (this.list[index] = { ...l, ...{ notshowSeq, tabn, key } });
+      let { id } = a;
+      this.charpter.store.update({ id, notshowSeq, tabn });
     },
-    convert(a, charpter) {
+    convert(a, charpter, idx) {
+      // eslint-disable-next-line no-unused-vars
       let { imgsrc, text, id, tree, version } = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
       let url = charpter.url(id, this.rootpath);
       let label = text.substring(0, 6);
       let style = convertStyle(a.style);
-      let html = version ? createHtml(tree) : undefined;
+      let html;
+      //  = version ? createHtml(tree) : undefined;
+      let key = new Date() * 1 + "-" + idx;
       let ret = {
         ...a,
-        ...{ style, label, url, imgsrc, html, text },
+        ...{ style, label, url, imgsrc, html, text, key },
       };
       return ret;
     },
@@ -331,7 +299,7 @@ html-img-hover {
   margin: 2px;
 }
 .sub-title {
-  display: flex;
+  /* display: flex; */
   margin-top: 4px;
   margin-bottom: 4px;
   font-size: small;
@@ -342,7 +310,8 @@ span.sub-tag {
   margin: 4px;
   font-size: small;
   font-weight: normal;
-  padding: 2px;
+  padding-right: 2px;
+  padding-left: 2px;
   background-color: #42b983;
   color: white;
   border-radius: 3px;

@@ -364,7 +364,14 @@ class Chapter {
     if (this.children.length == 0) return "\n"
     let index = 0;
     let items = this.children.map((a, idx) => {
-      let { label, style, note, imgsrc, tags, id, notshowSeq } = a;
+      let { label, style, note, imgsrc, tags, id, notshowSeq, tabn } = a;
+      label = label.split('\n').map((a) => {
+        a = a.replaceAll('-', '\\-')
+        return a
+      }).join('')
+      if (!tabn) {
+        tabn = notshowSeq ? 1 : 0
+      }
       if (tags) {
         tags = new Set(tags)
         tags = Array.from(tags);
@@ -387,6 +394,7 @@ class Chapter {
         }
       }
       let space = notshowSeq ? '   ' : ''
+      if (tabn) space = space.repeat(tabn)
       if (note) {
         note = `${space}>${note}`
       } else {
@@ -398,7 +406,7 @@ class Chapter {
       if (imgsrc) {
         imgsrc = getImgSrcUrl(imgsrc)
         let { path } = parseurl(imgsrc)
-        img = `${ref}\n![${path}](${imgsrc})`
+        img = `![${path}](${imgsrc})`
       }
       let content = label ? (hlyellow ? `<span class="${hlyellow}"> ${label}</span>` : label) : "";
       if (note.length) {
@@ -412,15 +420,16 @@ class Chapter {
         let pre = index + '. '
         pre = '- '
         if (img) {
-          content = img
-          img = undefined
+          title = `${pre} ${ref}${tags}`
+          img = `${space}>${img}`
+        } else {
+          title = `${pre} ${content}${tags}`
         }
-        title = `${pre} ${tags}${content}`
       } else {
         if (img) {
           img = `${space}>${img}`
         } else {
-          title = `${space}${tags}${content}`
+          title = `${space}- ${content}${tags}`
         }
       }
       // let divider =""

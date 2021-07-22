@@ -16,7 +16,6 @@ import TagPanel from './TagPanel'
 import BackgroudSelector from './BackgroudSelector'
 import DropColor from './DropColor'
 import { highlightType } from "../highlightType";
-
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
@@ -34,7 +33,7 @@ export const NoteMenu = {
             justify: 'space-between',
             img: undefined,
             showfortxt: true,
-            showtagPane: true,
+            showtagPane: false,
             // first3Colors: default_color_list,
             backgroundColorKey: 1,
             underlineColor: undefined,
