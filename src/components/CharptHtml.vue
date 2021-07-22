@@ -13,7 +13,13 @@
     </h2>
     <div
       v-for="(
-        { note, imgsrc, tags, url, text, style, notshowSeq, tabn, html, key },
+        {
+          note,imgsrc,tags,url,text,style,notshowSeq,
+          tabn,
+          html,
+          key,
+          id,
+        },
         index
       ) in list"
       :key="key"
@@ -41,6 +47,11 @@
           size="small"
           icon="ios-arrow-dropright-circle"
           @click="onIcon(index, true)"
+        />
+        <Button
+          size="small"
+          icon="ios-copy"
+          @click="onCopy({ id, text, note })"
         />
       </ButtonGroup>
       <div
@@ -78,9 +89,10 @@
 </template>
 <script>
 // eslint-disable-next-line no-unused-vars
-import { convertStyle, createHtml, getImgSrcUrl } from "../utils";
+import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
+const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";
 export default {
@@ -124,6 +136,11 @@ export default {
     }
   },
   methods: {
+    onCopy({ id, text }) {
+      let copy = getNoteUrl(id, this.charpter) + "\n\n" + text;
+      copyPasteBoard(copy);
+      msg("拷贝", `${id}  [${text.length}]字`);
+    },
     onChangeFocuse(index) {
       if (index != this.focusline && this.focusline != undefined) {
         this.focusline = undefined;

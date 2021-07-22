@@ -719,7 +719,7 @@ export class hlPlacement {
         node.filterText = filterText
         return filterText
     }
-    isTextNode(node) { let { NodeType } = node; return NodeType == 1 || NodeType == 3 }
+    isTextNode(node) { let { nodeType } = node; return nodeType == 1 || nodeType == 3 }
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     checkParent = (parentElement, text, findstart = false) => {
         let begin, end, next = 0, endMeta, startMeta;
