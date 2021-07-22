@@ -2,6 +2,7 @@ import { UTILS } from './css_path'
 let trimstring = (s) => {
     return s.replace(/\u3000| |\t/g, '');
 }
+const notRoot = (parentElement) => parentElement && parentElement.tagName != "article".toUpperCase()
 
 export const getTextChildByOffset = ($parent, offset) => {
     const nodeStack = [$parent];
@@ -467,12 +468,14 @@ export class hlPlacement {
             }
             return { rc, next }
         }
-        const notRoot = (parentElement) => parentElement && parentElement.tagName != "article".toUpperCase()
         const findNextParent = (el) => {
             let { parentElement } = el;
             if (parentElement) {
-                if (notRoot(parentElement))
-                    return parentElement.nextSibling
+                if (notRoot(parentElement)) {
+                    let ret = parentElement.nextSibling
+                    if (ret) return ret;
+                    return findNextParent(parentElement)
+                }
             }
         }
         let { nodetree } = hs
@@ -663,17 +666,18 @@ export class hlPlacement {
     }
     replacementHS(hs) {
         if (this.hl.store.title == hs.title) {
-            let { csspath, imgsrc } = hs;
+            let { imgsrc } = hs;
             if (imgsrc) return hs;
-            if (csspath == undefined) {
-                csspath = {}
+            let { nodetree } = hs
+            let ret
+            if (nodetree) {
+                ret = this.searchByNodetree(hs)
+            } else {
+                let { tree } = rebuildTree(hs)
+                ret = this.searchByNodetree({ ...hs, ...{ nodetree: tree } })
             }
-            let ret = this.searchByNodetree(hs)
             if (ret) return ret
 
-            let { tree } = rebuildTree(hs)
-            ret = this.searchByNodetree({ ...hs, ...{ nodetree: tree } })
-            if (ret) return ret
             ret = this.replacementHS3(hs)
             if (ret) {
                 return { ...hs, ...ret }
@@ -886,20 +890,21 @@ export class hlPlacement {
                     continue
                 }
                 let text = trimstring(hs.text)
-                let parent = el.parentElement
-                parent = this.cancheck(parent) ? parent : el
+                let parent = notRoot(el.parentNode) ? el.parentNode : el
                 let { begin, endMeta, startMeta } = this.checkParent(parent, text)
                 if (endMeta) {
                     if (startMeta && begin == 0) {
-
-                        parent = parent.previousElementSibling
-                    }
-                    if (startMeta) {
                         let ret = this.updateParentIndex([startMeta, endMeta], hs)
                         if (ret) return ret
-                        return { startMeta, endMeta }
                     }
-                    parent = parent.previousElementSibling
+                    const getPrevOrPrevParent = (parent) => {
+                        if (parent) {
+                            let ret = parent.previousSibling
+                            if (ret) return notRoot(ret) ? ret : undefined
+                            return getPrevOrPrevParent(parent.parentNode)
+                        }
+                    }
+                    parent = getPrevOrPrevParent(parent)
                     while (parent) {
                         text = text.substring(0, begin)
                         let a = this.checkParent(parent, text, true)
@@ -910,7 +915,7 @@ export class hlPlacement {
                         if (begin == 0) {
                             break
                         }
-                        parent = parent.previousElementSibling
+                        parent = getPrevOrPrevParent(parent)
                     }
                     if (startMeta) {
                         let ret = this.updateParentIndex([startMeta, endMeta], hs)

@@ -1,5 +1,5 @@
 <template>
-  <Tooltip theme="light" :disabled="false" width="60px">
+  <Tooltip theme="light" :disabled="false" :width="60" class="dropcolor-tip">
     <!-- <Icon type="md-more" /> -->
     <Badge :count="count">
       <Button style="height: 32px; padding-left: 2px; padding-right: 2px">
@@ -117,7 +117,13 @@ export default {
 };
 </script>
 <style >
-.dropcolor-delete {
+/* .#markpannel > div.ivu-row-flex.ivu-row-flex-top.ivu-row-flex-space-between > div:nth-child(4) > div > div:nth-child(2) > div > div.ivu-tooltip-popper.ivu-tooltip-light > div > div.ivu-tooltip-inner */
+.dropcolor-tip div.ivu-tooltip-inner {
+  padding-left: 2px;
+  padding-right: 2px;
+  width: 80px;
+}
+ .dropcolor-delete {
   margin-right: 2px;
 }
 .dropcolor li {

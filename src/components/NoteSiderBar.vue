@@ -91,7 +91,7 @@ export default {
   },
   data() {
     return {
-      current: this.hl?this.hl.store.Chapter():undefined,
+      current: this.hl ? this.hl.store.Chapter() : undefined,
       open: undefined,
       disabled: false,
       zoomNoteBook: undefined,
@@ -212,8 +212,8 @@ export default {
   width: 100% !important;
 }
 .zoom-in .html-drawer-right .ivu-drawer {
-  left: 70% !important;
-  width: 30% !important;
+  width: 400px !important;
+  right: 2px !important;
   margin-bottom: 10px !important;
 }
 .zoom-in .ivu-drawer {

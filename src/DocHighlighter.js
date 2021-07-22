@@ -12,7 +12,30 @@ import { hl_note, tUl, tfontColor } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
-import { getHSText, hlPlacement } from './hlPlacement';
+import { hlPlacement } from './hlPlacement';
+let cmpNodePosition = (node, othernode) => {
+    if (node == undefined) {
+        return 1
+    }
+    if (othernode == undefined) {
+        return -1
+    }
+    let cmp = node.compareDocumentPosition(othernode)
+    if (node == othernode) return 0;
+    if (Node.DOCUMENT_POSITION_PRECEDING & cmp) {
+        return 1
+    }
+    if (cmp & Node.DOCUMENT_POSITION_FOLLOWING) {
+        return -1
+    }
+    if (cmp & Node.DOCUMENT_POSITION_CONTAINS) {
+        return 1;
+    }
+    if (cmp & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+        return -1
+    }
+    return 0
+}
 const copyPasteBoard = require('clipboard-copy')
 
 const removeTips = () => {
@@ -391,12 +414,14 @@ export class DocHighlighter {
                             return selectedNodes
                         }
                         let hs = self.store.geths(id)
-                        selectedNodes = this.hsPlacement.filterSelectedNotes(selectedNodes, hs)
-                        if (selectedNodes.length == 0) {
-                            console.error("selectedNodes", selectedNodes.length, last.splitType, hs);
-                            return []
-                        } else {
-                            return selectedNodes
+                        if (hs) {
+                            selectedNodes = this.hsPlacement.filterSelectedNotes(selectedNodes, hs)
+                            if (selectedNodes.length == 0) {
+                                console.error("selectedNodes", selectedNodes.length, last.splitType, hs);
+                                return []
+                            } else {
+                                return selectedNodes
+                            }
                         }
                     }
                 }
@@ -413,7 +438,9 @@ export class DocHighlighter {
             }
             if (selectedNodes.length == 0) {
                 let hs = self.store.geths(id)
-                console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                if(hs){
+                    console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                }
             }
             return selectedNodes;
         });
@@ -485,12 +512,12 @@ export class DocHighlighter {
                 let { style, note, bookmark, tree, nodetree } = hhs
                 let a = new highlightType(this, hhs)
                 a.showHighlight()
-                let pos = this.getHSPostion(hhs)
+                // let pos = this.getHSPostion(hhs)
                 if (nodetree == undefined) {
                     nodetree = this.hlPlacement.hsNodetree(hhs)
                     this.store.update({ ...{ id }, ...nodetree })
                 }
-                this.store.update({ ...{ id }, ...pos })
+                this.store.update({ ...{ id } })
 
 
                 let parentNodeId = this.parentNodeId(id)
@@ -651,15 +678,15 @@ export class DocHighlighter {
         }
         return
     }
-    getTextIndex(noteid) {
-        let ptns = this.highlighter.getDoms(noteid).map((a) => {
-            if (a.innerText.length) {
-                return a.innerText
-            }
-            return
-        }).filter((a) => a != undefined)
-        return this.search(this.innerText, ptns)
-    }
+    // getTextIndex(noteid) {
+    //     let ptns = this.highlighter.getDoms(noteid).map((a) => {
+    //         if (a.innerText.length) {
+    //             return a.innerText
+    //         }
+    //         return
+    //     }).filter((a) => a != undefined)
+    //     return this.search(this.innerText, ptns)
+    // }
 
     saveNoteData = (noteid, data) => {
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
@@ -723,19 +750,21 @@ export class DocHighlighter {
                     hs.tree = tree
                     hs.version = version
                     let nodetree = this.hsNodetree(noteid, hs)
-                    hs = { ...hs, ...this.getHSPostion(hs), ...nodetree }
+                    // hs = { ...hs, ...this.getHSPostion(hs), ...nodetree }
+                    hs = { ...hs, ...nodetree }
                     return { hs }
                 })
                 this.store.save(sources2);
             } else {
                 let nodetree = this.hsNodetree(noteid)
-                let textIndex = this.getTextIndex(noteid);
-                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version, nodetree, textIndex, ...nodetree })
+                // let textIndex = this.getTextIndex(noteid);
+                this.store.update({ id: noteid, note, style, tags, bookmark, tree, version, nodetree, ...nodetree })
             }
         } else {
             this.removeHighLight(noteid);
             this.deleteId(noteid);
         }
+        this.updateAllPositions()
         Book.updated = true;
         this.updatePanel();
     };
@@ -747,25 +776,25 @@ export class DocHighlighter {
     hsNodetree(id, hs) {
         return this.hsPlacement.hsNodetree(id, hs)
     }
-    getHSPostion(hs) {
-        let noteid = hs.id
-        let top = this.getTopElementPosition(noteid);
+    // getHSPostion(hs) {
+    //     let noteid = hs.id
+    //     let top = this.getTopElementPosition(noteid);
 
-        let textIndex = this.getTextIndex(noteid);
+    //     let textIndex = this.getTextIndex(noteid);
 
-        if (textIndex == undefined) {
-            let ptns = getHSText(hs);
-            if (ptns) {
-                textIndex = this.search(this.innerText, ptns)
-            }
-        }
-        if (textIndex == undefined)
-            textIndex = hs.textIndex
-        if (top == undefined) {
-            top = hs.top
-        }
-        return { top, textIndex }
-    }
+    //     if (textIndex == undefined) {
+    //         let ptns = getHSText(hs);
+    //         if (ptns) {
+    //             textIndex = this.search(this.innerText, ptns)
+    //         }
+    //     }
+    //     if (textIndex == undefined)
+    //         textIndex = hs.textIndex
+    //     if (top == undefined) {
+    //         top = hs.top
+    //     }
+    //     return { top, textIndex }
+    // }
 
     addTagBackground(hs, noteid) {
         let { tags, style } = hs
@@ -797,48 +826,14 @@ export class DocHighlighter {
         return []
     }
     updateAllPositions() {
-        // eslint-disable-next-line no-unused-vars
         let storeInfos = this.allhs();
-        let cmp = (node, othernode) => {
-            if (node == undefined) {
-                return 1
-            }
-            if (othernode == undefined) {
-                return -1
-            }
-            let cmp = node.compareDocumentPosition(othernode)
-            if (node == othernode) return 0;
-            if (Node.DOCUMENT_POSITION_PRECEDING & cmp) {
-                return 1
-            }
-            if (cmp & Node.DOCUMENT_POSITION_FOLLOWING) {
-                return -1
-            }
-            if (cmp & Node.DOCUMENT_POSITION_CONTAINS) {
-                return 1;
-            }
-            if (cmp & Node.DOCUMENT_POSITION_CONTAINED_BY) {
-                return -1
-            }
-            return 0
-        }
-        let images = this.$root.querySelectorAll('img');
+        let self = this
         storeInfos = storeInfos.map(
             ({ hs }) => {
-                let { id } = hs
-                if (hs.imgsrc) {
-                    for (let i = 0; i < images.length; i++) {
-                        let e = images[i];
-                        if (getEleSrc(e) == hs.imgsrc) {
-                            return { hs, el: e }
-                        }
-                    }
-                }
-                let nodes = this.highlighter.getDoms(id)
-                nodes = nodes.sort(cmp)
-                return { hs, el: nodes.length ? nodes[0] : undefined }
+                let { element } = self.getTopElement(hs)
+                return { hs, el: element }
             }).sort((a, b) => {
-                return cmp(a.el, b.el)
+                return cmpNodePosition(a.el, b.el)
             }).map((a, idx) => {
                 let { hs } = a
                 hs.domidx = idx
@@ -912,43 +907,9 @@ export class DocHighlighter {
 
     };
     findTailElement(id, tail = true) {
-        let el = this.getElement(id);
-        if (el == undefined) return
-        let pos = this.getPosition(el)
-        let index
-        // var str = "[微笑][微笑][微笑][微笑][微笑][微笑]"
-        // eslint-disable-next-line no-unused-vars
-        let findRexpr = (str, rstr) => {
-            var regstr = new RegExp(rstr, "g");
-            return str.search(regstr)
-        }
-        this.procssAllElements(id, (node) => {
-            let { innerText } = node
-            if (innerText && innerText.length) {
-                let a = this.innerText.indexOf(innerText);
-                if (index == undefined) index = a;
-                else if (tail) {
-                    if (a > index) {
-                        el = node
-                        index = a;
-                    }
-                } else {
-                    if (a < index) {
-                        el = node
-                        index = a;
-                    }
-                }
-                return;
-            }
-            let p2 = this.getPosition(node)
-            let yes = p2.top > pos.top;
-            if (tail == false) yes = !yes;
-            if (yes) {
-                pos = p2;
-                el = node;
-            }
-        })
-        return el
+        let ret = this.getTopElement({ id })
+        if (tail) { return ret.tail }
+        return ret.element
     }
     createMarkNode(id, note) {
         let el = this.findTailElement(id)
@@ -1011,13 +972,19 @@ export class DocHighlighter {
     //     return ret;
     // }
     scollTopID(id) {
-        let { top, element } = this.getTopElement(id);
-        if (top != undefined) {
+        let hs = this.hsbyid(id)
+        if (hs) {
+            let { top, element } = this.getTopElement(hs);
             if (element) {
                 element.scrollIntoView()
-            } else {
+            } else if (top != undefined) {
                 window.scrollTo(0, top);
             }
+            if (top == undefined) {
+                if (element)
+                    top = this.getPosition(element).top
+            }
+            if (top == undefined) { return }
             let b = document.getElementsByClassName('content')[0]
             let pp = this.getPosition(b)
             mountCmp(ScrollMark, { id, hl: this, left: pp.left + 10, top }, document.body);
@@ -1041,24 +1008,28 @@ export class DocHighlighter {
         }
         offset.bottom = offset.top + offset.height;
         return offset;
-    };
-    getTopElement = (noteid) => {
-        let element
-        let top, left, bottom;
-        this.procssAllElements(noteid, (a) => {
-            let pos = this.getPosition(a)
-            if (top == undefined || top > pos.top) {
-                element = a;
+    }
+
+    getTopElement = (hs) => {
+        let { id } = hs
+        if (hs.imgsrc) {
+            let images = this.$root.querySelectorAll('img');
+            for (let i = 0; i < images.length; i++) {
+                let e = images[i];
+                if (getEleSrc(e) == hs.imgsrc) {
+                    let element = e;
+                    let { top } = this.getPosition(element)
+                    return { top, element, tail: element }
+                }
             }
-            top = top ? Math.min(top, pos.top) : pos.top;
-            left = left ? Math.min(left, pos.left) : pos.left;
-            bottom = bottom ? Math.max(bottom, pos.bottom) : pos.bottom;
-        });
-        return { top, left, bottom, element };
-    };
-    getTopElementPosition = (noteid) => {
-        let { top, left, bottom } = this.getTopElement(noteid)
-        return { top, left, bottom };
+        }
+        let nodes = this.highlighter.getDoms(id)
+        if (nodes.length) {
+            let element = nodes[0]
+            let { top } = this.getPosition(element)
+            return { top, element, nodes, tail: nodes[nodes.length - 1] }
+        }
+        return {}
     };
     turnHighLight(enable) {
         let { highlighter } = this;

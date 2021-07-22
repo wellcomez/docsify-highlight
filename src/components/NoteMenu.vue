@@ -145,7 +145,7 @@ export default NoteMenu;
   position: absolute;
   border: 1px solid #fff;
   border-radius: 3px;
-  width: 440px;
+  /* width: 400px; */
   height: fit-content;
   background: var(--theme-color, #42b983);
   font-size: 12px;

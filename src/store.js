@@ -83,6 +83,33 @@ export class BookToc {
       return c;
     })
   }
+  fixWrongTitles() {
+    let charpterTitles = this.ChapterOjbList()
+    let m = {}
+    charpterTitles.forEach((charpter) => {
+      let { store } = charpter;
+      m[store.title] = charpter
+    })
+    charpterTitles.forEach((charpter) => {
+      let { store } = charpter;
+      let all = store.getAll()
+      all.filter(({ hs }) => {
+        if (hs.title != store.title) return true
+      }).forEach(({ hs }) => {
+        let { store } = charpter;
+        let target = m[hs.title]
+        if (target) {
+          target.store.save({ hs })
+          store.remove(hs.id)
+          console.log(hs.id, "move to " + hs.title + " from " + store.title)
+        }
+      })
+    })
+    charpterTitles.forEach((charpter) => {
+      let { store } = charpter;
+      store.forceSave()
+    })
+  }
   CharpterStorage({ path, title } = {}) {
     let { userid } = this
     if (path && title) {
@@ -261,7 +288,7 @@ class Chapter {
       });
       let aa = this.children.sort((a, b) => {
         if (a.domidx != undefined && b.domidx != undefined) {
-          return a.domidx- b.domidx;
+          return a.domidx - b.domidx;
         }
         if (a.textIndex != undefined && b.textIndex != undefined) {
           return a.textIndex - b.textIndex;
@@ -440,8 +467,7 @@ export class Book {
   }
   sortedChapter() {
     let sorttoc = pluginScript().sorttoc
-    let b = this
-    let aaa = b.Charpter().sort((a, b) => {
+    let aaa = this.Charpter().sort((a, b) => {
       // if (a.label == document.title) {
       //   return -1;
       // }
