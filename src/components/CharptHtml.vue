@@ -43,6 +43,22 @@
         />
       </div>
       <div class="sub-title">
+        <!-- <p
+          @click="onClick({ index, url })"
+          v-if="html"
+          :style="tabN(tabn, {})"
+          v-html="html"
+        >
+          <a
+            v-if="notshowSeq != true || tabn == 0"
+            style="text-decoration: none; color: black"
+          >
+            {{ headNumer(index) }}.</a
+          >
+          <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
+            a
+          }}</span>
+        </p> -->
         <a
           v-if="notshowSeq != true || tabn == 0"
           style="text-decoration: none; color: black"
@@ -51,16 +67,10 @@
         >
         <p
           @click="onClick({ index, url })"
-          v-if="html"
-          :style="tabN(tabn, {})"
           v-html="html"
+          :style="tabN(tabn, {})"
         >
-          <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
-            a
-          }}</span>
-        </p>
-        <p @click="onClick({ index, url })" v-else :style="tabN(tabn, {})">
-          <span :style="style">{{ text }}</span>
+          <span v-if="!html" :style="style">{{ text }}</span>
           <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
             a
           }}</span>
@@ -113,6 +123,10 @@ export default {
       if (a) {
         this.$el.scrollIntoView();
       }
+      this.focusline = undefined;
+    },
+    focusline() {
+      this.list = this.updateList();
     },
   },
   mounted() {
@@ -163,8 +177,10 @@ export default {
     onSort() {
       let { hl } = this;
       hl.updateAllPositions();
-      this.charpter = hl.store.Chapter();
-      msg("排序", this.charpter.label);
+      let charpter = hl.store.Chapter();
+      this.list = this.initList(charpter)
+      this.list = this.updateList()
+      msg("排序", charpter.label);
     },
     initList(charpter) {
       if (charpter)

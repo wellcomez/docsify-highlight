@@ -91,7 +91,7 @@ export default {
   },
   data() {
     return {
-      current: this.hl ? this.hl.store.Chapter() : undefined,
+      current: this.hl ? this.hl.store.Chapter() : {},
       open: undefined,
       disabled: false,
       zoomNoteBook: undefined,
@@ -109,34 +109,18 @@ export default {
     onClickURL(a) {
       gotoNote(a);
     },
-    clickOnToc(a) {
+    changeCurrentCharacter(charpter) {
       this.disabled = false;
-      const getPosition = ($node) => {
-        let offset = {
-          top: 0,
-          left: 0,
-          height: $node.offsetHeight,
-        };
-        while ($node) {
-          offset.top += $node.offsetTop;
-          offset.left += $node.offsetLeft;
-          $node = $node.offsetParent;
+      this.sortedChapter.find((a) => {
+        if (charpter.label == a.label) {
+          this.current = a;
+          gotoNote(a.children[0])
+          return true;
         }
-        offset.bottom = offset.top + offset.height;
-        return offset;
-      };
-      let h2 = document.querySelectorAll(".charpterhtml h2");
-      for (let i = 0; i < h2.length; i++) {
-        let t = h2[i];
-        let tt = t.getAttribute("tt");
-        if (tt == a) {
-          let { top } = getPosition(t);
-          document
-            .querySelector(".html-drawer .ivu-drawer-body")
-            .scrollTo(0, top - 50);
-          return;
-        }
-      }
+      });
+    },
+    clickOnToc(charpter) {
+      this.changeCurrentCharacter(charpter);
     },
   },
   watch: {
@@ -146,7 +130,7 @@ export default {
       }
     },
     hl(a) {
-      this.current = a.store.Chapter();
+      this.changeCurrentCharacter(a.store.Chapter());
     },
     openNoteBook(a) {
       if (a) {

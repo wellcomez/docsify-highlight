@@ -4,7 +4,7 @@
       <li
         class="html-toc-li"
         v-for="({ href, label }, index) in list"
-        @click="clickme(label)"
+        @click="clickme(index)"
         :key="index"
         style="list-style-type: decimal; list-style: decimal"
       >
@@ -29,7 +29,7 @@ export default {
   },
   watch: {
     charpter() {
-      this.newFunction();
+      this.convertRef();
     },
   },
   data() {
@@ -41,10 +41,10 @@ export default {
     if (this.exporthtml&&this.$el&&this.$el.classList) {
       this.$el.classList.add("exporthtml");
     }
-    this.newFunction();
+    this.convertRef();
   },
   methods: {
-    newFunction() {
+    convertRef() {
       this.list = this.charpter.map((a) => {
         let { label } = a;
         let href;
@@ -82,10 +82,13 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     clickme(index) {
+      let l = this.list
+      let {label} = l
+      let charpter = this.charpter[index]
       if (this.click) {
-        this.click(index);
+        this.click(charpter);
       } else {
-        this.clickOnToc(index);
+        this.clickOnToc(label);
       }
     },
   },
