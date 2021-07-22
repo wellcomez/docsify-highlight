@@ -10,8 +10,13 @@ const default_yellow = "#FFFF33";
 import { getConfig } from "./ANoteConfig";
 const defaultColor = {};
 defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)", default_red, default_yellow];
-defaultColor[tUl] = ["green", "red", "yellow"];
-defaultColor[tfontColor] = ["black", "green", "red", "white"];
+defaultColor[tUl] = ["red", "green", "yellow"];
+defaultColor[tfontColor] = ["red", "black", "green", "white"];
+
+export let lastDefaultColor = {};
+[tUl, tfontColor, tBackgroundColor].forEach((a) => {
+    lastDefaultColor[a] = defaultColor[a][0]
+})
 class colorSettings {
     constructor(type, values = undefined) {
         this.type = type
@@ -35,7 +40,7 @@ class colorSettings {
         this.colorList = this.colorList.filter((a, index) => {
             return i != index;
         })
-        if(this.colorList.length==0){
+        if (this.colorList.length == 0) {
             this.colorList = defaultColor[this.type];
         }
         this.save()
@@ -60,31 +65,29 @@ class colorSettings {
 // eslint-disable-next-line no-unused-vars
 export class highlightType {
     constructor(hl, hs) {
-        let { id: noteid, style } = hs;
-        if (style == undefined) style = {}
-        this.hl = hl;
-        this.noteid = noteid;
-        if (style) {
-            this.allTypes = style;
-        }
-        if (this.allTypes[tfontColor] == undefined) {
-            this.allTypes[tfontColor] = { colorhex: "red" };
-        }
-        if (this.allTypes[tUl] == undefined)
-            this.allTypes[tUl] = { colorhex: "red" };
         this.colorSettings = {};
-        let aaa = [tUl, tfontColor, tBackgroundColor]
-        for (let i = 0; i < aaa.length; i++) {
-            let a = aaa[i];
+        this.allTypes = {};
+        this.hl = hl;
+        this.noteid = hs.id;
 
-            let b = new colorSettings(a, defaultColor[a]);
-            this.colorSettings[a] = b;
-            let { enable, colorhex } = this.getType(a)
-            b.addColor(colorhex)
-            if (enable) {
-                // b.onSelectedColor(colorhex)
-            }
+
+        let { style } = hs;
+        if (style == undefined) style = {}
+        if (style) {
+            this.allTypes = { ...style };
         }
+
+        [tUl, tfontColor, tBackgroundColor].forEach((type) => {
+            let b = this.colorSettings[type] = new colorSettings(type, defaultColor[type]);
+            const colorhex = lastDefaultColor[type];
+            if (colorhex) {
+                b.addColor(colorhex);
+                let { enable } = this.getType(type);
+                if (enable != true) {
+                    this.setType({ type, enable, colorhex })
+                }
+            }
+        });
     }
     hlSettings(type) {
         return this.colorSettings[type]
@@ -103,12 +106,12 @@ export class highlightType {
         return this.colorSettings[type].currentColor();
     }
     showHighlight() {
-        for (let color in this.allTypes) {
-            let { enable, colorhex } = this.allTypes[color];
+        for (let type in this.allTypes) {
+            let { enable, colorhex } = this.allTypes[type];
             let { noteid } = this
             if (enable) {
-                color = parseInt(color)
-                this.hl.updateHignLightColor(noteid, color, colorhex);
+                type = parseInt(type)
+                this.hl.updateHignLightColor(noteid, type, colorhex);
             }
         }
     }
@@ -133,6 +136,9 @@ export class highlightType {
         let color = type;
         let disable = enable != true;
         this.allTypes[type] = { enable, colorhex };
+        if (enable && colorhex) {
+            lastDefaultColor[type] = colorhex;
+        }
         this.hl.updateHignLightColor(noteid, color, colorhex, disable);
     }
     json() {

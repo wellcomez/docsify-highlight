@@ -55,7 +55,7 @@ export const NoteMenu = {
     },
     watch: {
         color1() {
-            this.colorList = this.hlSettings?this.hlSettings.colorList:[];
+            this.colorList = this.hlSettings ? this.hlSettings.colorList : [];
         },
         hlType(a) {
             if (a == tUl || a == tfontColor) {
@@ -196,8 +196,7 @@ export const NoteMenu = {
         },
         initDefaultButton() {
             let aaa = [tUl, tfontColor, tBackgroundColor]
-            for (let i = 0; i < aaa.length; i++) {
-                let a = aaa[i]
+            aaa.forEach((a) => {
                 let { enable, colorhex } = this.hlStyle.getType(a)
                 if (colorhex == undefined) {
                     colorhex = this.hlStyle.getDefaultColor(a)
@@ -209,7 +208,7 @@ export const NoteMenu = {
                         this.color1 = colorhex
                     }
                 }
-            }
+            })
         },
         updateSelection(a) {
             if (a != undefined) {
