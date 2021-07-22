@@ -4,7 +4,7 @@
     v-on:click="onClickMask"
     @touchstart="onClickMask"
   >
-    <div v-bind:style="style" class="my-remove-tip" id="markpannel">
+    <div v-bind:style="style" :class="tipclass" id="markpannel">
       <Row v-if="showtagPane">
         <TagPanel :tags.sync="tags" />
       </Row>
@@ -145,17 +145,18 @@ export default NoteMenu;
   position: absolute;
   border: 1px solid #fff;
   border-radius: 3px;
-  /* width: 400px; */
+  width: 390px;
   height: fit-content;
   background: var(--theme-color, #42b983);
   font-size: 12px;
   cursor: pointer;
-  /* line-height: 18px; */
   overflow: visible;
   padding: 4px;
   padding-bottom: 1px;
 }
-
+.my-remove-tip.notfortext{
+  width: 230px;
+}
 .my-remove-tip .ivu-col {
   padding-bottom: 2px;
 }

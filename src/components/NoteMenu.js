@@ -79,6 +79,9 @@ export const NoteMenu = {
         }
     },
     computed: {
+        tipclass(){
+            return this.showfortxt?"my-remove-tip":"my-remove-tip notfortext"
+        },
         backgroundClass() {
             if (this.hlType == tBackgroundColor) {
                 return "backgroundClass"

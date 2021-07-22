@@ -98,10 +98,20 @@ export class BookToc {
       }).forEach(({ hs }) => {
         let { store } = charpter;
         let target = m[hs.title]
-        if (target) {
+        if (target == undefined && hs.imgsrc) {
+          let path = decodeURIComponent(new URL(hs.imgsrc).pathname)
+          let ret = Object.keys(m).filter((a) => {
+            return path.indexOf(a) != -1
+          })
+          if (ret.length == 1) {
+            // console.log(ret, hs.tilte)
+            target = m[ret[0]]
+          }
+        }
+        if (target && target.store != store) {
           target.store.save({ hs })
           store.remove(hs.id)
-          console.log(hs.id, "move to " + hs.title + " from " + store.title)
+          console.log(hs.id, "move to " + target.store.title + " from " + store.title)
         }
       })
     })

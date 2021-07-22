@@ -4,7 +4,7 @@ import { User } from "./UserLogin";
 import { log } from "./log";
 import { getIntersection } from "./hl"
 import { getConfig } from './ANoteConfig';
-import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox, getImgSrcUrl } from './utils';
+import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
@@ -273,22 +273,16 @@ export class DocHighlighter {
             User.addCallback(checkUserStatus, true)
         }
         let handleImageClick = (e) => {
-            // console.log(window.location)
             try {
                 let menu = document.getElementsByClassName("note-menu")
                 if (menu && menu.length) return
 
                 let ele = e.target
-                let find = false
-                let ssss = this.$root.querySelectorAll('.markdown-section img')
-                for (let i = 0; i < ssss.length; i++) {
-                    if (ele == ssss[i]) {
-                        find = true;
-                        break
-                    }
-                }
-                if (find == false) return
-
+                let parentTagName = 'img'
+                let ssss = this.$root.querySelectorAll(parentTagName)
+                ssss = Array.prototype.slice.call(ssss);
+                let parentIndex = ssss.indexOf(ele)
+                if (parentIndex == -1) return
                 let { tagName } = ele
                 if (tagName == 'IMG') {
                     e.stopPropagation()
@@ -303,21 +297,12 @@ export class DocHighlighter {
                                 : ((([1e7])) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/gu, createUUID);
                         }
                         let id = createUUID()
-                        let parentTagName = 'img'
-                        let parentIndex
                         let textOffset = 0
-                        let imgs = this.$root.querySelectorAll(parentTagName)
-                        for (let i = 0; i < imgs.length; i++) {
-                            if (ele == imgs[i]) {
-                                parentIndex = i
-                                break
-                            }
-                        }
                         let startMeta = { parentTagName, parentIndex, textOffset }
                         let endMeta = startMeta
                         let imgsrc = getEleSrc(ele);
-                        let text = ""
-                        let hs = { startMeta, endMeta, id, imgsrc, text }
+                        let title = this.store.title
+                        let hs = { startMeta, endMeta, id, imgsrc, title }
                         let sources = [hs]
                         if (ele) {
                             let wrap = mountCmp(NoteImg, { id, hl: this, imgElement: ele }, ele, true).$el
@@ -325,8 +310,8 @@ export class DocHighlighter {
                         }
                     }
                 }
-                // eslint-disable-next-line no-empty
             } catch (error) {
+                console.error(error)
             }
             console.log(e)
         }
@@ -438,7 +423,7 @@ export class DocHighlighter {
             }
             if (selectedNodes.length == 0) {
                 let hs = self.store.geths(id)
-                if(hs){
+                if (hs) {
                     console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
                 }
             }
@@ -841,56 +826,32 @@ export class DocHighlighter {
             })
         this.store.jsonToStore(storeInfos)
     }
+    storeInfosImg = (storeInfos) => storeInfos.filter(({ hs }) => {
+        return hs.imgsrc
+    })
     load = (loaded) => {
         if (loaded) {
-            let { store, highlighter } = this;
+            let { highlighter } = this;
             const storeInfos = this.allhs();
+            const storeInfosImg = this.storeInfosImg(storeInfos)
             storeInfos.forEach(
                 ({ hs }) => {
                     try {
-                        let node = this.getElement(hs.id);
-                        if (node != undefined) {
+                        if (this.getElement(hs.id) != undefined) {
                             this.updateHignLightColor(hs.id, hs.color, hs.colorhex);
                             return;
                         }
-                        // eslint-disable-next-line no-empty
                     } catch (error) {
+                        console.error(error)
                     }
-                    hs = this.checkHS(hs)
                     if (hs.imgsrc) {
-                        let { startMeta, id, note } = hs;
-                        let { parentTagName, parentIndex } = startMeta
-                        let ele = this.$root.querySelectorAll(parentTagName)[parentIndex]
-                        if (ele) {
-                            let ok = true;
-                            let imgsrc = getEleSrc(ele);
-                            if (imgsrc == hs.imgsrc) {
-                                ok = true;
-                            } else {
-                                let images = this.$root.querySelectorAll(parentTagName);
-                                for (let i = 0; i < images.length; i++) {
-                                    let e = images[i];
-                                    if (getEleSrc(e) == hs.imgsrc) {
-                                        ele = e;
-                                        startMeta.parentIndex = i;
-                                        hs.startMeta = startMeta
-                                        this.store.update({ id, startMeta })
-                                        ok = true;
-                                        break;
-                                    }
-                                }
-                                let url = store.Chapter().url(id);
-                                let imgsrc = getImgSrcUrl(hs.imgsrc);
-                                console.info("Not-find",
-                                    "\n" + decodeURI(url),
-                                    "\n" + decodeURI(imgsrc),
-                                    this.store.title)
-                            }
-                            if (ok) {
-                                mountCmp(NoteImg, { id, note, hl: this, imgElement: ele }, ele, true)
-                            }
+                        let { note, id } = hs
+                        let { ok, element } = this.fixHSImgElement(hs, storeInfosImg)
+                        if (ok) {
+                            mountCmp(NoteImg, { id, note, hl: this, imgElement: element }, element, true)
                         }
                     } else {
+                        hs = this.checkHS(hs)
                         highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
                 }
@@ -906,6 +867,62 @@ export class DocHighlighter {
         }
 
     };
+    findHSImgElement(hs, storeInfosImg = undefined) {
+        let parentTagName = 'img'
+        let images = this.$root.querySelectorAll(parentTagName);
+        let { startMeta } = hs;
+        let { parentIndex } = startMeta
+        let ele = images[parentIndex]
+        if (ele) {
+            let imgsrc = getEleSrc(ele);
+            if (imgsrc == hs.imgsrc) {
+                return { element: ele, parentIndex }
+            }
+        }
+
+
+        if (storeInfosImg == undefined) {
+            storeInfosImg = this.storeInfosImg(this.store.getAll())
+        }
+        let allHs = storeInfosImg.map(({ hs }) => hs).filter((a) => {
+            return a.imgsrc == hs.imgsrc;
+        }).sort((a, b) => {
+            return a.startMeta.parentIndex - b.startMeta.parentIndex
+        });
+        let index = allHs.indexOf(hs);
+        images = Array.prototype.slice.call(images);
+        let hsImageElements = images.filter((e) => {
+            return getEleSrc(e) == hs.imgsrc;
+        }).sort(cmpNodePosition);
+        let element = hsImageElements[index];
+        parentIndex = undefined
+        if (element) {
+            hsImageElements.indexOf(element);
+        }
+        return { element, parentIndex };
+
+    }
+    fixHSImgElement(hs, storeInfosImg = undefined) {
+        let { startMeta, id, title } = hs
+        let { element, parentIndex } = this.findHSImgElement(hs, storeInfosImg)
+        let ok
+        if (element) {
+            ok = true
+            if (startMeta.parentIndex != parentIndex && parentIndex != undefined) {
+                startMeta.parentIndex = parentIndex
+                hs.startMeta = startMeta;
+                this.store.update({ id, startMeta, title });
+            }
+            if (title) {
+                title = this.store.title
+                if (title) {
+                    this.store.update({ id, title });
+                }
+            }
+        }
+        return { hs, ok, element }
+    }
+
     findTailElement(id, tail = true) {
         let ret = this.getTopElement({ id })
         if (tail) { return ret.tail }
@@ -1013,14 +1030,10 @@ export class DocHighlighter {
     getTopElement = (hs) => {
         let { id } = hs
         if (hs.imgsrc) {
-            let images = this.$root.querySelectorAll('img');
-            for (let i = 0; i < images.length; i++) {
-                let e = images[i];
-                if (getEleSrc(e) == hs.imgsrc) {
-                    let element = e;
-                    let { top } = this.getPosition(element)
-                    return { top, element, tail: element }
-                }
+            let { element } = this.findHSImgElement(hs)
+            if (element) {
+                let { top } = this.getPosition(element)
+                return { top, element, tail: element }
             }
         }
         let nodes = this.highlighter.getDoms(id)

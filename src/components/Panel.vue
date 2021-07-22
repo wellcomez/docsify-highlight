@@ -65,7 +65,7 @@
         <i-switch :value="checked" @on-change="onChange" />
       </Col> -->
       <Col>
-        <SvgButton @click="openNoteBook = !openNoteBook" name="md-text"/>
+        <SvgButton @click="openNoteBook = !openNoteBook" name="md-text" />
       </Col>
       <Col>
         <SvgButton @click="bDrawerOpen = true" name="md-settings" />
@@ -82,6 +82,14 @@
                 size="small"
                 style="margin: 4px"
                 >排序</Button
+              >
+            </Col>
+            <Col>
+              <Button
+                @click="onClickRepairStore"
+                size="small"
+                style="margin: 4px"
+                >修复</Button
               >
             </Col>
             <Col>
@@ -338,6 +346,9 @@ export default {
     },
     onClickURL(a) {
       gotoNote(a);
+    },
+    onClickRepairStore(){
+      this.book.toc.fixWrongTitles()
     },
     onClickRepairToc2() {
       this.hl.updateAllPositions();
