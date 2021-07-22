@@ -722,6 +722,10 @@ export class hlPlacement {
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     checkParent = (parentElement, text, findstart = false) => {
         let begin, end, next = 0, endMeta, startMeta;
+        let parentElementText = parentElement.innerText
+        if(parentElementText==undefined){
+            parentElementText = parentElement.wholeText.replaceAll("\n", '')
+        }
         let nodetree = []
         let nodec
         if (this.cancheck(parentElement)) {
@@ -742,9 +746,9 @@ export class hlPlacement {
                 let nodec = this.convertDom2Nodetree(node)
                 if (textOffset != undefined || textOffset == -1) {
                     if (node.nodeType == 3) {
-                        let lcs = longestCommonSubstring(nodec.innerText, parentElement.innerText)
+                        let lcs = longestCommonSubstring(nodec.innerText, parentElementText)
                         let { sequence } = lcs
-                        textOffset = parentElement.innerText.indexOf(sequence) + sequence.length - 1
+                        textOffset = parentElementText.indexOf(sequence) + sequence.length - 1
                         if (textOffset == undefined || textOffset == -1) {
                             console.error(nodec, text)
                             textOffset = 0
@@ -769,10 +773,10 @@ export class hlPlacement {
                 if (textOffset != undefined || textOffset == -1) {
                     let nodec = this.convertDom2Nodetree(node)
                     if (node.nodeType == 3) {
-                        let lcs = longestCommonSubstring(nodec.innerText, parentElement.innerText)
+                        let lcs = longestCommonSubstring(nodec.innerText, parentElementText)
                         let { sequence } = lcs
                         if (sequence.length) {
-                            textOffset = parentElement.innerText.indexOf(sequence);
+                            textOffset = parentElementText.indexOf(sequence);
                         } else {
                             textOffset = 0
                         }
