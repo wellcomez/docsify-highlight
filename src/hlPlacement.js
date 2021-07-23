@@ -1,6 +1,175 @@
 import { UTILS } from './css_path'
+const regexpNoSpace = new RegExp("\\s", "g")
 let trimstring = (s) => {
-    return s.replace(/\u3000| |\t/g, '');
+    // return s.replace(/\u3000|' '|\t/, '');
+    return s.replace(regexpNoSpace, '')
+}
+const getPrevOrPrevParent = (parent) => {
+    if (parent) {
+        let ret = parent.previousSibling
+        if (ret && notRoot(ret)) {
+            if (isTextNode(ret) == false) {
+                return getPrevOrPrevParent(ret)
+            }
+            return ret
+        }
+        return getPrevOrPrevParent(parent.parentNode)
+    }
+}
+const findInLast = (node, text) => {
+    if (node.nodeType == 3) {
+        let t = trimstring(node.textContent)
+        let index = text.lastIndexOf(t)
+        if (index != -1 && index + t.length == text.length) {
+            text = text.substring(0, index)
+            return { node, text }
+        } else {
+            return {}
+        }
+    }
+    let last = node.lastChild
+    let rc = {}
+    while (last) {
+        let result = findInLast(last, text)
+        text = result.text
+        if (text == undefined) return {}
+        if (text.length == 0) return result
+        rc = { ...result }
+        last = last.previousSibling
+    }
+    return rc
+
+}
+const findInFirst = (node, text) => {
+    if (node.nodeType == 3) {
+        let t = trimstring(node.textContent)
+        if (!t) {
+            return { next: true }
+        }
+        let index = text.indexOf(t)
+        if (index != -1) {
+            return { node, textOffset: index }
+        } else {
+            return {}
+        }
+    }
+    let last = node.firstChild
+    let rc = { next: true }
+    while (last) {
+        let ret = findInFirst(last, text)
+        if (ret.node) {
+            return ret
+        }
+        if (ret.next) {
+            last = last.nextSibling
+        } else {
+            return {}
+        }
+    }
+    return rc
+
+}
+const compareNodeText = (text2, el, prefixTrim) => {
+    let parent = notRoot(el.parentNode) ? el.parentNode : el
+    let preElement = parent
+    let preContent = filteInnerText(preElement)
+    let endElement = el
+    preContent = trimstring(preContent)
+    let bb = text2.lastIndexOf(preContent)
+    let findTail
+    if (bb == -1) {
+        let { sequence } = longestCommonSubstring(text2, preContent)
+        if (sequence) {
+            findTail = sequence.lastIndexOf(prefixTrim) + prefixTrim.length == sequence.length
+            if (findTail) {
+                bb = text2.lastIndexOf((sequence))
+            }
+        }
+    }
+    if (bb == 0) {
+        let { node } = findInFirst(preElement, text2)
+        if (node) {
+            return { beginElement: node, endElement}
+        }
+    }
+    while (bb > 0) {
+        text2 = text2.substring(0, bb)
+        if (text2.length == 0) {
+            break;
+        }
+        const find = (a) => {
+            let index = -1
+            let nextElement = getPrevOrPrevParent(a)
+            if (!nextElement) return { index }
+            let content = trimstring(filteInnerText(nextElement))
+            if (content) {
+                if (content.length > text2.length) {
+                    if (content.lastIndexOf(text2) != 1) {
+                        return { preElement: nextElement, index: 0 }
+                    }
+                    return { preElement: nextElement, index: -1 }
+                } else {
+                    let index = text2.lastIndexOf(content)
+                    return { preElement: nextElement, index }
+                }
+            } else {
+                return find(nextElement)
+            }
+        }
+        let result = find(preElement)
+        bb = result.index
+        preElement = result.preElement
+        if (bb == 0) {
+            let ret = findInLast(preElement, text2)
+            if (ret.node) {
+                return { beginElement: ret.node, endElement}
+            }
+        }
+    }
+    return undefined
+}
+const isTextNode = (node) => {
+    let { nodeType } = node;
+    let yes = nodeType == 1 || nodeType == 3
+    if (yes) {
+        if (node.classList && node.classList.contains('notemarker')) {
+            yes = false
+        }
+    }
+    return yes
+}
+const commonInnerText = (node) => {
+    let { innerText, nodeValue } = node;
+    if (innerText == undefined) {
+        innerText = nodeValue;
+        if (innerText) {
+            innerText = innerText.replaceAll("\n", '');
+        }
+    }
+    if (innerText)
+        return innerText;
+    return '';
+}
+const filteInnerText = (node) => {
+    const nodetext = (node) => {
+        if (isTextNode(node) == false) { return "" }
+        if (node.childNodes.length) {
+            return undefined;
+        }
+        return commonInnerText(node)
+    }
+    let ret = nodetext(node)
+    if (ret != undefined) return ret
+    ret = []
+    for (let i = 0; i < node.childNodes.length; i++) {
+        let a = node.childNodes[i]
+        if (isTextNode(a) == false) continue
+        let t = filteInnerText(a)
+        if (t) {
+            ret.push(t)
+        }
+    }
+    return ret.join("")
 }
 const notRoot = (parentElement) => parentElement && parentElement.tagName != "article".toUpperCase()
 
@@ -219,15 +388,13 @@ export class hlPlacement {
         }
         return {}
     }
+
     convertDom2Nodetree(a) {
-        let element = a;
-        let { innerText, nodeType, wholeText } = a;
-        if (innerText == undefined) {
-            innerText = wholeText
-            if (innerText) {
-                innerText = innerText.replaceAll("\n", '')
-            }
-        }
+        let { nodeType, } = a;
+        let element = a
+
+        let innerText = filteInnerText(a)
+
         let parentTagName = a.tagName;
         if (a.tagName == 'I' || nodeType == 3) {
             element = a.parentElement;
@@ -266,10 +433,7 @@ export class hlPlacement {
         return {}
     }
     findElementText(el, text) {
-        let { innerText: elText, wholeText } = el
-        if (elText == undefined) {
-            elText = wholeText.replaceAll("\n", '')
-        }
+        let elText = commonInnerText(el)
         let index = elText.indexOf(text)
         if (index != -1)
             return index
@@ -605,10 +769,7 @@ export class hlPlacement {
         text = trimstring(text)
         let nodeText = ''
         selectedNodes.forEach((node) => {
-            let { innerText, wholeText } = node.$node;
-            if (innerText == undefined) {
-                innerText = wholeText
-            }
+            let innerText = commonInnerText(node.$node)
             let a = trimstring(innerText).replaceAll("\n", '')
             if (a.length) {
                 nodeText = nodeText + a
@@ -619,10 +780,7 @@ export class hlPlacement {
             // console.log(sequence, lcs)
         })
         selectedNodes.forEach((node) => {
-            let { innerText, wholeText } = node.$node;
-            if (innerText == undefined) {
-                innerText = wholeText
-            }
+            let innerText = commonInnerText(node)
             let a = trimstring(innerText).replaceAll("\n", '')
             if (text == undefined || text.length == 0) return;
             if (a.length) {
@@ -711,140 +869,15 @@ export class hlPlacement {
                 }
                 filterText = ret
             } else {
-                filterText = node.wholeText;
+                filterText = node.nodeValue;
             }
         }
         filterText = trimstring(filterText).replaceAll("\n", '')
         node.filterText = filterText
         return filterText
     }
-    isTextNode(node) { let { nodeType } = node; return nodeType == 1 || nodeType == 3 }
-    cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
-    checkParent = (parentElement, text, findstart = false) => {
-        let begin, end, next = 0, endMeta, startMeta;
-        let parentElementText = parentElement.innerText
-        if (parentElementText == undefined) {
-            parentElementText = parentElement.wholeText.replaceAll("\n", '')
-        }
-        let nodetree = []
-        let nodec
-        if (this.cancheck(parentElement)) {
-            let { childNodes } = parentElement
-            childNodes = Array.prototype.slice.call(childNodes);
-            let children = childNodes.filter((a) => this.isTextNode(a))
-            if (children.length == 0) {
-                children = [parentElement]
-            }
-            const setEndMeta = (endMeta, node, lastchar) => {
-                let { textOffset } = endMeta
-                let nodec = this.convertDom2Nodetree(node)
-                if (textOffset != undefined || textOffset == -1) {
-                    if (node.nodeType == 3) {
-                        let lcs = longestCommonSubstring(nodec.innerText, parentElementText)
-                        let { sequence } = lcs
-                        textOffset = parentElementText.indexOf(sequence) + sequence.length - 1
-                        if (textOffset == undefined || textOffset == -1) {
-                            console.error(nodec, text)
-                            textOffset = 0
-                        } else {
-                            textOffset = textOffset + sequence.length - 1
-                        }
-                    } else {
-                        textOffset = nodec.innerText.lastIndexOf(lastchar)
-                        if (textOffset == -1) {
-                            textOffset = nodec.innerText.length - 1
-                        }
-                    }
-                }
-                if (textOffset == -1)
-                    console.error(endMeta, node, parentElement)
-                endMeta.textOffset = textOffset
-                return endMeta
-            }
 
-            const setStartMeta = (endMeta, node, firstChar) => {
-                let { textOffset } = endMeta
-                if (textOffset != undefined || textOffset == -1) {
-                    let nodec = this.convertDom2Nodetree(node)
-                    if (node.nodeType == 3) {
-                        let lcs = longestCommonSubstring(nodec.innerText, parentElementText)
-                        let { sequence } = lcs
-                        if (sequence.length) {
-                            textOffset = parentElementText.indexOf(sequence);
-                        } else {
-                            textOffset = 0
-                        }
-                    } else {
-                        textOffset = nodec.innerText.indexOf(firstChar)
-                    }
-                }
-                if (textOffset == -1)
-                    console.error(endMeta, node, parentElement)
-                endMeta.textOffset = textOffset
-                return endMeta
-            }
-            for (let j = 0; j < children.length; j++) {
-                nodec = undefined
-                let c = children[j]
-                let ignored = c.classList && c.classList.contains('hl-ignored')
-                nodec = this.convertDom2Nodetree(c)
-                nodetree.push(nodec)
-                let t = trimstring(nodec.innerText)
-                if (t.length == 0) continue
-                let index = text.substring(next).indexOf(t) + next
-                if (index != -1) {
-                    if (begin == undefined) {
-                        begin = index
-                        startMeta = setStartMeta({ ...nodec }, c, t[0])
-                    }
-                    if (end != undefined) {
-                        if (next != index) {
-                            if (findstart == true) {
-                                break
-                            } else {
-                                if (ignored == false) {
-                                    begin = undefined, end = undefined, endMeta = undefined, startMeta = undefined
-                                    continue
-                                } else {
-                                    break
-                                }
-                            }
-                        }
-                    }
-                    end = index + t.length - 1
-                    next = end + 1
-                    if (next == text.length) {
-                        endMeta = setEndMeta({ ...nodec }, c, text[text.length - 1])
-                        break
-                    }
-                } else if (end != undefined) {
-                    text = text.substring(next)
-                    if (t.indexOf(text) == 0) {
-                        endMeta = setEndMeta({ ...nodec }, c, t[t.length - 1])
-                    }
-                    break;
-                } else {
-                    if (begin == undefined) {
-                        let lcs = longestCommonSubstring(t, text)
-                        // { length: 9, sequence: ' common s', offset: 7 }
-                        let { sequence } = lcs
-                        if (sequence) {
-                            begin = text.indexOf(sequence)
-                        }
-                        if (begin != -1) {
-                            end = begin + sequence.length - 1
-                            if (begin == 0)
-                                startMeta = setStartMeta({ ...nodec, textOffset: begin }, c, sequence[0])
-                            endMeta = { ...nodec, textOffset: end }
-                            // setEndMeta(endMeta,c)
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        return { begin, end, endMeta, startMeta, nodetree }
-    }
+    cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     replacementHS3(hs) {
         let { endMeta } = hs;
         let prefix = this.isOneElement(hs) ? hs.text : hs.text.substring(hs.text.length - endMeta.textOffset)
@@ -858,9 +891,21 @@ export class hlPlacement {
         let isOneElement = this.isOneElement(hs)
 
         let rc;
+        let left = false;
+        let offset = 0;
         for (let cout = 0; cout < nodes.length; cout++) {
-            const i = (meta.parentIndex + cout) % nodes.length
+            offset = parseInt(cout / 2)
+            if (left) {
+                offset = -offset
+                if (offset == 0 && left) {
+                    left = !left
+                    continue
+                }
+            }
+            left = !left
+            const i = meta.parentIndex + offset
             let el = nodes[i]
+            if (el == undefined) continue
             let { innerText } = el
             let yes = innerText && innerText.length
             if (yes == false) { continue }
@@ -888,43 +933,27 @@ export class hlPlacement {
                     continue
                 }
                 let text = trimstring(hs.text)
-                let parent = notRoot(el.parentNode) ? el.parentNode : el
-                let { begin, endMeta, startMeta } = this.checkParent(parent, text)
-                if (endMeta) {
-                    if (startMeta && begin == 0) {
-                        let ret = this.updateParentIndex([startMeta, endMeta], hs)
-                        if (ret) return ret
-                    }
-                    const getPrevOrPrevParent = (parent) => {
-                        if (parent) {
-                            let ret = parent.previousSibling
-                            if (ret && notRoot(ret)) {
-                                if (this.isTextNode(ret) == false) {
-                                    return getPrevOrPrevParent(ret)
-                                }
-                                return ret
-                            }
-                            return getPrevOrPrevParent(parent.parentNode)
+                let compareResult = compareNodeText(text, el, prefixTrim)
+                if (compareResult) {
+                    let { endElement, beginElement } = compareResult
+                    let getMeta = (el) => {
+                        if (el.nodeType == 3) {
+                            el = el.parentElement
                         }
-                    }
-                    parent = getPrevOrPrevParent(parent)
-                    while (parent) {
-                        text = text.substring(0, begin)
-                        let a = this.checkParent(parent, text, true)
-                        begin = a.begin
-                        if (a.startMeta) {
-                            startMeta = a.startMeta
+                        let parentTagName = el.tagName
+                        if (parentTagName == "I" && (el.classList && el.classList.contains('docsify-highlighter'))) {
+                            el = el.parentElement
+                            parentTagName = el.tagName
                         }
-                        if (begin == 0) {
-                            break
-                        }
-                        parent = getPrevOrPrevParent(parent)
+                        return { parentTagName, ...this.getParentIndex({ parentTagName }, el) }
                     }
-                    if (startMeta) {
-                        let ret = this.updateParentIndex([startMeta, endMeta], hs)
-                        if (ret) return ret
-                        return { startMeta, endMeta }
-                    }
+                    getMeta = getMeta.bind(this)
+                    let endMeta = getMeta(endElement)
+                    let startMeta = getMeta(beginElement)
+                    let ret = this.updateParentIndex([startMeta, endMeta], hs)
+                    if (ret) return ret
+                    return { startMeta, endMeta }
+
                 }
             }
         }

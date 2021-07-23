@@ -67,10 +67,19 @@ export class DocHighlighter {
         if (!selected || !selected.$node || !selected.$node.parentNode) {
             return [];
         }
-        return [
-            this.highlighter.getIdByDom(selected.$node.parentNode),
-            ...this.highlighter.getExtraIdByDom(selected.$node.parentNode)
-        ].filter(i => i);
+        let id1 = ""
+        try {
+            id1 = this.highlighter.getIdByDom(selected.$node.parentNode)
+        } catch (error) {
+            console.error(error)
+        }
+        let id2 = []
+        try {
+            id2 = this.highlighter.getExtraIdByDom(selected.$node.parentNode)
+        } catch (error) {
+            console.error(error)
+        }
+        return [id1, ...id2].filter(i => i);
     }
     count() {
         let aa = this.allhs();
@@ -378,7 +387,11 @@ export class DocHighlighter {
                     let parent = selected.$node.parentNode;
                     const ingoreElement = (parent) => {
                         if (parent) {
-                            if (parent.style.display == 'none' || parent.classList.contains('hl-ignored'))
+                            if(parent.classList){
+                                let a = ['hl-ignored','notemarker','note-inline-tooltiptext'].find((a)=>parent.classList.contains(a))
+                                if(a)return true
+                            }
+                            if (parent.style.display == 'none' )
                                 return true
                         }
                         return false;
@@ -411,23 +424,28 @@ export class DocHighlighter {
                     }
                 }
             }
-            const candidates = selectedNodes.slice(1).reduce(
-                (left, selected) => getIntersection(left, this.getIds(selected)),
-                this.getIds(selectedNodes[0])
-            );
-            for (let i = 0; i < candidates.length; i++) {
-                if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
-                    selectedNodes = [];
-                    break;
+            try {
+                const candidates = selectedNodes.slice(1).reduce(
+                    (left, selected) => getIntersection(left, this.getIds(selected)),
+                    this.getIds(selectedNodes[0])
+                );
+                candidates.length
+                for (let i = 0; i < candidates.length; i++) {
+                    if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
+                        selectedNodes = [];
+                        break;
+                    }
                 }
-            }
-            if (selectedNodes.length == 0) {
-                let hs = self.store.geths(id)
-                if (hs) {
-                    console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                if (selectedNodes.length == 0) {
+                    let hs = self.store.geths(id)
+                    if (hs) {
+                        console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                    }
                 }
+                return selectedNodes;
+            } catch (error) {
+                console.error(error)
             }
-            return selectedNodes;
         });
         this.hsPlacement = new hlPlacement(this)
         // new hlPosition()
