@@ -3,15 +3,10 @@
  * This Object can be deSerialized to HRange.
  * Also it has the ability for persistence.
  */
-{
-    DomMeta, HookMap, DomNode;
-}
-from;
-'@src/types';
-import HighlightRange from '@src/model/range/index';
-import { queryElementNode, getTextChildByOffset } from '@src/model/source/dom';
-var HighlightSource = /** @class */ (function () {
-    function HighlightSource(startMeta, endMeta, text, id, extra) {
+import HighlightRange from '../range/index';
+import { queryElementNode, getTextChildByOffset } from './dom';
+export default class HighlightSource  {
+    HighlightSource(startMeta, endMeta, text, id, extra) {
         this.startMeta = startMeta;
         this.endMeta = endMeta;
         this.text = text;
@@ -21,7 +16,7 @@ var HighlightSource = /** @class */ (function () {
             this.extra = extra;
         }
     }
-    HighlightSource.prototype.deSerialize = function ($root, hooks) {
+    deSerialize = function ($root, hooks) {
         var _a = queryElementNode(this, $root), start = _a.start, end = _a.end;
         var startInfo = getTextChildByOffset(start, this.startMeta.textOffset);
         var endInfo = getTextChildByOffset(end, this.endMeta.textOffset);
@@ -33,6 +28,4 @@ var HighlightSource = /** @class */ (function () {
         var range = new HighlightRange(startInfo, endInfo, this.text, this.id, true);
         return range;
     };
-    return HighlightSource;
-}());
-export default HighlightSource;
+}

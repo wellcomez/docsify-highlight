@@ -1,12 +1,7 @@
 /**
  * some dom operations about HighlightRange
  */
-{
-    DomMeta, DomNode;
-}
-from;
-'@src/types';
-import { CAMEL_DATASET_IDENTIFIER, ROOT_IDX, UNKNOWN_IDX } from '@src/util/const';
+import { CAMEL_DATASET_IDENTIFIER, ROOT_IDX, UNKNOWN_IDX } from '../../util/const';
 var countGlobalNodeIndex = function ($node, $root) {
     var tagName = $node.tagName;
     var $list = $root.getElementsByTagName(tagName);
@@ -47,7 +42,7 @@ var getOriginParent = function ($node) {
         return $node;
     }
     var $originParent = $node.parentNode;
-    while ($originParent ? .dataset[CAMEL_DATASET_IDENTIFIER] : ) {
+    while ($originParent ? $originParent.dataset[CAMEL_DATASET_IDENTIFIER] : false) {
         $originParent = $originParent.parentNode;
     }
     return $originParent;

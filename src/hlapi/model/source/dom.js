@@ -1,11 +1,4 @@
-{
-    DomNode;
-}
-from;
-'@src//types';
-from;
-'@src/model/source/index';
-import { ROOT_IDX } from '@src/util/const';
+import { ROOT_IDX } from '../../util/const';
 /**
  * Because of supporting highlighting a same area (range overlapping),
  * Highlighter will calculate which text-node and how much offset it actually be,
