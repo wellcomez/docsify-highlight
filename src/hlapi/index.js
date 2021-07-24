@@ -4,22 +4,12 @@ import uuid from './util/uuid';
 import Painter from './painter';
 import { getDefaultOptions } from './util/const';
 import { EventType, CreateFrom } from './types';
-import { addClass, removeClass, isHighlightWrapNode, getHighlightById, getExtraHighlightId, getHighlightsByRoot, getHighlightId, } from './util/dom';
+import { isHighlightWrapNode, getHighlightById, getExtraHighlightId, getHighlightsByRoot, getHighlightId, } from './util/dom';
 export {
     isHighlightWrapNode ,HighlightSource
 }
 export default class Highlighter {
     constructor(options) {
-        this.addClass = (className, id) => {
-            this.getDoms(id).forEach($n => {
-                addClass($n, className);
-            });
-        };
-        this.removeClass = (className, id) => {
-            this.getDoms(id).forEach($n => {
-                removeClass($n, className);
-            });
-        };
         this.getIdByDom = ($node) => getHighlightId($node, this.options.$root);
         this.getExtraIdByDom = ($node) => getExtraHighlightId($node, this.options.$root);
         this.getDoms = (id) => id
@@ -84,17 +74,6 @@ export default class Highlighter {
         };
         this.options = getDefaultOptions();
         this.setOption(options);
-    }
-    remove(id) {
-        if (!id) {
-            return;
-        }
-        this.painter.removeHighlight(id);
-    }
-    removeAll() {
-        this.painter.removeAllHighlight();
-        const ids = this.cache.removeAll();
-        this.emit(EventType.REMOVE, { ids }, this);
     }
     _highlightFromHSource(sources = []) {
         const renderedSources = this.painter.highlightSource(sources);
