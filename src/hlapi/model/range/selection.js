@@ -3,8 +3,8 @@
  * If you want to use Highlighter in some old browsers, you may use a polyfill.
  * https://caniuse.com/#search=selection
  */
-export var getDomRange = function () {
-    var selection = window.getSelection();
+export const getDomRange = () => {
+    const selection = window.getSelection();
     if (selection.isCollapsed) {
         // eslint-disable-next-line no-console
         console.debug('no text selected');
@@ -12,6 +12,6 @@ export var getDomRange = function () {
     }
     return selection.getRangeAt(0);
 };
-export var removeSelection = function () {
+export const removeSelection = () => {
     window.getSelection().removeAllRanges();
 };

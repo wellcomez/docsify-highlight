@@ -8,27 +8,27 @@ import { unique } from '../util/tool';
  *  - id: #nav, #js-toggle-btn
  *  - tag: div, p, span
  */
-var isMatchSelector = function ($node, selector) {
+const isMatchSelector = ($node, selector) => {
     if (!$node) {
         return false;
     }
     if (/^\./.test(selector)) {
-        var className = selector.replace(/^\./, '');
+        const className = selector.replace(/^\./, '');
         return $node && hasClass($node, className);
     }
     else if (/^#/.test(selector)) {
-        var id = selector.replace(/^#/, '');
+        const id = selector.replace(/^#/, '');
         return $node && $node.id === id;
     }
-    var tagName = selector.toUpperCase();
+    const tagName = selector.toUpperCase();
     return $node && $node.tagName === tagName;
 };
 /**
  * If start node and end node is the same, don't need to tranvers the dom tree.
  */
-var getNodesIfSameStartEnd = function ($startNode, startOffset, endOffset, exceptSelectors) {
-    var $element = $startNode;
-    var isExcepted = function ($e) { return exceptSelectors ? exceptSelectors.some(function (s) { return isMatchSelector($e, s); }) : false; };
+const getNodesIfSameStartEnd = ($startNode, startOffset, endOffset, exceptSelectors) => {
+    let $element = $startNode;
+    const isExcepted = ($e) => exceptSelectors ? exceptSelectors.some(s => isMatchSelector($e, s)) : false;
     while ($element) {
         if ($element.nodeType === 1 && isExcepted($element)) {
             return [];
@@ -36,7 +36,7 @@ var getNodesIfSameStartEnd = function ($startNode, startOffset, endOffset, excep
         $element = $element.parentNode;
     }
     $startNode.splitText(startOffset);
-    var passedNode = $startNode.nextSibling;
+    const passedNode = $startNode.nextSibling;
     passedNode.splitText(endOffset - startOffset);
     return [
         {
@@ -49,34 +49,34 @@ var getNodesIfSameStartEnd = function ($startNode, startOffset, endOffset, excep
 /**
  * get all the dom nodes between the start and end node
  */
-export var getSelectedNodes = function ($root, start, end, exceptSelectors) {
-    var $startNode = start.$node;
-    var $endNode = end.$node;
-    var startOffset = start.offset;
-    var endOffset = end.offset;
+export const getSelectedNodes = ($root, start, end, exceptSelectors) => {
+    const $startNode = start.$node;
+    const $endNode = end.$node;
+    const startOffset = start.offset;
+    const endOffset = end.offset;
     // split current node when the start-node and end-node is the same
     if ($startNode === $endNode && $startNode instanceof Text) {
         return getNodesIfSameStartEnd($startNode, startOffset, endOffset, exceptSelectors);
     }
-    var nodeStack = [$root];
-    var selectedNodes = [];
-    var isExcepted = function ($e) { return exceptSelectors ? exceptSelectors.some(function (s) { return isMatchSelector($e, s); }) : false; };
-    var withinSelectedRange = false;
-    var curNode = null;
+    const nodeStack = [$root];
+    const selectedNodes = [];
+    const isExcepted = ($e) => exceptSelectors ? exceptSelectors.some(s => isMatchSelector($e, s)) : false;
+    let withinSelectedRange = false;
+    let curNode = null;
     while ((curNode = nodeStack.pop())) {
         // do not traverse the excepted node
         if (curNode.nodeType === 1 && isExcepted(curNode)) {
             continue;
         }
-        var children = curNode.childNodes;
-        for (var i = children.length - 1; i >= 0; i--) {
+        const children = curNode.childNodes;
+        for (let i = children.length - 1; i >= 0; i--) {
             nodeStack.push(children[i]);
         }
         // only collect text nodes
         if (curNode === $startNode) {
             if (curNode.nodeType === 3) {
                 curNode.splitText(startOffset);
-                var node = curNode.nextSibling;
+                const node = curNode.nextSibling;
                 selectedNodes.push({
                     $node: node,
                     type: SelectedNodeType.text,
@@ -88,7 +88,7 @@ export var getSelectedNodes = function ($root, start, end, exceptSelectors) {
         }
         else if (curNode === $endNode) {
             if (curNode.nodeType === 3) {
-                let node = curNode;
+                const node = curNode;
                 node.splitText(endOffset);
                 selectedNodes.push({
                     $node: node,
@@ -110,55 +110,55 @@ export var getSelectedNodes = function ($root, start, end, exceptSelectors) {
     }
     return selectedNodes;
 };
-var addClass = function ($el, className) {
-    var classNames = Array.isArray(className) ? className : [className];
+const addClass = ($el, className) => {
+    let classNames = Array.isArray(className) ? className : [className];
     classNames = classNames.length === 0 ? [getDefaultOptions().style.className] : classNames;
-    classNames.forEach(function (c) {
+    classNames.forEach(c => {
         addElementClass($el, c);
     });
     return $el;
 };
-var isNodeEmpty = function ($n) { return !$n || !$n.textContent; };
+const isNodeEmpty = ($n) => !$n || !$n.textContent;
 /**
  * Wrap a common wrapper.
  */
-var wrapNewNode = function (selected, range, className, wrapTag) {
-    var $wrap = document.createElement(wrapTag);
+const wrapNewNode = (selected, range, className, wrapTag) => {
+    const $wrap = document.createElement(wrapTag);
     addClass($wrap, className);
     $wrap.appendChild(selected.$node.cloneNode(false));
     selected.$node.parentNode.replaceChild($wrap, selected.$node);
-    $wrap.setAttribute("data-" + DATASET_IDENTIFIER, range.id);
-    $wrap.setAttribute("data-" + DATASET_SPLIT_TYPE, selected.splitType);
-    $wrap.setAttribute("data-" + DATASET_IDENTIFIER_EXTRA, '');
+    $wrap.setAttribute(`data-${DATASET_IDENTIFIER}`, range.id);
+    $wrap.setAttribute(`data-${DATASET_SPLIT_TYPE}`, selected.splitType);
+    $wrap.setAttribute(`data-${DATASET_IDENTIFIER_EXTRA}`, '');
     return $wrap;
 };
 /**
  * Split and wrapper each one.
  */
-var wrapPartialNode = function (selected, range, className, wrapTag) {
-    var $wrap = document.createElement(wrapTag);
-    var $parent = selected.$node.parentNode;
-    var $prev = selected.$node.previousSibling;
-    var $next = selected.$node.nextSibling;
-    var $fr = document.createDocumentFragment();
-    var parentId = $parent.dataset[CAMEL_DATASET_IDENTIFIER];
-    var parentExtraId = $parent.dataset[CAMEL_DATASET_IDENTIFIER_EXTRA];
-    var extraInfo = parentExtraId ? parentId + ID_DIVISION + parentExtraId : parentId;
-    $wrap.setAttribute("data-" + DATASET_IDENTIFIER, range.id);
-    $wrap.setAttribute("data-" + DATASET_IDENTIFIER_EXTRA, extraInfo);
+const wrapPartialNode = (selected, range, className, wrapTag) => {
+    const $wrap = document.createElement(wrapTag);
+    const $parent = selected.$node.parentNode;
+    const $prev = selected.$node.previousSibling;
+    const $next = selected.$node.nextSibling;
+    const $fr = document.createDocumentFragment();
+    const parentId = $parent.dataset[CAMEL_DATASET_IDENTIFIER];
+    const parentExtraId = $parent.dataset[CAMEL_DATASET_IDENTIFIER_EXTRA];
+    const extraInfo = parentExtraId ? parentId + ID_DIVISION + parentExtraId : parentId;
+    $wrap.setAttribute(`data-${DATASET_IDENTIFIER}`, range.id);
+    $wrap.setAttribute(`data-${DATASET_IDENTIFIER_EXTRA}`, extraInfo);
     $wrap.appendChild(selected.$node.cloneNode(false));
-    var headSplit = false;
-    var tailSplit = false;
-    var splitType;
+    let headSplit = false;
+    let tailSplit = false;
+    let splitType;
     if ($prev) {
-        var $span = $parent.cloneNode(false);
+        const $span = $parent.cloneNode(false);
         $span.textContent = $prev.textContent;
         $fr.appendChild($span);
         headSplit = true;
     }
-    var classNameList = [];
+    const classNameList = [];
     if (Array.isArray(className)) {
-        classNameList.push.apply(classNameList, className);
+        classNameList.push(...className);
     }
     else {
         classNameList.push(className);
@@ -166,7 +166,7 @@ var wrapPartialNode = function (selected, range, className, wrapTag) {
     addClass($wrap, unique(classNameList));
     $fr.appendChild($wrap);
     if ($next) {
-        let $span = $parent.cloneNode(false);
+        const $span = $parent.cloneNode(false);
         $span.textContent = $next.textContent;
         $fr.appendChild($span);
         tailSplit = true;
@@ -183,20 +183,20 @@ var wrapPartialNode = function (selected, range, className, wrapTag) {
     else {
         splitType = SplitType.none;
     }
-    $wrap.setAttribute("data-" + DATASET_SPLIT_TYPE, splitType);
+    $wrap.setAttribute(`data-${DATASET_SPLIT_TYPE}`, splitType);
     $parent.parentNode.replaceChild($fr, $parent);
     return $wrap;
 };
 /**
  * Just update id info (no wrapper updated).
  */
-var wrapOverlapNode = function (selected, range, className) {
-    var $parent = selected.$node.parentNode;
-    var $wrap = $parent;
+const wrapOverlapNode = (selected, range, className) => {
+    const $parent = selected.$node.parentNode;
+    const $wrap = $parent;
     removeAllClass($wrap);
     addClass($wrap, className);
-    var dataset = $parent.dataset;
-    var formerId = dataset[CAMEL_DATASET_IDENTIFIER];
+    const dataset = $parent.dataset;
+    const formerId = dataset[CAMEL_DATASET_IDENTIFIER];
     dataset[CAMEL_DATASET_IDENTIFIER] = range.id;
     dataset[CAMEL_DATASET_IDENTIFIER_EXTRA] = dataset[CAMEL_DATASET_IDENTIFIER_EXTRA]
         ? formerId + ID_DIVISION + dataset[CAMEL_DATASET_IDENTIFIER_EXTRA]
@@ -213,11 +213,11 @@ var wrapOverlapNode = function (selected, range, className) {
  *  - wrapping part of the node
  *  - wrapping the whole wrapped node
  */
-export var wrapHighlight = function (selected, range, className, wrapTag) {
-    var $parent = selected.$node.parentNode;
-    var $prev = selected.$node.previousSibling;
-    var $next = selected.$node.nextSibling;
-    var $wrap;
+export const wrapHighlight = (selected, range, className, wrapTag) => {
+    const $parent = selected.$node.parentNode;
+    const $prev = selected.$node.previousSibling;
+    const $next = selected.$node.nextSibling;
+    let $wrap;
     // text node, not in a highlight wrapper -> should be wrapped in a highlight wrapper
     if (!isHighlightWrapNode($parent)) {
         $wrap = wrapNewNode(selected, range, className, wrapTag);
@@ -236,16 +236,15 @@ export var wrapHighlight = function (selected, range, className, wrapTag) {
  * merge the adjacent text nodes
  * .normalize() API has some bugs in IE11
  */
-export var normalizeSiblingText = function ($s, isNext) {
-    if (isNext === void 0) { isNext = true; }
+export const normalizeSiblingText = ($s, isNext = true) => {
     if (!$s || $s.nodeType !== 3) {
         return;
     }
-    var $sibling = isNext ? $s.nextSibling : $s.previousSibling;
+    const $sibling = isNext ? $s.nextSibling : $s.previousSibling;
     if ($sibling.nodeType !== 3) {
         return;
     }
-    var text = $sibling.nodeValue;
+    const text = $sibling.nodeValue;
     $s.nodeValue = isNext ? $s.nodeValue + text : text + $s.nodeValue;
     $sibling.parentNode.removeChild($sibling);
 };

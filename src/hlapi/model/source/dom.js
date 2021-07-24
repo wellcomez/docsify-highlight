@@ -8,14 +8,14 @@ import { ROOT_IDX } from '../../util/const';
  * @param {number} offset text offset in the origin website dom tree
  * @return {DomNode} DOM a dom info object
  */
-export var getTextChildByOffset = function ($parent, offset) {
-    var nodeStack = [$parent];
-    var $curNode = null;
-    var curOffset = 0;
-    var startOffset = 0;
+export const getTextChildByOffset = ($parent, offset) => {
+    const nodeStack = [$parent];
+    let $curNode = null;
+    let curOffset = 0;
+    let startOffset = 0;
     while (($curNode = nodeStack.pop())) {
-        var children = $curNode.childNodes;
-        for (var i = children.length - 1; i >= 0; i--) {
+        const children = $curNode.childNodes;
+        for (let i = children.length - 1; i >= 0; i--) {
             nodeStack.push(children[i]);
         }
         if ($curNode.nodeType === 3) {
@@ -41,12 +41,12 @@ export var getTextChildByOffset = function ($parent, offset) {
  * @param {HTMLElement | Document} $root root element, default document
  * @return {Object}
  */
-export var queryElementNode = function (hs, $root) {
-    var start = hs.startMeta.parentIndex === ROOT_IDX
+export const queryElementNode = (hs, $root) => {
+    const start = hs.startMeta.parentIndex === ROOT_IDX
         ? $root
         : $root.getElementsByTagName(hs.startMeta.parentTagName)[hs.startMeta.parentIndex];
-    var end = hs.endMeta.parentIndex === ROOT_IDX
+    const end = hs.endMeta.parentIndex === ROOT_IDX
         ? $root
         : $root.getElementsByTagName(hs.endMeta.parentTagName)[hs.endMeta.parentIndex];
-    return { start: start, end: end };
+    return { start, end };
 };

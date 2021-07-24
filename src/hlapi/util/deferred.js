@@ -1,23 +1,23 @@
 export default function getDeferred() {
-    var resolve;
-    var reject;
-    var promise = new Promise(function (r, j) {
+    let resolve;
+    let reject;
+    const promise = new Promise((r, j) => {
         resolve = r;
         reject = j;
     });
     return {
-        promise: promise,
-        resolve: resolve,
-        reject: reject,
+        promise,
+        resolve,
+        reject,
     };
 }
-export var resolve = function (data) {
-    var defer = getDeferred();
+export const resolve = (data) => {
+    const defer = getDeferred();
     defer.resolve(data);
     return defer.promise;
 };
-export var reject = function (data) {
-    var defer = getDeferred();
+export const reject = (data) => {
+    const defer = getDeferred();
     defer.reject(data);
     return defer.promise;
 };
