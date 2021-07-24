@@ -1,8 +1,11 @@
 import { UTILS } from './css_path'
+// eslint-disable-next-line no-unused-vars
+import {getSelectedNodes,HighlightRange} from './hlapi'
 const regexpNoSpace = new RegExp("\\s", "g")
 let trimstring = (s) => {
     // return s.replace(/\u3000|' '|\t/, '');
-    return s.replace(regexpNoSpace, '')
+    let ret = s.replace(regexpNoSpace, '')
+    return ret.replaceAll("\n", '')
 }
 const getPrevOrPrevParent = (parent) => {
     if (parent) {
@@ -16,7 +19,8 @@ const getPrevOrPrevParent = (parent) => {
         return getPrevOrPrevParent(parent.parentNode)
     }
 }
-const findInLast = (node, text) => {
+
+const findInTopElement = (node, text) => {
     if (node.nodeType == 3) {
         let t = trimstring(node.textContent)
         let index = text.lastIndexOf(t)
@@ -24,18 +28,25 @@ const findInLast = (node, text) => {
             text = text.substring(0, index)
             return { node, text }
         } else {
-            return {}
+            return { text, error: true }
         }
     }
-    let last = node.lastChild
-    let rc = {}
-    while (last) {
-        let result = findInLast(last, text)
-        text = result.text
-        if (text == undefined) return {}
-        if (text.length == 0) return result
-        rc = { ...result }
-        last = last.previousSibling
+    let rc = { text }
+    if (isTextNode(node)) {
+        let last = node.lastChild
+        while (last) {
+            let result = findInTopElement(last, text)
+            text = result.text
+            if (result.error) {
+                let ignore = node.classList && node.classList.contains('hl-ignored')
+                if (ignore == false) {
+                    return result
+                }
+            }
+            if (text.length == 0) return result
+            rc = { ...result, ...{ error: false } }
+            last = last.previousSibling
+        }
     }
     return rc
 
@@ -48,26 +59,108 @@ const findInFirst = (node, text) => {
         }
         let index = text.indexOf(t)
         if (index != -1) {
-            return { node, textOffset: index }
+            return { node, textOffset: index, match: t }
         } else {
-            return {}
+            return { error: true }
         }
     }
-    let last = node.firstChild
     let rc = { next: true }
-    while (last) {
-        let ret = findInFirst(last, text)
-        if (ret.node) {
-            return ret
-        }
-        if (ret.next) {
-            last = last.nextSibling
-        } else {
-            return {}
+    if (isTextNode(node)) {
+        let last = node.firstChild
+        while (last) {
+            let ret = findInFirst(last, text)
+            if (ret.node) {
+                return ret
+            }
+            if (ret.next) {
+                last = last.nextSibling
+            } else {
+                return ret
+            }
         }
     }
     return rc
+}
 
+function searchFirstMatchNode(el, text) {
+    let nextElement = el
+    let parent = el.parentNode
+    while (nextElement) {
+        let result = findInFirst(nextElement, text);
+        let { match, error } = result
+        if (match) {
+            return result
+        }
+        if (error) {
+            let ignore = nextElement.classList && nextElement.classList.contains('hl-ignored')
+            if (ignore == false)
+                return result
+        }
+        nextElement = nextElement.nextSibling
+    }
+    if (parent) {
+        return searchFirstMatchNode(parent.firstChild, text)
+    } else {
+        return { error: true }
+    }
+}
+
+const completeSearch = (hs, begin, text) => {
+    let { endMeta } = hs
+    let first = false
+    let text2search = text;
+    let node2search = begin
+    let beginElement = begin
+    while (text2search.length) {
+        const nextNode = (node) => {
+            if (node.nextSibling) return node.nextSibling
+            return nextNode(node.parentNode)
+        }
+        // eslint-disable-next-line no-unused-vars
+        let { error, node } = searchFirstMatchNode(node2search, text2search)
+        if (error) {
+            if (first) {
+                let s = trimstring(filteInnerText(node2search))
+                let { sequence } = longestCommonSubstring(text2search, s)
+                if (sequence) {
+                    text2search = text2search.substring(text2search.lastIndexOf(sequence) + sequence.length)
+                    node2search = nextNode(node2search)
+                    first = false
+                    if (notRoot(node2search) == false) break;
+                    continue
+                }
+            }
+            break;
+        }
+        let match = trimstring(node.textContent)
+        text2search = text2search.substring(match.length)
+        if (!text2search) {
+            let el = node.parentElement
+            while (el && notRoot(el)) {
+                let { tagName } = el
+                if (tagName == endMeta.parentTagName) {
+                    return { beginElement, endElement: el }
+                }
+                el = el.parentElement
+            }
+            el = node.parentElement
+            let { tagName } = el
+            while (tagName == 'I') {
+                if (el.parentElement) {
+                    el = el.parentElement
+                    tagName = el.tagName
+                }
+                else {
+                    break
+                }
+            }
+            return { beginElement, endElement: el }
+        }
+        node2search = nextNode(node)
+        if (notRoot(node2search) == false) break;
+    }
+    console.log("completeSearch fail", hs.id, hs.text)
+    return
 }
 const compareNodeText = (text2, el, prefixTrim) => {
     let parent = notRoot(el.parentNode) ? el.parentNode : el
@@ -89,7 +182,7 @@ const compareNodeText = (text2, el, prefixTrim) => {
     if (bb == 0) {
         let { node } = findInFirst(preElement, text2)
         if (node) {
-            return { beginElement: node, endElement}
+            return { beginElement: node, endElement }
         }
     }
     while (bb > 0) {
@@ -120,9 +213,9 @@ const compareNodeText = (text2, el, prefixTrim) => {
         bb = result.index
         preElement = result.preElement
         if (bb == 0) {
-            let ret = findInLast(preElement, text2)
+            let ret = findInTopElement(preElement, text2)
             if (ret.node) {
-                return { beginElement: ret.node, endElement}
+                return { beginElement: ret.node, endElement }
             }
         }
     }
@@ -160,16 +253,16 @@ const filteInnerText = (node) => {
     }
     let ret = nodetext(node)
     if (ret != undefined) return ret
-    ret = []
+    ret = ''
     for (let i = 0; i < node.childNodes.length; i++) {
         let a = node.childNodes[i]
         if (isTextNode(a) == false) continue
         let t = filteInnerText(a)
         if (t) {
-            ret.push(t)
+            ret += t
         }
     }
-    return ret.join("")
+    return ret
 }
 const notRoot = (parentElement) => parentElement && parentElement.tagName != "article".toUpperCase()
 
@@ -296,27 +389,27 @@ export let rebuildTree = ({ tree, startMeta, endMeta }) => {
             if (children) {
                 children = children.map(convert).filter((a) => a != undefined)
                 if (tagName != "I") {
-                    let text2 = []
-                    let innerText2 = []
+                    let text2 = ''
+                    let innerText2 = ''
                     children = children.map((a) => {
                         let { tagName, text, innerText } = a;
                         if (innerText) {
-                            innerText2.push(innerText)
+                            innerText2 += (innerText)
                         }
                         if (tagName == "I") {
                             if (text.length)
-                                text2.push(trimstring(text))
+                                text2 += (trimstring(text))
                             return undefined
                         }
                         return a;
                     }).filter((a) => a != undefined);
                     if (children.length == 0)
                         children = undefined
-                    if (text2.length) {
-                        text = text2.join('');
+                    if (text2) {
+                        text = text2
                     }
-                    if (innerText2.length) {
-                        innerText = innerText2.join('');
+                    if (innerText2) {
+                        innerText = innerText2
                     }
                 }
             } else {
@@ -333,10 +426,14 @@ export let rebuildTree = ({ tree, startMeta, endMeta }) => {
             return { ...text, ...children, tagName, ...innerText, parentTagName: tagName }
         }
         tree = tree.nodes.map(convert).filter((a) => a != undefined)
-        let { innerText } = tree.map((node) => {
+        let innerText = '';
+        tree.map((node) => {
             let { innerText } = node
             return innerText
-        }).filter((a) => a != undefined).join("")
+        }).filter((a) => a != undefined).forEach((a) => {
+            innerText += a
+        })
+
         tree.forEach((a, idx) => {
             if (idx == 0) {
                 if (startMeta.parentTagName != a.parentTagName && a.parentTagName == 'I') {
@@ -368,14 +465,14 @@ export class hlPlacement {
         }
         return r
     }
-    getMetaElement(meta) {
-        let nodes = this.$root.querySelectorAll(meta.parentTagName)
-        try {
-            return nodes[meta.parentIndex]
-        } catch (error) {
-            return
-        }
-    }
+    // getMetaElement(meta) {
+    //     let nodes = this.$root.querySelectorAll(meta.parentTagName)
+    //     try {
+    //         return nodes[meta.parentIndex]
+    //     } catch (error) {
+    //         return
+    //     }
+    // }
     getParentIndex = (endMeta, node) => {
         let { parentTagName, parentIndex } = endMeta
         let nn = this.$root.querySelectorAll(parentTagName)
@@ -396,8 +493,12 @@ export class hlPlacement {
         let innerText = filteInnerText(a)
 
         let parentTagName = a.tagName;
-        if (a.tagName == 'I' || nodeType == 3) {
+        if (nodeType == 3) {
             element = a.parentElement;
+            parentTagName = element.tagName;
+        }
+        while (parentTagName == 'I') {
+            element = element.parentElement
             parentTagName = element.tagName;
         }
         let { id } = element;
@@ -605,150 +706,45 @@ export class hlPlacement {
         }
         return { nodetree, ...csspath };
     }
-    searchByNodetree(hs) {
-        const rc_ok = 1
-        const rc_wrong = -1
-        const rc_no_found = 0
-        const findBrother = (next, findel, ingoreFirst) => {
-            let slide = findel
-            let rc = rc_no_found
-            while (slide) {
-                let a = this._searchNode(next, slide)
-                if (a.findIndex != undefined) {
-                    // nodetree[i] = next = a
-                    rc = rc_ok
-                    return { rc, next: a }
-                }
-                let filter = this.filterText(slide)
-                if (filter) {
-                    if (ingoreFirst) {
-                        ingoreFirst = false
-                    } else {
-                        rc = rc_wrong
-                        return { rc, next }
-                    }
-                }
-                slide = slide.nextSibling;
-            }
-            return { rc, next }
-        }
-        const findNextParent = (el) => {
-            let { parentElement } = el;
-            if (parentElement) {
-                if (notRoot(parentElement)) {
-                    let ret = parentElement.nextSibling
-                    if (ret) return ret;
-                    return findNextParent(parentElement)
-                }
-            }
-        }
+    searchByNodetree2(hs) {
         let { nodetree } = hs
         if (nodetree && nodetree.length) {
             let result = [nodetree[0]]
-            for (let i = 1, len = nodetree.length; i < len; i++) {
-                sameNodeTreeElement(nodetree[i], nodetree[i - 1]) == false && result.push(nodetree[i])
-            }
-            nodetree = result.filter((a) => a.innerText && a.innerText.length)
+            nodetree = result.filter((a) => a.innerText)
         }
+        let text = trimstring(hs.text)
         if (nodetree && nodetree.length) {
-            let text = trimstring(hs.text)
-            let beginIdx, endRange;
-            nodetree.forEach((a, idx) => {
-                a.originalIndex = a.parentIndex
+            let beginIdx
+            nodetree.filter((a) => {
                 let { trim } = a
                 if (trim == undefined) {
                     trim = trimstring(a.innerText)
                     a.trim = trim;
                 }
-                let index = text.indexOf(trim)
-                if (index != -1) {
-                    if (beginIdx == undefined) {
-                        if (index == 0) {
-                            beginIdx = idx
-                        }
-                    }
-                    if (endRange !== undefined && trim.length + beginIdx == endRange + 1) {
-                        beginIdx = undefined;
-                        endRange = undefined;
-                        return
-                    }
-                    endRange = index + trim.length - 1
-                }
+                return a.trim
             })
             if (beginIdx != undefined) {
                 nodetree = nodetree.slice(beginIdx)
             }
-            let { startMeta, endMeta } = hs
             let beginMeta = nodetree[0]
-            let nodetreeOrig = nodetree.map((a) => a)
-            nodetree[0] = beginMeta = this._searchNode(beginMeta)
-            if (beginMeta.findIndex === undefined) {
+            beginMeta = this._searchNode(beginMeta)
+            if (beginMeta.findel === undefined) {
                 beginMeta.parentIndex = undefined;
-                nodetree[0] = beginMeta = this._searchNode(beginMeta)
+                beginMeta = this._searchNode(beginMeta)
             }
-            if (nodetree.length == 1 && beginMeta.findIndex != undefined) {
-                let first = nodetree[0]
-                let last = nodetree[0]
-                if (first.parentTagName == startMeta.parentTagName) {
-                    startMeta.parentIndex = first.parentIndex;
-                    if (last.parentTagName == startMeta.parentTagName) {
-                        endMeta.parentIndex = last.parentIndex;
-                        return { ...hs, ...{ startMeta, endMeta } }
-                    }
-                }
+            let { findel } = beginMeta
+            let compareResult = completeSearch(hs, findel, text)
+            if (compareResult) {
+                let { endElement, beginElement } = compareResult
+                let endMeta = this.getMeta(endElement)
+                let startMeta = this.getMeta(beginElement)
+                let ret = this.updateParentIndex([startMeta, endMeta], hs)
+                if (ret) return ret
+                return { startMeta, endMeta }
             }
-            let i = 1
-
-            while (i < nodetree.length) {
-                let { findIndex, findel } = beginMeta
-                if (findIndex == undefined) break;
-                let next = nodetree[i]
-                next.prevElement = beginMeta.findel
-                if (findel) {
-                    let ret = findBrother(next, findel, true)
-                    let rc = ret.rc
-                    next = ret.next
-                    if (rc == rc_no_found) {
-                        let nextElement = findel
-                        nextElement = findNextParent(nextElement)
-                        while (nextElement) {
-                            let ret = findBrother(next, nextElement)
-                            rc = ret.rc
-                            next = ret.next
-                            if (rc == rc_no_found) {
-                                nextElement = findNextParent(nextElement)
-                            }
-                            break
-                        }
-                    }
-                }
-                if (next.findIndex != undefined) {
-                    nodetree[i] = next
-                    beginMeta = { ...next }
-                    beginMeta.prevElement = undefined
-                    i = i + 1
-                } else {
-                    beginMeta = nodetree[0]
-                    nodetree = nodetreeOrig.map((a) => a)
-                    nodetree[0] = beginMeta = this._searchNode(beginMeta)
-                    i = 1
-                    continue
-                }
-            }
-
-            let last = nodetree[nodetree.length - 1]
-            if (last.findIndex != undefined) {
-                let rr = this.updateParentIndex(nodetree, hs)
-                if (rr) {
-                    return rr
-                }
-                // console.log("find")
-            }
-
         }
-
-
     }
+
     getMetaNode(rr) {
         let { startMeta, endMeta } = rr
         let a = getMetaNode(this.$root, startMeta)
@@ -828,26 +824,22 @@ export class hlPlacement {
             if (imgsrc) return hs;
             let { nodetree } = hs
             let ret
+            rebuildTree(hs)
+            // this.searchByNodetree2(nodetree ? hs : { ...hs, nodetree: rebuildTree(hs) })
             ret = this.replacementHS3(hs)
             if (ret) {
                 return { ...hs, ...ret }
             }
             if (nodetree) {
-                ret = this.searchByNodetree(hs)
+                ret = this.searchByNodetree2(hs)
             } else {
                 let { tree } = rebuildTree(hs)
-                ret = this.searchByNodetree({ ...hs, ...{ nodetree: tree } })
+                ret = this.searchByNodetree2({ ...hs, ...{ nodetree: tree } })
             }
             if (ret) return ret
             console.warn('not find ' + hs.id + '   ' + hs.text, hs)
         }
         return hs
-    }
-    isOneElement(hs) {
-        let { startMeta, endMeta } = hs;
-        if (startMeta.parentTagName != endMeta.parentTagName) return false;
-        if (startMeta.parentIndex != endMeta.parentIndex) return false;
-        return true;
     }
 
 
@@ -879,8 +871,15 @@ export class hlPlacement {
 
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     replacementHS3(hs) {
+        const OneElement = (hs) => {
+            let { startMeta, endMeta } = hs;
+            if (startMeta.parentTagName != endMeta.parentTagName) return false;
+            if (startMeta.parentIndex != endMeta.parentIndex) return false;
+            return true;
+        }
+
         let { endMeta } = hs;
-        let prefix = this.isOneElement(hs) ? hs.text : hs.text.substring(hs.text.length - endMeta.textOffset)
+        let prefix = OneElement(hs) ? hs.text : hs.text.substring(hs.text.length - endMeta.textOffset)
         let prefixTrim = trimstring(prefix)
         let meta = { ...endMeta }
         let nodes = this.queryNodes[meta.parentTagName]
@@ -888,7 +887,7 @@ export class hlPlacement {
             nodes = this.$root.querySelectorAll(meta.parentTagName)
             this.queryNodes[meta.parentTagName] = nodes
         }
-        let isOneElement = this.isOneElement(hs)
+        let isOneElement = OneElement(hs)
 
         let rc;
         let left = false;
@@ -936,20 +935,8 @@ export class hlPlacement {
                 let compareResult = compareNodeText(text, el, prefixTrim)
                 if (compareResult) {
                     let { endElement, beginElement } = compareResult
-                    let getMeta = (el) => {
-                        if (el.nodeType == 3) {
-                            el = el.parentElement
-                        }
-                        let parentTagName = el.tagName
-                        if (parentTagName == "I" && (el.classList && el.classList.contains('docsify-highlighter'))) {
-                            el = el.parentElement
-                            parentTagName = el.tagName
-                        }
-                        return { parentTagName, ...this.getParentIndex({ parentTagName }, el) }
-                    }
-                    getMeta = getMeta.bind(this)
-                    let endMeta = getMeta(endElement)
-                    let startMeta = getMeta(beginElement)
+                    let endMeta = this.getMeta(endElement)
+                    let startMeta = this.getMeta(beginElement)
                     let ret = this.updateParentIndex([startMeta, endMeta], hs)
                     if (ret) return ret
                     return { startMeta, endMeta }
@@ -959,6 +946,17 @@ export class hlPlacement {
         }
         if (rc) { return rc }
         return undefined
+    }
+    getMeta = (el) => {
+        if (el.nodeType == 3) {
+            el = el.parentElement
+        }
+        let parentTagName = el.tagName
+        if (parentTagName == "I" && (el.classList && el.classList.contains('docsify-highlighter'))) {
+            el = el.parentElement
+            parentTagName = el.tagName
+        }
+        return { parentTagName, ...this.getParentIndex({ parentTagName }, el) }
     }
 
     getParentIndex = (endMeta, node) => {
