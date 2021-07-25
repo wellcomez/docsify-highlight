@@ -129,7 +129,7 @@ export class DocHighlighter {
         const classname = 'docsify-highlighter'
         let node;
         try {
-            node = this.highlighter.getDoms(nodeid)
+            node = this.getHighlightDom(nodeid)
             if (node) {
                 for (let i = 0; i < node.length; i++) {
                     let el = node[i]
@@ -155,7 +155,7 @@ export class DocHighlighter {
         const classname = 'docsify-highlighter'
         let node;
         try {
-            node = this.highlighter.getDoms(nodeid)[0];
+            node = this.getHighlightDom(nodeid)[0];
             // eslint-disable-next-line no-empty
         } catch (error) {
         }
@@ -361,7 +361,7 @@ export class DocHighlighter {
             this.createNoteMenu(node)
         };
         let { $root } = this;
-        this.highlighter = new Highlighter({
+        let a = new Highlighter({
             $root,
             wrapTag: 'i',
             exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
@@ -369,16 +369,17 @@ export class DocHighlighter {
                 className: 'docsify-highlighter'
             }
         });
-        this.highlighter.on(Highlighter.event.HOVER, this.onHover.bind(this));
-        this.highlighter.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
-        // this.highlighter.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
-        this.highlighter.on(Highlighter.event.CREATE, this.onCreate.bind(this));
-        this.highlighter.on(Highlighter.event.CLICK, onClick);
-        this.highlighter.hooks.Render.WrapNode.tap((id, selectedNodes) => {
+        this.highlighter = a;
+        a.on(Highlighter.event.HOVER, this.onHover.bind(this));
+        a.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
+        // a.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
+        a.on(Highlighter.event.CREATE, this.onCreate.bind(this));
+        a.on(Highlighter.event.CLICK, onClick);
+        a.hooks.Render.WrapNode.tap((id, selectedNodes) => {
             return selectedNodes
         });
         let self = this
-        this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
+        a.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
             if (selectedNodes.length === 0) {
                 return [];
             }
@@ -387,11 +388,11 @@ export class DocHighlighter {
                     let parent = selected.$node.parentNode;
                     const ingoreElement = (parent) => {
                         if (parent) {
-                            if(parent.classList){
-                                let a = ['hl-ignored','notemarker','note-inline-tooltiptext'].find((a)=>parent.classList.contains(a))
-                                if(a)return true
+                            if (parent.classList) {
+                                let a = ['hl-ignored', 'notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a))
+                                if (a) return true
                             }
-                            if (parent.style.display == 'none' )
+                            if (parent.style.display == 'none')
                                 return true
                         }
                         return false;
@@ -431,7 +432,7 @@ export class DocHighlighter {
                 );
                 candidates.length
                 for (let i = 0; i < candidates.length; i++) {
-                    if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
+                    if (this.getHighlightDom(candidates[i]).length === selectedNodes.length) {
                         selectedNodes = [];
                         break;
                     }
@@ -453,9 +454,9 @@ export class DocHighlighter {
         //     source => log('Serialize.Restore hook -', source)
         // );
 
-        // this.highlighter.hooks.Serialize.RecordInfo.tap(() => {
+        // eslint-disable-next-line no-unused-vars
+        // this.highlighter.hooks.Serialize.RecordInfo.tap((start, end, root) => {
         //     const extraInfo = Math.random().toFixed(4);
-        //     log('Serialize.RecordInfo hook -', extraInfo);
         //     return extraInfo;
         // });
     }
@@ -562,10 +563,11 @@ export class DocHighlighter {
             this.createNoteMenu(this.getElement(hs.id), sources)
         }
     };
+    getHighlightDom=(noteid)=>this.highlighter.getDoms(noteid)
     parentNodeId(noteid) {
         let highlightIdExtra;
         try {
-            this.highlighter.getDoms(noteid).forEach((node) => {
+            this.getHighlightDom(noteid).forEach((node) => {
                 if (highlightIdExtra == undefined)
                     highlightIdExtra = node.dataset.highlightIdExtra
                 if (highlightIdExtra == undefined || highlightIdExtra.length == 0)
@@ -614,7 +616,7 @@ export class DocHighlighter {
         let ret = []
         let styleList = []
         if (checkparent) {
-            this.highlighter.getDoms(noteid).forEach((node) => {
+            this.getHighlightDom(noteid).forEach((node) => {
                 let find = false;
                 parent.forEach((a) => {
                     a.querySelectorAll(".docsify-highlighter").forEach((b) => {
@@ -628,7 +630,7 @@ export class DocHighlighter {
                 }
             });
         } else {
-            this.highlighter.getDoms(noteid).forEach((node) => {
+            this.getHighlightDom(noteid).forEach((node) => {
                 let child = this.convertNote2TreeNode(node, styleList)
                 ret.push(child);
             })
@@ -682,7 +684,7 @@ export class DocHighlighter {
         return
     }
     // getTextIndex(noteid) {
-    //     let ptns = this.highlighter.getDoms(noteid).map((a) => {
+    //     let ptns = this.getHighlightDom(noteid).map((a) => {
     //         if (a.innerText.length) {
     //             return a.innerText
     //         }
@@ -739,21 +741,14 @@ export class DocHighlighter {
                     if (note) {
                         hs.note = note
                     }
-                    let { date } = hs;
-                    if (date == undefined) {
+                    if (!hs.date) {
                         hs.date = new Date() * 1;
                     }
-                    let text = ''
-                    this.highlighter.getDoms(noteid).forEach((a) => {
-                        text = text + a.innerText
-                    })
-                    hs.text = text
                     hs.tags = tags
                     hs.bookmark = bookmark
                     hs.tree = tree
                     hs.version = version
                     let nodetree = this.hsNodetree(noteid, hs)
-                    // hs = { ...hs, ...this.getHSPostion(hs), ...nodetree }
                     hs = { ...hs, ...nodetree }
                     return { hs }
                 })
@@ -1054,7 +1049,7 @@ export class DocHighlighter {
                 return { top, element, tail: element }
             }
         }
-        let nodes = this.highlighter.getDoms(id)
+        let nodes = this.getHighlightDom(id)
         if (nodes.length) {
             let element = nodes[0]
             let { top } = this.getPosition(element)
