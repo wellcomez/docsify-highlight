@@ -452,6 +452,9 @@ export class DocHighlighter {
                 b.parentNode.removeChild(b);
             }
         })
+        let dom = this.highlighter.getDoms(id)
+        let extra = dom.length ? this.highlighter.getExtraIdByDom(dom[0]) : []
+
         this.removeHighLight(id)
         highlighter.removeClass(hl_note, id)
         highlighter.removeClass("highlight-wrap-hover", id);
@@ -461,6 +464,12 @@ export class DocHighlighter {
             store = this.store
         }
         store.remove(id);
+
+        extra.forEach((id) => {
+            let hs = this.hsbyid(id)
+            let a = new highlightType(this.highlighter, hs)
+            a.showHighlight()
+        })
         // this.repairToc()
         this.updatePanel();
     }

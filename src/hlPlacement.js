@@ -142,6 +142,7 @@ const compareNodeText = (text2, el, prefixTrim) => {
     }
     return undefined
 }
+const shouldIgnore = (node) => node.classList && node.classList.contains('notemarker')
 const isTextNode = (node) => {
     let { nodeType } = node;
     let yes = nodeType == 1 || nodeType == 3
@@ -230,55 +231,57 @@ export let getNodeMatchTextBackword = (el, text,) => {
     while (left.length) {
         let curNode = stack.pop()
         if (!curNode) return []
-        if (curNode.nodeType == 3) {
-            let trimContent = trimstring(curNode.textContent)
-            if (trimContent) {
-                let index = left.lastIndexOf(trimContent)
-                let match = index != -1
-                if (!match) {
-                    if (trimContent.length > left.length) {
-                        index = trimContent.indexOf(left)
-                        if (index) {
-                            beginOffset = index
-                            selectedNodes.push(curNode)
-                            break
-                        }
-                        if (checkedIgnore) {
-                            selectedNodes = []
-                            break
-                        }
-                    } else {
-                        if (selectedNodes.length == 0) {
-                            let { sequence } = longestCommonSubstring(left, trimContent)
-                            if (sequence) {
-                                index = left.lastIndexOf(sequence)
-                                if (index != -1) {
-                                    match = index + sequence.length == left.length
-                                }
+        if (shouldIgnore(curNode) == false) {
+            if (curNode.nodeType == 3) {
+                let trimContent = trimstring(curNode.textContent)
+                if (trimContent) {
+                    let index = left.lastIndexOf(trimContent)
+                    let match = index != -1
+                    if (!match) {
+                        if (trimContent.length > left.length) {
+                            index = trimContent.indexOf(left)
+                            if (index) {
+                                beginOffset = index
+                                selectedNodes.push(curNode)
+                                break
                             }
-                        }
-                        if (checkedIgnore) {
-                            let parentNode = curNode.parentNode
-                            let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
-
-                            if (match == false && ignored == false) {
-                                if (selectedNodes.length)
-                                    console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left, " s:" + trimContent)
+                            if (checkedIgnore) {
                                 selectedNodes = []
                                 break
                             }
+                        } else {
+                            if (selectedNodes.length == 0) {
+                                let { sequence } = longestCommonSubstring(left, trimContent)
+                                if (sequence) {
+                                    index = left.lastIndexOf(sequence)
+                                    if (index != -1) {
+                                        match = index + sequence.length == left.length
+                                    }
+                                }
+                            }
+                            if (checkedIgnore) {
+                                let parentNode = curNode.parentNode
+                                let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
+
+                                if (match == false && ignored == false) {
+                                    if (selectedNodes.length)
+                                        console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left, " s:" + trimContent)
+                                    selectedNodes = []
+                                    break
+                                }
+                            }
                         }
                     }
+                    if (match) {
+                        left = left.substring(0, index)
+                        selectedNodes.push(curNode)
+                    }
                 }
-                if (match) {
-                    left = left.substring(0, index)
-                    selectedNodes.push(curNode)
+            } else {
+                let { childNodes } = curNode
+                for (let i = 0; i < childNodes.length; i++) {
+                    stack.push(childNodes[i])
                 }
-            }
-        } else {
-            let { childNodes } = curNode
-            for (let i = 0; i < childNodes.length; i++) {
-                stack.push(childNodes[i])
             }
         }
         if (stack.length == 0) {
@@ -325,54 +328,56 @@ export let getNodeMatchTextForward = (el, text,) => {
     while (trimBegin < left.length) {
         let curNode = stack.pop()
         if (!curNode) return []
-        if (curNode.nodeType == 3) {
-            let trimContent = trimstring(curNode.textContent)
-            if (trimContent) {
-                let index = left.indexOf(trimContent, trimBegin)
-                let match = index != -1
-                if (!match) {
-                    if (trimContent.length > left.length - trimBegin) {
-                        index = trimContent.indexOf(left.substring(trimBegin))
-                        if (index == 0) {
-                            selectedNodes.push(curNode)
-                            break
-                        }
-                        if (checkedIgnore) {
-                            selectedNodes = []
-                            break
-                        }
-                    } else {
-                        if (selectedNodes.length == 0) {
-                            let { sequence } = longestCommonSubstring(left, trimContent)
-                            if (sequence) {
-                                trimBegin = left.indexOf(sequence) + sequence.length
-                                match = true;
+        if (shouldIgnore(curNode) == false) {
+            if (curNode.nodeType == 3) {
+                let trimContent = trimstring(curNode.textContent)
+                if (trimContent) {
+                    let index = left.indexOf(trimContent, trimBegin)
+                    let match = index != -1
+                    if (!match) {
+                        if (trimContent.length > left.length - trimBegin) {
+                            index = trimContent.indexOf(left.substring(trimBegin))
+                            if (index == 0) {
+                                selectedNodes.push(curNode)
+                                break
                             }
-                        }
-                        if (checkedIgnore) {
-                            let parentNode = curNode.parentNode
-                            let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
-                            if (match == false && ignored == false) {
-                                if (selectedNodes.length)
-                                    console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left.substring(trimBegin), " begin:" + trimBegin, " s:" + trimContent)
+                            if (checkedIgnore) {
                                 selectedNodes = []
                                 break
                             }
+                        } else {
+                            if (selectedNodes.length == 0) {
+                                let { sequence } = longestCommonSubstring(left, trimContent)
+                                if (sequence) {
+                                    trimBegin = left.indexOf(sequence) + sequence.length
+                                    match = true;
+                                }
+                            }
+                            if (checkedIgnore) {
+                                let parentNode = curNode.parentNode
+                                let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
+                                if (match == false && ignored == false) {
+                                    if (selectedNodes.length)
+                                        console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left.substring(trimBegin), " begin:" + trimBegin, " s:" + trimContent)
+                                    selectedNodes = []
+                                    break
+                                }
+                            }
                         }
                     }
-                }
-                if (match) {
-                    if (selectedNodes.length == 0) {
-                        trimBegin = index
-                        matchIndex = index
+                    if (match) {
+                        if (selectedNodes.length == 0) {
+                            trimBegin = index
+                            matchIndex = index
+                        }
+                        trimBegin += trimContent.length
+                        selectedNodes.push(curNode)
                     }
-                    trimBegin += trimContent.length
-                    selectedNodes.push(curNode)
                 }
+            } else {
+                pushChildNodes(curNode, stack)
+                continue
             }
-        } else {
-            pushChildNodes(curNode, stack)
-            continue
         }
         if (stack.length == 0) {
             let copy = (parentNode, curNode) => {
@@ -456,32 +461,6 @@ function longestCommonSubstring(str1, str2) {
     }
 }
 
-export let getHSText = (hs) => {
-    let { tree } = hs;
-    const concatchild = (children) => {
-        return children.map((a) => {
-            let { text, children } = a;
-            if (children) {
-                return concatchild(children);
-            }
-            if (text == undefined || text == null) { return "" }
-            return text;
-        }).join("")
-    }
-    if (tree && tree.nodes) {
-        return tree.nodes.map((a) => {
-            let { text, children } = a;
-            if (children)
-                return concatchild(children)
-            if (text == undefined || text == null) { return "" }
-            return text;
-        }).filter((a) => {
-            let yes = a && a.length;
-            return yes;
-        });
-    }
-    return undefined;
-}
 export let rebuildTree = ({ tree, startMeta, endMeta }) => {
     if (tree && tree.nodes) {
         let convert = (a) => {
@@ -669,86 +648,6 @@ export class hlPlacement {
             }
         }
         return -1
-    }
-    _indexOfNodes(nodes, node) {
-        for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i] == node) { return i }
-        }
-        return undefined
-    }
-    _searchNode = (meta, root) => {
-        let { parentTagName, innerText, prevElement, parentIndex } = meta
-
-        const getTagNodes = (parentTagName) => {
-            let nodes = parentTagName != "I" ? this.queryNodes[parentTagName] : undefined
-            if (nodes == undefined) {
-                nodes = this.$root.querySelectorAll(parentTagName)
-                this.queryNodes[parentTagName] = nodes
-            }
-            return nodes
-        }
-        let nullRet = { findel: undefined, findIndex: undefined }
-        const _check = (el, i = 0) => {
-            let index = this.findElementText(el, innerText)
-            if (index != -1) {
-                if (prevElement && prevElement != el) {
-                    let cmp = prevElement.compareDocumentPosition(el)
-                    if ((cmp & (Node.DOCUMENT_POSITION_CONTAINS + Node.DOCUMENT_POSITION_FOLLOWING)) == false) {
-                        return
-                    }
-                }
-                let parentIndex = i
-                let findIndex = i;
-                let findel = el
-                return { parentIndex, findIndex, findel }
-            }
-        }
-        if (root) {
-            let subNodes = root.nodeType != 3 ? root.querySelectorAll(parentTagName) : []
-            for (let i = 0; i < subNodes.length; i++) {
-                let el = subNodes[i]
-                let out = _check(el, i)
-                if (out) {
-                    let ret = { ...meta, ...out }
-                    let nodes = getTagNodes(parentTagName)
-                    ret.parentIndex = this._indexOfNodes(nodes, ret.findel)
-                    return ret
-                }
-            }
-            try {
-                let out = _check(root)
-                if (out) {
-                    out = { ...meta, ...out }
-                    let nodes = getTagNodes(root.tagName)
-                    out.parentTagName = root.tagName
-                    out.parentIndex = this._indexOfNodes(nodes, out.findel)
-                    out.findIndex = out.parentIndex
-                    return out
-                }
-            } catch (error) {
-                console.error(error)
-            }
-            return { ...meta, ...nullRet }
-        }
-        let nodes = getTagNodes(parentTagName)
-        let idx = meta.findIndex
-        if (idx == undefined) {
-            idx = parentIndex
-            if (idx == undefined) {
-                idx = 0
-            }
-        } else {
-            idx = idx + 1
-        }
-        let ret
-        for (let i = idx; i < nodes.length; i++) {
-            let el = nodes[i]
-            ret = _check(el, i)
-            if (ret) {
-                return { ...meta, ...ret }
-            }
-        }
-        return { ...meta, ...nullRet }
     }
     updateParentIndex(nodetree, hs) {
         let first = nodetree[0]
