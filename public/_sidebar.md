@@ -2,3 +2,4 @@
 - [b](b.md)
 - [README](README.md)
 - [doc.md](doc.md)
+-[教你炒股票24：MACD对背弛的辅助判断](教你炒股票24：MACD对背弛的辅助判断.html)
