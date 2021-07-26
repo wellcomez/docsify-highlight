@@ -30,32 +30,36 @@
     if (lang) {
       document.documentElement.setAttribute('lang', lang[1]);
     }
-
-    // Docsify configuration
-    let pre= () => {
+    let pre = () => {
       let eles = document.getElementsByTagName('span')
-      for (let i = 0; i < eles.length; i++) {
-        let el = eles[i];
-        if (el.style && el.style.color) {
-          // console.log(el.style.color)
-          if (el.style.color == "#0000ff" || el.style.color == 'rgb(0, 0, 255)')
-            el.style.display = "none"
-            e.classList.add("hl-ignored")
+      let colorSet = new Set();
+      let text = "【韶山映山红】"
+      eles.forEach((el) => {
+        let { color } = el.style ? el.style : {}
+        if (el.innerText.indexOf(text) >= 0) {
+          if (color) {
+            colorSet.add(color)
+          }
+          el.classList.add('hl-ignored')
+        } else if (color) {
+          if (colorSet.has(color)) {
+            el.classList.add('hl-ignored')
+          }
         }
-      }
+      })
     }
-    let sorttoc = (a,b)=>{
-      let getnum=(s)=>{
-        try{
+    let sorttoc = (a, b) => {
+      let getnum = (s) => {
+        try {
           return parseInt(s.match(/教你炒股票(\d+)/g)[0].substring(5))
-        }catch(e){
+        } catch (e) {
         }
       }
       let n1 = getnum(a)
       let n2 = getnum(b)
-      if(n1!=undefined&&n2!=undefined){
-        if(n1==n2)return 0;
-        return n1>n2?1:-1;
+      if (n1 != undefined && n2 != undefined) {
+        if (n1 == n2) return 0;
+        return n1 > n2 ? 1 : -1;
       }
       return a.localeCompare(b, "zh");
     }
@@ -77,7 +81,7 @@
       maxLevel: 4,
       subMaxLevel: 2,
       DocHighlighter: {
-        script:{pre,sorttoc},
+        script: { pre, sorttoc },
         leancloud: {
           appId: "dvMVEXYBm0Rpy5JyWhhm6D43-gzGzoHsz",
           appKey: "UeGNjOzrueJjiSpjzipJpvfJ",
