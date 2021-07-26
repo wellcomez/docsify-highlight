@@ -506,6 +506,11 @@ export class DocHighlighter {
         let ret = url + "\n\n" + (text ? text : "")
         copyPasteBoard(ret)
     }
+    updateStyleOfHs(id) {
+        let hhs = this.hsbyid(id)
+        let a = new highlightType(this.highlighter, hhs)
+        a.showHighlight()
+    }
     onCreate = (a) => {
         let { sources, type } = a;
         sources.forEach(hs => {
@@ -519,9 +524,7 @@ export class DocHighlighter {
             let creatFromStore = ({ id }) => {
                 let hhs = this.hsbyid(id)
                 let { style, note, bookmark, tree, nodetree, version } = hhs
-                let a = new highlightType(this.highlighter, hhs)
-                a.showHighlight()
-                // let pos = this.getHSPostion(hhs)
+                this.updateStyleOfHs(id)
                 if (nodetree == undefined) {
                     nodetree = this.hlPlacement.hsNodetree(hhs)
                     this.store.update({ ...{ id }, ...nodetree })
@@ -687,9 +690,6 @@ export class DocHighlighter {
             if (sources) {
                 let sources2 = sources.map(a => {
                     let hs = { ...a }
-                    if (style) {
-                        hs.style = style;
-                    }
                     if (note) {
                         hs.note = note
                     }
@@ -705,8 +705,7 @@ export class DocHighlighter {
                 this.store.save(sources2);
             } else {
                 let nodetree = this.hsNodetree(noteid)
-                // let textIndex = this.getTextIndex(noteid);
-                this.store.update({ id: noteid, note, style, tags, bookmark, nodetree, ...nodetree })
+                this.store.update({ id: noteid, note, tags, bookmark, nodetree, ...nodetree })
             }
             let highlightIdExtras = this.parentNodeId(noteid)
             if (highlightIdExtras.length) {
@@ -721,7 +720,10 @@ export class DocHighlighter {
                     }
                 })
             }
+            this.store.update({ id: noteid, style })
+            this.updateStyleOfHs(noteid)
             this.updateHtml(noteid)
+
         } else {
             this.removeHighLight(noteid);
             this.deleteId(noteid);
