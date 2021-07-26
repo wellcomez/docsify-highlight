@@ -3,10 +3,9 @@ import HighlightSource from './model/source';
 import uuid from './util/uuid';
 import Painter from './painter';
 import { getDefaultOptions } from './util/const';
-import { EventType, CreateFrom } from './types';
 import { isHighlightWrapNode, getHighlightById, getExtraHighlightId, getHighlightsByRoot, getHighlightId, } from './util/dom';
 export {
-    isHighlightWrapNode ,HighlightSource
+    isHighlightWrapNode, HighlightSource, HighlightRange
 }
 export default class Highlighter2 {
     constructor(options) {
@@ -24,6 +23,24 @@ export default class Highlighter2 {
                 exceptSelectors: this.options.exceptSelectors,
             }, this.hooks);
         };
+        this.converRange2Source= (range) => {
+            const start = {
+                $node: range.startContainer,
+                offset: range.startOffset,
+            };
+            const end = {
+                $node: range.endContainer,
+                offset: range.endOffset,
+            };
+            const text = range.toString();
+            let id = uuid()
+            const hRange = new HighlightRange(start, end, text, id);
+            if (!hRange) {
+                return null;
+            }
+            const source = hRange.serialize(this.options.$root, this.hooks);
+            return source
+        };
         this.fromRange = (range) => {
             const start = {
                 $node: range.startContainer,
@@ -34,12 +51,9 @@ export default class Highlighter2 {
                 offset: range.endOffset,
             };
             const text = range.toString();
-            let id =  uuid()
+            let id = uuid()
             const hRange = new HighlightRange(start, end, text, id);
             if (!hRange) {
-                // eventEmitter.emit(INTERNAL_ERROR_EVENT, {
-                //     type: ERROR.RANGE_INVALID,
-                // });
                 return null;
             }
             return this._highlightFromHRange(hRange);
@@ -48,7 +62,7 @@ export default class Highlighter2 {
             const hs = new HighlightSource(start, end, text, id, extra);
             try {
                 let renderedSources = this._highlightFromHSource(hs);
-                return {hs,renderedSources};
+                return { hs, renderedSources };
             }
             catch (err) {
                 return {};
@@ -58,13 +72,8 @@ export default class Highlighter2 {
             const source = range.serialize(this.options.$root, this.hooks);
             const $wraps = this.painter.highlightRange(range);
             if ($wraps.length === 0) {
-                // eventEmitter.emit(INTERNAL_ERROR_EVENT, {
-                //     type: ERROR.DOM_SELECTION_EMPTY,
-                // });
                 return null;
             }
-            this.cache.save(source);
-            this.emit(EventType.CREATE, { sources: [source], type: CreateFrom.INPUT }, this);
             return source;
         };
         this.options = getDefaultOptions();
@@ -73,7 +82,5 @@ export default class Highlighter2 {
     _highlightFromHSource(sources = []) {
         const renderedSources = this.painter.highlightSource(sources);
         return renderedSources
-        // this.emit(EventType.CREATE, { sources: renderedSources, type: CreateFrom.STORE }, this);
-        // this.cache.save(sources);
     }
 }

@@ -1,6 +1,7 @@
 import { UTILS } from './css_path'
 // eslint-disable-next-line no-unused-vars
 import { getSelectedNodes, HighlightRange } from './hlapi'
+import Highlighter2 from './hlapi/index';
 const regexpNoSpace = new RegExp("\\s", "g")
 let trimstring = (s) => {
     // return s.replace(/\u3000|' '|\t/, '');
@@ -853,6 +854,22 @@ export class hlPlacement {
                             }
                         }
                     }
+                    let { $root } = this
+                    let a = new Highlighter2({
+                        $root,
+                        wrapTag: 'i',
+                        exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
+                        style: {
+                            className: 'docsify-highlighter'
+                        }
+                    });
+                    let range = document.createRange()
+                    let offset = beginElement.textContent.indexOf(text[0])
+                    range.setStart(beginElement, offset);
+                    offset = endElement.textContent.lastIndexOf(text[text.length - 1])
+                    range.setEnd(endElement, offset);
+                    // eslint-disable-next-line no-unused-vars
+                    let bbb = a.converRange2Source(range)
                     let endMeta = this.getMeta(endElement)
                     let startMeta = this.getMeta(beginElement)
                     let ret = this.updateParentIndex([startMeta, endMeta], hs)

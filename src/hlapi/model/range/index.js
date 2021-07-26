@@ -40,13 +40,18 @@ class HighlightRange {
     // }
     // serialize the HRange instance
     // so that you can save the returned object (e.g. use JSON.stringify on it and send to backend)
-    serialize($root, hooks) {
+    getMeta($root){
+        const startMeta = getDomMeta(this.start.$node, this.start.offset, $root);
+        const endMeta = getDomMeta(this.end.$node, this.end.offset, $root);
+        return {startMeta,endMeta};
+    }
+    serialize($root) {
         const startMeta = getDomMeta(this.start.$node, this.start.offset, $root);
         const endMeta = getDomMeta(this.end.$node, this.end.offset, $root);
         let extra;
-        if (!hooks.Serialize.RecordInfo.isEmpty()) {
-            extra = hooks.Serialize.RecordInfo.call(this.start, this.end, $root);
-        }
+        // if (!hooks.Serialize.RecordInfo.isEmpty()) {
+        //     extra = hooks.Serialize.RecordInfo.call(this.start, this.end, $root);
+        // }
         this.frozen = true;
         return new HighlightSource(startMeta, endMeta, this.text, this.id, extra);
     }
