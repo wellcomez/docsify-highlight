@@ -67,10 +67,56 @@ export class highlightType {
     constructor(hl, hs) {
         this.colorSettings = {};
         this.allTypes = {};
-        this.hl = hl;
+        this.getHighlightDom = (noteid) => hl.getDoms(noteid)
         this.noteid = hs.id;
+        this.procssAllElements = (nodeid, cb) => {
+            const classname = 'docsify-highlighter'
+            let node;
+            try {
+                node = this.getHighlightDom(nodeid)
+                if (node) {
+                    for (let i = 0; i < node.length; i++) {
+                        let el = node[i]
+                        cb(el)
+                    }
+                    return
+                }
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+            let elements = document.getElementsByClassName(classname)
+            for (let i = 0; i < elements.length; i++) {
+                let element = elements[i]
+                try {
+                    if (element.dataset.highlightId == nodeid) {
+                        cb(element)
+                    }
+                    // eslint-disable-next-line no-empty
+                } catch (error) { }
+            }
+        }
+        this.updateHignLightColor = (noteid, type, colorhex, disable) => {
+            // this.removeHighLight(noteid);
+            this.procssAllElements(noteid, (a) => {
+                if (disable) {
+                    colorhex = ""
+                }
+                this.updateNodeHighLightColor(a, type, colorhex);
+            })
+        }
+        this.updateNodeHighLightColor = (node, type, colorhex) => {
+            if (type == tUl) {
+                if (colorhex != "")
+                    node.style.borderBottom = "2px solid " + colorhex;
 
-
+                else
+                    node.style.borderBottom = "";
+            } else if (type == tfontColor) {
+                node.style.color = colorhex;
+            } else {
+                node.style.backgroundColor = colorhex;
+            }
+        }
         let { style } = hs;
         if (style == undefined) style = {}
         if (style) {
@@ -111,7 +157,18 @@ export class highlightType {
             let { noteid } = this
             if (enable) {
                 type = parseInt(type)
-                this.hl.updateHignLightColor(noteid, type, colorhex);
+                this.updateHignLightColor(noteid, type, colorhex);
+            }
+        }
+    }
+
+
+    highlightNode(node) {
+        for (let type in this.allTypes) {
+            let { enable, colorhex } = this.allTypes[type];
+            if (enable) {
+                type = parseInt(type)
+                this.updateNodeHighLightColor(node, type, colorhex);
             }
         }
     }
@@ -139,7 +196,7 @@ export class highlightType {
         if (enable && colorhex) {
             lastDefaultColor[type] = colorhex;
         }
-        this.hl.updateHignLightColor(noteid, color, colorhex, disable);
+        this.updateHignLightColor(noteid, color, colorhex, disable);
     }
     json() {
         return this.allTypes;

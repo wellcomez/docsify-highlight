@@ -16,15 +16,15 @@ class HighlightSource {
             this.extra = extra;
         }
     }
-    deSerialize($root, hooks) {
+    deSerialize($root) {
         const { start, end } = queryElementNode(this, $root);
         let startInfo = getTextChildByOffset(start, this.startMeta.textOffset);
         let endInfo = getTextChildByOffset(end, this.endMeta.textOffset);
-        if (!hooks.Serialize.Restore.isEmpty()) {
-            const res = hooks.Serialize.Restore.call(this, startInfo, endInfo) || [];
-            startInfo = res[0] || startInfo;
-            endInfo = res[1] || endInfo;
-        }
+        // if (!hooks.Serialize.Restore.isEmpty()) {
+        //     const res = hooks.Serialize.Restore.call(this, startInfo, endInfo) || [];
+        //     startInfo = res[0] || startInfo;
+        //     endInfo = res[1] || endInfo;
+        // }
         const range = new HighlightRange(startInfo, endInfo, this.text, this.id, true);
         return range;
     }

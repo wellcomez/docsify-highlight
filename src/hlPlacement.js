@@ -1,6 +1,6 @@
 import { UTILS } from './css_path'
 // eslint-disable-next-line no-unused-vars
-import {getSelectedNodes,HighlightRange} from './hlapi'
+import { getSelectedNodes, HighlightRange } from './hlapi'
 const regexpNoSpace = new RegExp("\\s", "g")
 let trimstring = (s) => {
     // return s.replace(/\u3000|' '|\t/, '');
@@ -82,86 +82,6 @@ const findInFirst = (node, text) => {
     return rc
 }
 
-function searchFirstMatchNode(el, text) {
-    let nextElement = el
-    let parent = el.parentNode
-    while (nextElement) {
-        let result = findInFirst(nextElement, text);
-        let { match, error } = result
-        if (match) {
-            return result
-        }
-        if (error) {
-            let ignore = nextElement.classList && nextElement.classList.contains('hl-ignored')
-            if (ignore == false)
-                return result
-        }
-        nextElement = nextElement.nextSibling
-    }
-    if (parent) {
-        return searchFirstMatchNode(parent.firstChild, text)
-    } else {
-        return { error: true }
-    }
-}
-
-const completeSearch = (hs, begin, text) => {
-    let { endMeta } = hs
-    let first = false
-    let text2search = text;
-    let node2search = begin
-    let beginElement = begin
-    while (text2search.length) {
-        const nextNode = (node) => {
-            if (node.nextSibling) return node.nextSibling
-            return nextNode(node.parentNode)
-        }
-        // eslint-disable-next-line no-unused-vars
-        let { error, node } = searchFirstMatchNode(node2search, text2search)
-        if (error) {
-            if (first) {
-                let s = trimstring(filteInnerText(node2search))
-                let { sequence } = longestCommonSubstring(text2search, s)
-                if (sequence) {
-                    text2search = text2search.substring(text2search.lastIndexOf(sequence) + sequence.length)
-                    node2search = nextNode(node2search)
-                    first = false
-                    if (notRoot(node2search) == false) break;
-                    continue
-                }
-            }
-            break;
-        }
-        let match = trimstring(node.textContent)
-        text2search = text2search.substring(match.length)
-        if (!text2search) {
-            let el = node.parentElement
-            while (el && notRoot(el)) {
-                let { tagName } = el
-                if (tagName == endMeta.parentTagName) {
-                    return { beginElement, endElement: el }
-                }
-                el = el.parentElement
-            }
-            el = node.parentElement
-            let { tagName } = el
-            while (tagName == 'I') {
-                if (el.parentElement) {
-                    el = el.parentElement
-                    tagName = el.tagName
-                }
-                else {
-                    break
-                }
-            }
-            return { beginElement, endElement: el }
-        }
-        node2search = nextNode(node)
-        if (notRoot(node2search) == false) break;
-    }
-    console.log("completeSearch fail", hs.id, hs.text)
-    return
-}
 const compareNodeText = (text2, el, prefixTrim) => {
     let parent = notRoot(el.parentNode) ? el.parentNode : el
     let preElement = parent
@@ -299,11 +219,193 @@ export const getTextChildByOffset = ($parent, offset) => {
         offset: startOffset,
     };
 };
+export let getNodeMatchTextBackword = (el, text,) => {
+    let selectedNodes = []
+    let left = trimstring(text)
+    // let trimBegin = 0
+    let stack = [el]
+    let beginOffset;
+    let checkedIgnore = false
+    while (left.length) {
+        let curNode = stack.pop()
+        if (!curNode) return []
+        if (curNode.nodeType == 3) {
+            let trimContent = trimstring(curNode.textContent)
+            if (trimContent) {
+                let index = left.lastIndexOf(trimContent)
+                let match = index != -1
+                if (!match) {
+                    if (trimContent.length > left.length) {
+                        index = trimContent.indexOf(left)
+                        if (index) {
+                            beginOffset = index
+                            selectedNodes.push(curNode)
+                            break
+                        }
+                        if (checkedIgnore) {
+                            selectedNodes = []
+                            break
+                        }
+                    } else {
+                        if (selectedNodes.length == 0) {
+                            let { sequence } = longestCommonSubstring(left, trimContent)
+                            if (sequence) {
+                                index = left.lastIndexOf(sequence)
+                                if (index != -1) {
+                                    match = index + sequence.length == left.length
+                                }
+                            }
+                        }
+                        if (checkedIgnore) {
+                            let parentNode = curNode.parentNode
+                            let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
 
+                            if (match == false && ignored == false) {
+                                if (selectedNodes.length)
+                                    console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left, " s:" + trimContent)
+                                selectedNodes = []
+                                break
+                            }
+                        }
+                    }
+                }
+                if (match) {
+                    left = left.substring(0, index)
+                    selectedNodes.push(curNode)
+                }
+            }
+        } else {
+            let { childNodes } = curNode
+            for (let i = 0; i < childNodes.length; i++) {
+                stack.push(childNodes[i])
+            }
+        }
+        if (stack.length == 0) {
+            let copy = (parentNode, curNode) => {
+                let { childNodes } = parentNode;
+                for (let i = 0; i < childNodes.length; i++) {
+                    let c = childNodes[i]
+                    if (c == curNode) break
+                    stack.push(c)
+                }
+                return stack.length != 0
+            }
+            let parentNode = curNode.parentNode
+            while (parentNode) {
+                let ret = copy(parentNode, curNode)
+                if (ret) {
+                    break
+                }
+                curNode = parentNode
+                parentNode = parentNode.parentNode
+            }
+            if (stack.length) continue
+            // console.warn("getMatchedNodes=empty" + selectedNodes.length, " left=" + left.substring(trimBegin), " begin:" + trimBegin)
+            return []
+        }
+    }
+    let beginElement = selectedNodes.length ? selectedNodes[selectedNodes.length - 1] : undefined
+    let endElement = selectedNodes.length ? selectedNodes[0] : undefined
+    return { selectedNodes, beginOffset, beginElement, endElement }
+}
+export let getNodeMatchTextForward = (el, text,) => {
+    let pushChildNodes = (curNode, stack) => {
+        let childNodes = curNode.childNodes
+        for (let i = childNodes.length - 1; i >= 0; i--) {
+            stack.push(childNodes[i])
+        }
+    }
+    let selectedNodes = []
+    let left = trimstring(text)
+    let trimBegin = 0
+    let stack = [el]
+    let matchIndex;
+    let checkedIgnore = false
+    while (trimBegin < left.length) {
+        let curNode = stack.pop()
+        if (!curNode) return []
+        if (curNode.nodeType == 3) {
+            let trimContent = trimstring(curNode.textContent)
+            if (trimContent) {
+                let index = left.indexOf(trimContent, trimBegin)
+                let match = index != -1
+                if (!match) {
+                    if (trimContent.length > left.length - trimBegin) {
+                        index = trimContent.indexOf(left.substring(trimBegin))
+                        if (index == 0) {
+                            selectedNodes.push(curNode)
+                            break
+                        }
+                        if (checkedIgnore) {
+                            selectedNodes = []
+                            break
+                        }
+                    } else {
+                        if (selectedNodes.length == 0) {
+                            let { sequence } = longestCommonSubstring(left, trimContent)
+                            if (sequence) {
+                                trimBegin = left.indexOf(sequence) + sequence.length
+                                match = true;
+                            }
+                        }
+                        if (checkedIgnore) {
+                            let parentNode = curNode.parentNode
+                            let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
+                            if (match == false && ignored == false) {
+                                if (selectedNodes.length)
+                                    console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left.substring(trimBegin), " begin:" + trimBegin, " s:" + trimContent)
+                                selectedNodes = []
+                                break
+                            }
+                        }
+                    }
+                }
+                if (match) {
+                    if (selectedNodes.length == 0) {
+                        trimBegin = index
+                        matchIndex = index
+                    }
+                    trimBegin += trimContent.length
+                    selectedNodes.push(curNode)
+                }
+            }
+        } else {
+            pushChildNodes(curNode, stack)
+            continue
+        }
+        if (stack.length == 0) {
+            let copy = (parentNode, curNode) => {
+                let { childNodes } = parentNode;
+                for (let i = childNodes.length - 1; i >= 0; i--) {
+                    let c = childNodes[i]
+                    if (c == curNode) break
+                    stack.push(c)
+                }
+                return stack.length != 0
+            }
+            let parentNode = curNode.parentNode
+            while (parentNode) {
+                let ret = copy(parentNode, curNode)
+                if (ret) {
+                    break
+                }
+                curNode = parentNode
+                parentNode = parentNode.parentNode
+            }
+            if (stack.length) continue
+            // console.warn("getMatchedNodes=empty" + selectedNodes.length, " left=" + left.substring(trimBegin), " begin:" + trimBegin)
+            return []
+        }
+    }
+    let endElement = selectedNodes.length ? selectedNodes[selectedNodes.length - 1] : undefined
+    let beginElement = selectedNodes.length ? selectedNodes[0] : undefined
+    return { selectedNodes, matchIndex, beginElement, endElement }
+}
 export const getMetaNode = (root, { parentTagName, parentIndex, textOffset }) => {
     let node = root.querySelectorAll(parentTagName)[parentIndex]
     return getTextChildByOffset(node, textOffset)
 }
+
 
 function longestCommonSubstring(str1, str2) {
     if (!str1 || !str2) {
@@ -708,39 +810,55 @@ export class hlPlacement {
     }
     searchByNodetree2(hs) {
         let { nodetree } = hs
-        if (nodetree && nodetree.length) {
-            let result = [nodetree[0]]
-            nodetree = result.filter((a) => a.innerText)
+        if (!nodetree) {
+            nodetree = rebuildTree(hs).tree
         }
         let text = trimstring(hs.text)
-        if (nodetree && nodetree.length) {
-            let beginIdx
-            nodetree.filter((a) => {
-                let { trim } = a
-                if (trim == undefined) {
-                    trim = trimstring(a.innerText)
-                    a.trim = trim;
+        nodetree = nodetree.filter((a) => a.innerText).map((a) => { return { ...a, trim: trimstring(a.innerText) } })
+        let left = false;
+        let offset = 0;
+        let { parentTagName, parentIndex } = hs.startMeta
+        let nodes = this.$root.querySelectorAll(parentTagName)
+        let firstText = trimstring(nodetree[0].innerText)
+        if (text.indexOf(firstText) != 0) {
+            let matched = nodetree.find((a) => text.indexOf(a.trim) != -1)
+            if (matched) {
+                firstText = matched.trim
+            }
+        }
+        for (let cout = 0; cout < nodes.length; cout++) {
+            offset = parseInt(cout / 2)
+            if (left) {
+                offset = -offset
+                if (offset == 0 && left) {
+                    left = !left
+                    continue
                 }
-                return a.trim
-            })
-            if (beginIdx != undefined) {
-                nodetree = nodetree.slice(beginIdx)
             }
-            let beginMeta = nodetree[0]
-            beginMeta = this._searchNode(beginMeta)
-            if (beginMeta.findel === undefined) {
-                beginMeta.parentIndex = undefined;
-                beginMeta = this._searchNode(beginMeta)
-            }
-            let { findel } = beginMeta
-            let compareResult = completeSearch(hs, findel, text)
-            if (compareResult) {
-                let { endElement, beginElement } = compareResult
-                let endMeta = this.getMeta(endElement)
-                let startMeta = this.getMeta(beginElement)
-                let ret = this.updateParentIndex([startMeta, endMeta], hs)
-                if (ret) return ret
-                return { startMeta, endMeta }
+            const i = parentIndex + offset
+            let el = nodes[i]
+            if (el == undefined) continue
+            let elText = trimstring(el.textContent).replaceAll("\n", "")
+            if (elText.indexOf(firstText) != -1 || firstText.indexOf(elText) != -1) {
+                // eslint-disable-next-line no-unused-vars
+                let { selectedNodes, matchIndex, beginElement, endElement } = getNodeMatchTextForward(el, text)
+                if (selectedNodes && selectedNodes.length) {
+                    let left = text.substring(0, matchIndex)
+                    if (left) {
+                        let prev = getPrevOrPrevParent(el)
+                        if (prev) {
+                            let back = getNodeMatchTextBackword(prev, left)
+                            if (back.beginElement) {
+                                beginElement = back.beginElement
+                            }
+                        }
+                    }
+                    let endMeta = this.getMeta(endElement)
+                    let startMeta = this.getMeta(beginElement)
+                    let ret = this.updateParentIndex([startMeta, endMeta], hs)
+                    if (ret) return ret
+                    return { ...hs, startMeta, endMeta }
+                }
             }
         }
     }
@@ -822,20 +940,18 @@ export class hlPlacement {
         if (this.hl.store.title == hs.title) {
             let { imgsrc } = hs;
             if (imgsrc) return hs;
-            let { nodetree } = hs
-            let ret
-            rebuildTree(hs)
-            // this.searchByNodetree2(nodetree ? hs : { ...hs, nodetree: rebuildTree(hs) })
+            let ret = this.searchByNodetree2(hs)
+            if (ret) return ret
             ret = this.replacementHS3(hs)
             if (ret) {
                 return { ...hs, ...ret }
             }
-            if (nodetree) {
-                ret = this.searchByNodetree2(hs)
-            } else {
-                let { tree } = rebuildTree(hs)
-                ret = this.searchByNodetree2({ ...hs, ...{ nodetree: tree } })
-            }
+            // if (nodetree) {
+            //     ret = this.searchByNodetree2(hs)
+            // } else {
+            //     let { tree } = rebuildTree(hs)
+            //     ret = this.searchByNodetree2({ ...hs, ...{ nodetree: tree } })
+            // }
             if (ret) return ret
             console.warn('not find ' + hs.id + '   ' + hs.text, hs)
         }

@@ -1,4 +1,5 @@
 import Highlighter from 'web-highlighter';
+import Highlighter2 from './hlapi/index';
 import { Book } from './store';
 import { User } from "./UserLogin";
 import { log } from "./log";
@@ -8,7 +9,7 @@ import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox } from '
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
-import { hl_note, tUl, tfontColor } from './colorSelector';
+import { hl_note } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
@@ -37,7 +38,29 @@ let cmpNodePosition = (node, othernode) => {
     return 0
 }
 const copyPasteBoard = require('clipboard-copy')
-
+const filterSelectNodes = (selectedNodes) => selectedNodes.filter((selected) => {
+    try {
+        let parent = selected.$node.parentNode;
+        const ingoreElement = (parent) => {
+            if (parent) {
+                if (parent.classList) {
+                    let a = ['hl-ignored', 'notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a));
+                    if (a)
+                        return true;
+                }
+                if (parent.style.display == 'none')
+                    return true;
+            }
+            return false;
+        };
+        if (ingoreElement(parent) || ingoreElement(selected.$node)) {
+            return false;
+        }
+        // eslint-disable-next-line no-empty
+    } catch (error) {
+    }
+    return true;
+});
 const removeTips = () => {
     var tips = document.getElementsByClassName('note-menu');
     tips.forEach(element => {
@@ -190,24 +213,6 @@ export class DocHighlighter {
         let { id } = a;
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
-    updateHignLightColor(noteid, color, colorhex, disable) {
-        this.removeHighLight(noteid);
-        this.procssAllElements(noteid, (a) => {
-            if (disable) {
-                colorhex = ""
-            }
-            if (color == tUl) {
-                if (colorhex != "")
-                    a.style.borderBottom = "2px solid " + colorhex
-                else
-                    a.style.borderBottom = ""
-            } else if (color == tfontColor) {
-                a.style.color = colorhex
-            } else {
-                a.style.backgroundColor = colorhex
-            }
-        })
-    }
 
     // eslint-disable-next-line no-unused-vars
     removeHighLight(noteid) {
@@ -235,7 +240,7 @@ export class DocHighlighter {
                 this.enable(false)
             } else {
                 let a = () => {
-                    this.createHightLigher()
+                    this.createMainHightLigher()
                     this.enable(true)
                     this.updatePanel()
                 }
@@ -252,7 +257,7 @@ export class DocHighlighter {
                         let content = "登录是否导入当前记录?"
                         let onOk = () => {
                             b.importFromUnNamed().then(() => {
-                                a();
+  a();
                             }).catch(() => {
                                 a();
                             })
@@ -336,44 +341,54 @@ export class DocHighlighter {
 
 
 
-        this.createHightLigher();
+        this.createMainHightLigher();
 
         if (this.on()) {
             this.enable(true);
         }
     }
-    createHightLigher() {
+    createMainHightLigher() {
         // eslint-disable-next-line no-unused-vars
         const onClick = (noteid, a, b) => {
             // const classname = 'docsify-highlighter'
             let { id } = noteid;
             let node;
-            try {
-                if (b.target.dataset.highlightId == noteid) {
+            if (b.target) {
+                let dd = a.getIdByDom(b.target)
+                if (dd == id) {
                     node = b.target
                 }
-                // eslint-disable-next-line no-empty
-            } catch (error) {
             }
             if (node == undefined) {
                 node = this.getElement(id)
             }
             this.createNoteMenu(node)
         };
-        let { $root } = this;
-        let a = new Highlighter({
-            $root,
-            wrapTag: 'i',
-            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
-            style: {
-                className: 'docsify-highlighter'
-            }
-        });
+        let a = this.newHighlighter();
         this.highlighter = a;
         a.on(Highlighter.event.HOVER, this.onHover.bind(this));
         a.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
         // a.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
-        a.on(Highlighter.event.CREATE, this.onCreate.bind(this));
+
+
+
+        const onCreate = (a) => {
+            let { sources } = a
+            this.addDosifyHighlighterClass(a)
+            log('create -', sources);
+            sources.forEach(hs => {
+                let title = document.title
+                hs.title = title;
+            })
+            let hs = sources[0]
+            let menu = document.getElementsByClassName("note-menu")
+            if (menu && menu.length) {
+                this.highlighter.remove(hs.id);
+                return;
+            }
+            this.createNoteMenu(this.getElement(hs.id), sources)
+        };
+        a.on(Highlighter.event.CREATE, onCreate);
         a.on(Highlighter.event.CLICK, onClick);
         a.hooks.Render.WrapNode.tap((id, selectedNodes) => {
             return selectedNodes
@@ -383,28 +398,8 @@ export class DocHighlighter {
             if (selectedNodes.length === 0) {
                 return [];
             }
-            selectedNodes = selectedNodes.filter((selected) => {
-                try {
-                    let parent = selected.$node.parentNode;
-                    const ingoreElement = (parent) => {
-                        if (parent) {
-                            if (parent.classList) {
-                                let a = ['hl-ignored', 'notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a))
-                                if (a) return true
-                            }
-                            if (parent.style.display == 'none')
-                                return true
-                        }
-                        return false;
-                    }
-                    if (ingoreElement(parent) || ingoreElement(selected.$node)) {
-                        return false;
-                    }
-                    // eslint-disable-next-line no-empty
-                } catch (error) {
-                }
-                return true
-            })
+
+            selectedNodes = filterSelectNodes(selectedNodes)
             if (selectedNodes.length) {
                 let last = selectedNodes[selectedNodes.length - 1]
                 if (selectedNodes.length > 1) {
@@ -460,6 +455,30 @@ export class DocHighlighter {
         //     return extraInfo;
         // });
     }
+    newHighlighter2() {
+        let { $root } = this;
+        let a = new Highlighter2({
+            $root,
+            wrapTag: 'i',
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
+            style: {
+                className: 'docsify-highlighter'
+            }
+        });
+        return a;
+    }
+    newHighlighter() {
+        let { $root } = this;
+        let a = new Highlighter({
+            $root,
+            wrapTag: 'i',
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
+            style: {
+                className: 'docsify-highlighter'
+            }
+        });
+        return a;
+    }
 
     deleteId(id, store) {
         let { highlighter } = this;
@@ -501,8 +520,8 @@ export class DocHighlighter {
         let ret = url + "\n\n" + (text ? text : "")
         copyPasteBoard(ret)
     }
-    onCreate = (a) => {
-        let { sources, type } = a;
+    addDosifyHighlighterClass = (a) => {
+        let { sources } = a;
         sources.forEach(hs => {
             try {
                 this.highlighter.addClass('docsify-highlighter', hs.id);
@@ -510,60 +529,11 @@ export class DocHighlighter {
             } catch (error) {
             }
         })
-        if (type == "from-store") {
-            let creatFromStore = ({ id }) => {
-                let hhs = this.hsbyid(id)
-                let { style, note, bookmark, tree, nodetree } = hhs
-                let a = new highlightType(this, hhs)
-                a.showHighlight()
-                // let pos = this.getHSPostion(hhs)
-                if (nodetree == undefined) {
-                    nodetree = this.hlPlacement.hsNodetree(hhs)
-                    this.store.update({ ...{ id }, ...nodetree })
-                }
-                this.store.update({ ...{ id } })
+    }
+
+    getHighlightDom = (noteid) => this.highlighter.getDoms(noteid)
 
 
-                let parentNodeId = this.parentNodeId(id)
-                if (parentNodeId == undefined) {
-                    if (tree == undefined) {
-                        tree = this.getHtml(id).tree
-                        this.store.update({ id, tree, version: '0.22' })
-                    }
-                }
-
-                if (note && note.length) {
-                    this.createMarkNode(id, note);
-                }
-                if (bookmark) {
-                    this.createBookmarkNode(id)
-                }
-                this.addTagBackground(style, id);
-                if (this.parseurlResult.noteid == id) {
-                    this.scollTopID(id);
-                }
-            }
-            creatFromStore = creatFromStore.bind(this);
-            sources.forEach((hs) => {
-                creatFromStore(hs)
-            })
-            this.updatePanel()
-        } else {
-            log('create -', sources);
-            sources.forEach(hs => {
-                let title = document.title
-                hs.title = title;
-            })
-            let hs = sources[0]
-            let menu = document.getElementsByClassName("note-menu")
-            if (menu && menu.length) {
-                this.highlighter.remove(hs.id);
-                return;
-            }
-            this.createNoteMenu(this.getElement(hs.id), sources)
-        }
-    };
-    getHighlightDom=(noteid)=>this.highlighter.getDoms(noteid)
     parentNodeId(noteid) {
         let highlightIdExtra;
         try {
@@ -839,36 +809,139 @@ export class DocHighlighter {
             })
         this.store.jsonToStore(storeInfos)
     }
-    storeInfosImg = (storeInfos) => storeInfos.filter(({ hs }) => {
-        return hs.imgsrc
-    })
-    load = (loaded) => {
-        if (loaded) {
-            let { highlighter } = this;
-            const storeInfos = this.allhs();
-            const storeInfosImg = this.storeInfosImg(storeInfos)
-            storeInfos.forEach(
-                ({ hs }) => {
-                    try {
-                        if (this.getElement(hs.id) != undefined) {
-                            this.updateHignLightColor(hs.id, hs.color, hs.colorhex);
-                            return;
-                        }
-                    } catch (error) {
-                        console.error(error)
-                    }
-                    if (hs.imgsrc) {
-                        let { note, id } = hs
-                        let { ok, element } = this.fixHSImgElement(hs, storeInfosImg)
-                        if (ok) {
-                            mountCmp(NoteImg, { id, note, hl: this, imgElement: element }, element, true)
-                        }
-                    } else {
-                        hs = this.checkHS(hs)
-                        highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+
+    createFromStoreHS(hs) {
+
+        let highlighter = this.newHighlighter()
+        let render = new highlightType(highlighter, hs)
+        let wrap = (id, selectedNodes) => {
+            render.highlightNode(selectedNodes)
+            // console.log(id, selectedNodes)
+        };
+        highlighter.hooks.Render.WrapNode.tap(wrap)
+
+        let onWrapNodeCreated = (a) => {
+            let { sources } = a
+            this.addDosifyHighlighterClass(a)
+            let creatFromStore = ({ id }) => {
+                let hhs = this.hsbyid(id);
+                let { style, note, bookmark, tree, nodetree } = hhs;
+                if (nodetree == undefined) {
+                    nodetree = this.hlPlacement.hsNodetree(hhs);
+                    this.store.update({ ...{ id }, ...nodetree });
+                }
+                this.store.update({ ...{ id } });
+
+
+                let parentNodeId = this.parentNodeId(id);
+                if (parentNodeId == undefined) {
+                    if (tree == undefined) {
+                        tree = this.getHtml(id).tree;
+                        this.store.update({ id, tree, version: '0.22' });
                     }
                 }
-            );
+
+                if (note && note.length) {
+                    this.createMarkNode(id, note);
+                }
+                if (bookmark) {
+                    this.createBookmarkNode(id);
+                }
+                this.addTagBackground(style, id);
+                if (this.parseurlResult.noteid == id) {
+                    this.scollTopID(id);
+                }
+            };
+            creatFromStore = creatFromStore.bind(this);
+            sources.forEach((hs) => {
+                creatFromStore(hs);
+            });
+            this.updatePanel();
+        }
+
+        highlighter.on(Highlighter.event.CREATE, onWrapNodeCreated);
+        const onCreateSelectedNodes = (id, selectedNodes) => {
+            // eslint-disable-next-line no-unused-vars
+            let text = ''
+            selectedNodes.forEach((a) => {
+                text += a.$node.textContent
+            })
+            // eslint-disable-next-line no-unused-vars
+            let last, first;
+            for (let i = selectedNodes.length - 1; i >= 0; i--) {
+                let element = selectedNodes[i]
+                let { textContent } = element.$node
+                let index = hs.text.lastIndexOf(textContent)
+                if (index != -1) {
+                    last = element
+                    break
+                }
+            }
+            for (let i = 0; i < selectedNodes.length; i++) {
+                let element = selectedNodes[i]
+                let { textContent } = element.$node
+                let index = hs.text.lastIndexOf(textContent)
+                if (index != -1) {
+                    first = element
+                    break
+                }
+            }
+            if (first && last) {
+                let i1 = selectedNodes.indexOf(first)
+                let i2 = selectedNodes.indexOf(last)
+                if (i1 != 0 && i2 != selectedNodes.length - 1) {
+                    let ret = []
+                    for (let i = i1; i <= i2; i++) {
+                        ret.push(selectedNodes[i])
+                    }
+                    console.error('no match onCreateSelectedNodes-2 '+hs.id+" ", first, last, i1, i2)////, selectedNodes)
+                    return ret
+                }
+            } else {
+                console.error('no match onCreateSelectedNodes '+hs.id+" ",  first, last)//, selectedNodes)
+                return []
+            }
+            selectedNodes = filterSelectNodes(selectedNodes)
+            console.log(id, selectedNodes)
+            return selectedNodes
+        }
+        highlighter.hooks.Render.SelectedNodes.tap(onCreateSelectedNodes);
+        hs = this.checkHS(hs)
+        highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+    }
+    load = (loaded) => {
+        if (loaded) {
+            let storeInfosImg = (storeInfos) => storeInfos.filter(({ hs }) => {
+                return hs.imgsrc
+            })
+            let storeInfosCommon = (storeInfos) => storeInfos.filter(({ hs }) => {
+                return !hs.imgsrc
+            })
+            let updateOld = (hs) => {
+                try {
+                    if (this.getElement(hs.id) != undefined) {
+                        let render = new highlightType(this.highlighter, hs)
+                        render.showHighlight()
+                        return true;
+                    }
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+            updateOld = updateOld.bind(this)
+            const storeInfos = this.allhs();
+            storeInfosCommon(storeInfos).forEach(({ hs }) => {
+                if (updateOld(hs)) return
+                this.createFromStoreHS(hs)
+            });
+            storeInfosImg(storeInfos).forEach(({ hs }) => {
+                if (updateOld(hs)) return
+                let { note, id } = hs
+                let { ok, element } = this.fixHSImgElement(hs, storeInfosImg)
+                if (ok) {
+                    mountCmp(NoteImg, { id, note, hl: this, imgElement: element }, element, true)
+                }
+            })
         } else {
             removeTips();
             const storeInfos = this.allhs();

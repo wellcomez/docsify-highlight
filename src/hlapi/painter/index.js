@@ -4,6 +4,7 @@
  * No need to instantiate repeatly. A Highlighter instance will bind a Painter instance.
  */
 import HighlightSource from '../model/source';
+// eslint-disable-next-line no-unused-vars
 import { wrapHighlight, getSelectedNodes, normalizeSiblingText } from '../painter/dom';
 import { getHighlightsByRoot, forEach, addClass, removeAllClass } from '../util/dom';
 import { ERROR } from '../types';
@@ -25,19 +26,20 @@ export default class Painter {
         if (!range.frozen) {
             throw ERROR.HIGHLIGHT_RANGE_FROZEN;
         }
-        const { $root, className, exceptSelectors } = this.options;
-        const hooks = this.hooks;
+        const { $root, exceptSelectors } = this.options;
+        // const hooks = this.hooks;
         let $selectedNodes = getSelectedNodes($root, range.start, range.end, exceptSelectors);
-        if (!hooks.Render.SelectedNodes.isEmpty()) {
-            $selectedNodes = hooks.Render.SelectedNodes.call(range.id, $selectedNodes) || [];
-        }
-        return $selectedNodes.map(n => {
-            let $node = wrapHighlight(n, range, className, this.options.wrapTag);
-            if (!hooks.Render.WrapNode.isEmpty()) {
-                $node = hooks.Render.WrapNode.call(range.id, $node);
-            }
-            return $node;
-        });
+        // // if (!hooks.Render.SelectedNodes.isEmpty()) {
+        // //     $selectedNodes = hooks.Render.SelectedNodes.call(range.id, $selectedNodes) || [];
+        // }
+        // return $selectedNodes.map(n => {
+        //     let $node = wrapHighlight(n, range, className, this.options.wrapTag);
+        //     // if (!hooks.Render.WrapNode.isEmpty()) {
+        //     //     $node = hooks.Render.WrapNode.call(range.id, $node);
+        //     // }
+        //     return $node;
+        // });
+        return $selectedNodes
     }
     highlightSource(sources) {
         const list = Array.isArray(sources) ? sources : [sources];

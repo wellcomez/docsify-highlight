@@ -8,7 +8,7 @@ import { isHighlightWrapNode, getHighlightById, getExtraHighlightId, getHighligh
 export {
     isHighlightWrapNode ,HighlightSource
 }
-export default class Highlighter {
+export default class Highlighter2 {
     constructor(options) {
         this.getIdByDom = ($node) => getHighlightId($node, this.options.$root);
         this.getExtraIdByDom = ($node) => getExtraHighlightId($node, this.options.$root);
@@ -44,21 +44,16 @@ export default class Highlighter {
             }
             return this._highlightFromHRange(hRange);
         };
-        // this.fromStore = (start, end, text, id, extra) => {
-        //     const hs = new HighlightSource(start, end, text, id, extra);
-        //     try {
-        //         this._highlightFromHSource(hs);
-        //         return hs;
-        //     }
-        //     catch (err) {
-        //         // eventEmitter.emit(INTERNAL_ERROR_EVENT, {
-        //         //     type: ERROR.HIGHLIGHT_SOURCE_RECREATE,
-        //         //     error: err,
-        //         //     detail: hs,
-        //         // });
-        //         return null;
-        //     }
-        // };
+        this.fromStore = (start, end, text, id, extra) => {
+            const hs = new HighlightSource(start, end, text, id, extra);
+            try {
+                let renderedSources = this._highlightFromHSource(hs);
+                return {hs,renderedSources};
+            }
+            catch (err) {
+                return {};
+            }
+        };
         this._highlightFromHRange = (range) => {
             const source = range.serialize(this.options.$root, this.hooks);
             const $wraps = this.painter.highlightRange(range);
@@ -77,7 +72,8 @@ export default class Highlighter {
     }
     _highlightFromHSource(sources = []) {
         const renderedSources = this.painter.highlightSource(sources);
-        this.emit(EventType.CREATE, { sources: renderedSources, type: CreateFrom.STORE }, this);
-        this.cache.save(sources);
+        return renderedSources
+        // this.emit(EventType.CREATE, { sources: renderedSources, type: CreateFrom.STORE }, this);
+        // this.cache.save(sources);
     }
 }
