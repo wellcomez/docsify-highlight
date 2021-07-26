@@ -8,6 +8,7 @@ const default_red = "#ff3366";
 const default_yellow = "#FFFF33";
 
 import { getConfig } from "./ANoteConfig";
+import { hlIngoreElement } from "./hlPlacement";
 const defaultColor = {};
 defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)", default_red, default_yellow];
 defaultColor[tUl] = ["red", "green", "yellow"];
@@ -105,6 +106,7 @@ export class highlightType {
             })
         }
         this.updateNodeHighLightColor = (node, type, colorhex) => {
+            if (hlIngoreElement(node) || hlIngoreElement(node.parentElement)) return;
             if (type == tUl) {
                 if (colorhex != "")
                     node.style.borderBottom = "2px solid " + colorhex;

@@ -56,7 +56,7 @@ const findInTopElement = (node, text) => {
             let result = findInTopElement(last, text)
             text = result.text
             if (result.error) {
-                let ignore = node.classList && node.classList.contains('hl-ignored')
+                let ignore = hlIngoreElement(node)
                 if (ignore == false) {
                     return result
                 }
@@ -263,7 +263,7 @@ export let getNodeMatchTextBackword = (el, text,) => {
                             index = trimContent.indexOf(left)
                             if (index != -1) {
                                 beginOffset = index
-                                index = left.length
+                                index = 0
                                 trimContent = left
                                 match = true
                             }
@@ -286,7 +286,7 @@ export let getNodeMatchTextBackword = (el, text,) => {
                             }
                             if (!match && checkedIgnore) {
                                 let parentNode = curNode.parentNode
-                                let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
+                                let ignored = hlIngoreElement(parentNode)
                                 if (ignored == false) {
                                     if (selectedNodes.length)
                                         console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left, " s:" + trimContent)
@@ -394,7 +394,7 @@ export let getNodeMatchTextForward = (el, text,) => {
                             }
                             if (!match && checkedIgnore) {
                                 let parentNode = curNode.parentNode
-                                let ignored = parentNode.classList && parentNode.classList.contains('hl-ignored')
+                                let ignored = hlIngoreElement(parentNode)
                                 if (ignored == false) {
                                     if (selectedNodes.length)
                                         console.warn("getMatchedNodes=" + selectedNodes.length, " left=" + left.substring(trimBegin), " begin:" + trimBegin, " s:" + trimContent)
@@ -462,6 +462,10 @@ export const getMetaNode = (root, { parentTagName, parentIndex, textOffset }) =>
     return getTextChildByOffset(node, textOffset)
 }
 
+
+export function hlIngoreElement(node) {
+    return node && node.classList && node.classList.contains('hl-ignored') ? true : false;
+}
 
 function longestCommonSubstring(str1, str2) {
     if (!str1 || !str2) {
@@ -594,9 +598,11 @@ class loop {
             if (offset == 0 && left) {
                 left = !left
             }
+        } else {
+            left = !left
         }
-        this.left = left
         const i = parentIndex + offset
+        this.left = left
         return i
     }
 }
@@ -834,7 +840,7 @@ export class hlPlacement {
         let a = new Highlighter2({
             $root,
             wrapTag: 'i',
-            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.charpterhtml'],
             style: {
                 className: 'docsify-highlighter'
             }
@@ -935,7 +941,7 @@ export class hlPlacement {
             if (ret) {
                 return { ...hs, ...ret }
             }
-            // console.error('replacementHS3 fail', hs.id)
+            console.error('replacementHS3 fail', hs.id)
             // ret = this.searchByNodetree2(hs)
             // if (ret) return ret
             // console.error('searchByNodetree2 fail', hs.id)
@@ -969,7 +975,14 @@ export class hlPlacement {
         node.filterText = filterText
         return filterText
     }
-
+    trimElement = (el) => {
+        let { innerTextTrim } = el
+        if (innerTextTrim == undefined) {
+            innerTextTrim = trimstring(el.textContent)
+            el.innerTextTrim = innerTextTrim
+        }
+        return innerTextTrim
+    }
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     replacementHS3(hs) {
         const OneElement = (hs) => {
@@ -991,19 +1004,14 @@ export class hlPlacement {
         // let isOneElement = OneElement(hs)
 
         let rc;
-        let left = false;
         let text = trimstring(hs.text)
         let _loop = new loop(meta.parentIndex)
         for (let cout = 0; cout < nodes.length; cout++) {
-            left = !left
             const i = _loop.geti(cout)
             let el = nodes[i]
             if (el == undefined) continue
-            let { innerText } = el
-            let yes = innerText && innerText.length
-            if (yes == false) { continue }
-
-            let include = this.findElementText(el, prefix) != -1
+            let include = this.trimElement(el).indexOf(prefixTrim) != -1
+            // let include = this.findElementText(el, prefix) != -1
             if (include == false) {
                 if (el.tagName.toUpperCase() == 'P' && el.querySelector(".hl-ignored")) {
                     let filterText = this.filterText(el)

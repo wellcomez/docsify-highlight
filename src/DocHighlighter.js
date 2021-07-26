@@ -12,7 +12,7 @@ import { hl_note } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
-import { hlPlacement } from './hlPlacement';
+import { hlIngoreElement, hlPlacement } from './hlPlacement';
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
         return 1
@@ -331,8 +331,13 @@ export class DocHighlighter {
             let { id } = noteid;
             let node;
             try {
-                if (this.getIdByDom(b.target) == id) {
-                    node = b.target
+                let el = b.target
+                let { parentElement } = el
+                if (hlIngoreElement(el) || (parentElement && hlIngoreElement(parentElement))) {
+                    return
+                }
+                if (this.getIdByDom(el) == id) {
+                    node = el
                 }
                 // eslint-disable-next-line no-empty
             } catch (error) {
@@ -346,7 +351,7 @@ export class DocHighlighter {
         let a = new Highlighter({
             $root,
             wrapTag: 'i',
-            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.charpterhtml'],
             style: {
                 className: 'docsify-highlighter'
             }
@@ -371,7 +376,7 @@ export class DocHighlighter {
                     const ingoreElement = (parent) => {
                         if (parent) {
                             if (parent.classList) {
-                                let a = ['hl-ignored', 'notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a))
+                                let a = ['notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a))
                                 if (a) return true
                             }
                             if (parent.style.display == 'none')
@@ -422,7 +427,7 @@ export class DocHighlighter {
                 if (selectedNodes.length == 0) {
                     let hs = self.store.geths(id)
                     if (hs) {
-                        console.wrap("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                        console.error("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
                     }
                 }
                 return selectedNodes;
@@ -454,6 +459,8 @@ export class DocHighlighter {
         })
         let dom = this.highlighter.getDoms(id)
         let extra = dom.length ? this.highlighter.getExtraIdByDom(dom[0]) : []
+
+        this.removeMarkNode(id);
 
         this.removeHighLight(id)
         highlighter.removeClass(hl_note, id)
@@ -546,6 +553,14 @@ export class DocHighlighter {
                 hs.title = title;
             })
             let hs = sources[0]
+            let normal = this.highlighter.getDoms(hs.id).filter((a) => {
+                let ignore = hlIngoreElement(a) || hlIngoreElement(a.parentElement)
+                return ignore ? false : true
+            })
+            if (normal.length == 0) {
+                this.highlighter.remove(hs.id)
+                return
+            }
             let menu = document.getElementsByClassName("note-menu")
             if (menu && menu.length) {
                 this.highlighter.remove(hs.id);
