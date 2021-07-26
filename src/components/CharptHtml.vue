@@ -14,7 +14,13 @@
     <div
       v-for="(
         {
-          note,imgsrc,tags,url,text,style,notshowSeq,
+          note,
+          imgsrc,
+          tags,
+          url,
+          text,
+          style,
+          notshowSeq,
           tabn,
           html,
           key,
@@ -92,6 +98,7 @@
 import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
+import { default_tree_version} from "../DocHighlighter";
 const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";
@@ -244,13 +251,12 @@ export default {
       this.charpter.store.update({ id, notshowSeq, tabn });
     },
     convert(a, charpter, idx) {
-      // eslint-disable-next-line no-unused-vars
       let { imgsrc, text, id, tree, version } = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
       let url = charpter.url(id, this.rootpath);
       let label = text.substring(0, 6);
       let style = convertStyle(a.style);
-      let html;
+      let html = version == default_tree_version ? createHtml(tree) : undefined;
       //  = version ? createHtml(tree) : undefined;
       let key = new Date() * 1 + "-" + idx;
       let ret = {

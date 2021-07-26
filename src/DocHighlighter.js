@@ -13,7 +13,7 @@ import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
-let defualt_tree_version = 0.33
+export let default_tree_version = 0.33
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
         return 1
@@ -510,6 +510,7 @@ export class DocHighlighter {
         let hhs = this.hsbyid(id)
         let a = new highlightType(this.highlighter, hhs)
         a.showHighlight()
+
     }
     onCreate = (a) => {
         let { sources, type } = a;
@@ -532,10 +533,10 @@ export class DocHighlighter {
                 this.store.update({ ...{ id } })
 
 
-                if (version != defualt_tree_version) {
+                if (version != default_tree_version) {
                     if (tree == undefined) {
                         tree = this.getHtml(id).tree
-                        this.store.update({ id, tree, version: defualt_tree_version })
+                        this.store.update({ id, tree, version: default_tree_version })
                     }
                 }
 
@@ -720,8 +721,17 @@ export class DocHighlighter {
                     }
                 })
             }
-            this.store.update({ id: noteid, style })
+            this.store.update({ id: noteid, style, parent: highlightIdExtras })
             this.updateStyleOfHs(noteid)
+            let extra = this.highlighter.getDoms(noteid).map((a) => {
+                return this.highlighter.getIdByDom(a)
+            }).filter((a) => a != noteid)
+            extra.forEach((id) => {
+                let hhs = this.hsbyid(id)
+                let a = new highlightType(this.highlighter, hhs)
+                a.showHighlight()
+
+            })
             this.updateHtml(noteid)
 
         } else {
