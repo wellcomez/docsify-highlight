@@ -3,6 +3,23 @@ import { UTILS } from './css_path'
 import { getSelectedNodes, HighlightRange } from './hlapi'
 import Highlighter2 from './hlapi/index';
 const regexpNoSpace = new RegExp("\\s", "g")
+const getKK = (k, textContent) => {
+    let blankPoint = Array.from(textContent.matchAll(regexpNoSpace))
+    if (blankPoint.length == 0) return k
+    blankPoint = blankPoint.map((a) => {
+        return a.index
+    })
+    // eslint-disable-next-line no-unused-vars
+    for (let i = 0; i < blankPoint.length; i++) {
+        let b = blankPoint[i]
+        let kk = k + i
+        if (kk <= b) {
+            return kk;
+        }
+    }
+    return k + blankPoint.length
+}
+
 let trimstring = (s) => {
     // return s.replace(/\u3000|' '|\t/, '');
     let ret = s.replace(regexpNoSpace, '')
@@ -83,7 +100,7 @@ const findInFirst = (node, text) => {
     return rc
 }
 
-const compareNodeText = (text2, el, prefixTrim) => {
+export const compareNodeText = (text2, el, prefixTrim) => {
     let parent = notRoot(el.parentNode) ? el.parentNode : el
     let preElement = parent
     let preContent = filteInnerText(preElement)
@@ -229,6 +246,7 @@ export let getNodeMatchTextBackword = (el, text,) => {
     let beginOffset;
     let findtext = ''
     let checkedIgnore = false
+    let endIndex = {}, beginIndex = {}
     while (left.length && stack.length) {
         let curNode = stack.pop()
         if (!curNode) {
@@ -241,14 +259,17 @@ export let getNodeMatchTextBackword = (el, text,) => {
                     let index = left.lastIndexOf(trimContent)
                     let match = index != -1
                     if (!match) {
-                        if (trimContent.length > left.length) {
+                        if (trimContent.length >= left.length) {
                             index = trimContent.indexOf(left)
                             if (index != -1) {
+                                let textOffset = getKK(index, curNode.textContent)
                                 beginOffset = index
-                                selectedNodes.push(curNode)
-                                break
+                                index = left.length
+                                trimContent = left
+                                match = true
+                                beginIndex.textContent = textOffset
                             }
-                            if (checkedIgnore) {
+                            if (match == false && checkedIgnore) {
                                 selectedNodes = []
                                 break
                             }
@@ -259,6 +280,11 @@ export let getNodeMatchTextBackword = (el, text,) => {
                                     index = left.lastIndexOf(sequence)
                                     if (index != -1) {
                                         match = index + sequence.length == left.length
+                                        if (match) {
+                                            trimContent = sequence
+                                            let k = trimContent.indexOf(sequence)
+                                            endIndex.textOffset = getKK(k + sequence.length - 1, curNode.textContent)
+                                        }
                                     }
                                 }
                             }
@@ -275,8 +301,18 @@ export let getNodeMatchTextBackword = (el, text,) => {
                         }
                     }
                     if (match) {
+                        if (selectedNodes.length == 0) {
+                            let { textOffset } = endIndex
+                            if (textOffset == undefined) textOffset = 0
+                            endIndex = { ...endIndex, index, curNode, textOffset }
+                        }
                         left = left.substring(0, index)
-                        findtext += trimContent
+                        if (!left) {
+                            let { textOffset } = beginIndex
+                            if (textOffset == undefined) textOffset = 0
+                            beginIndex = { ...beginIndex, index, curNode, textOffset }
+                        }
+                        findtext = trimContent + findtext
                         selectedNodes.push(curNode)
                     }
                 }
@@ -308,10 +344,10 @@ export let getNodeMatchTextBackword = (el, text,) => {
             }
         }
     }
-    if (left) selectedNodes = []
+    if (left) return undefined
     let beginElement = selectedNodes.length ? selectedNodes[selectedNodes.length - 1] : undefined
     let endElement = selectedNodes.length ? selectedNodes[0] : undefined
-    return { findtext, selectedNodes, beginOffset, beginElement, endElement }
+    return { findtext, selectedNodes, beginOffset, beginElement, endElement, beginIndex, endIndex }
 }
 export let getNodeMatchTextForward = (el, text,) => {
     let pushChildNodes = (curNode, stack) => {
@@ -771,12 +807,12 @@ export class hlPlacement {
                         let prev = getPrevOrPrevParent(el)
                         if (prev) {
                             let back = getNodeMatchTextBackword(prev, left)
-                            if (back.beginElement) {
+                            if (back && back.beginElement) {
                                 beginElement = back.beginElement
                             }
                         }
                     }
-                    let bbb = this.converTextNode2Meta(beginElement, text, endElement, hs);
+                    let bbb = this.converTextNode2Meta({ beginElement, endElement }, text, hs);
                     let { startMeta, endMeta } = bbb;
                     if (!endMeta)
                         endMeta = this.getMeta(endElement)
@@ -790,7 +826,7 @@ export class hlPlacement {
         }
     }
 
-    converTextNode2Meta(beginElement, text, endElement, hs) {
+    converTextNode2Meta({ beginElement, endElement, beginIndex, endIndex }, text, hs) {
         let { $root } = this;
         let a = new Highlighter2({
             $root,
@@ -803,9 +839,9 @@ export class hlPlacement {
         let bbb = {};
         try {
             let range = document.createRange();
-            let offset = beginElement.textContent.indexOf(text[0]);
+            let offset = beginIndex ? beginIndex.textOffset : beginElement.textContent.indexOf(text[0]);
             range.setStart(beginElement, offset);
-            offset = endElement.textContent.lastIndexOf(text[text.length - 1]);
+            offset = endIndex ? endIndex.textOffset : endElement.textContent.lastIndexOf(text[text.length - 1]);
             range.setEnd(endElement, offset);
             bbb = a.converRange2Source(range);
         } catch (error) {
@@ -891,21 +927,15 @@ export class hlPlacement {
         if (this.hl.store.title == hs.title) {
             let { imgsrc } = hs;
             if (imgsrc) return hs;
-            let ret = this.searchByNodetree2(hs)
-            if (ret) return ret
-            console.error('searchByNodetree2 fail', hs.id)
+            let ret
             ret = this.replacementHS3(hs)
             if (ret) {
                 return { ...hs, ...ret }
             }
-            // if (nodetree) {
-            //     ret = this.searchByNodetree2(hs)
-            // } else {
-            //     let { tree } = rebuildTree(hs)
-            //     ret = this.searchByNodetree2({ ...hs, ...{ nodetree: tree } })
-            // }
-            if (ret) return ret
-            console.warn('not find ' + hs.id + '   ' + hs.text, hs)
+            // console.error('replacementHS3 fail', hs.id)
+            // ret = this.searchByNodetree2(hs)
+            // if (ret) return ret
+            // console.error('searchByNodetree2 fail', hs.id)
         }
         return hs
     }
@@ -955,10 +985,11 @@ export class hlPlacement {
             nodes = this.$root.querySelectorAll(meta.parentTagName)
             this.queryNodes[meta.parentTagName] = nodes
         }
-        let isOneElement = OneElement(hs)
+        // let isOneElement = OneElement(hs)
 
         let rc;
         let left = false;
+        let text = trimstring(hs.text)
         let _loop = new loop(meta.parentIndex)
         for (let cout = 0; cout < nodes.length; cout++) {
             left = !left
@@ -980,27 +1011,19 @@ export class hlPlacement {
                 }
             }
             if (include) {
-                if (isOneElement) {
-                    let { startMeta, endMeta, text } = hs;
-                    let xxx = el.innerText.substring(startMeta.textOffset, endMeta.textOffset)
-                    startMeta = { ...startMeta, ...{ parentIndex: i } }
-                    endMeta = { ...endMeta, ...{ parentIndex: i } }
-                    rc = { startMeta, endMeta }
-                    if (text == xxx) {
-                        return rc
-                    }
-                    continue
-                }
-                let text = trimstring(hs.text)
-                let compareResult = compareNodeText(text, el, prefixTrim)
-                if (compareResult) {
-                    let { endElement, beginElement } = compareResult
-                    let endMeta = this.getMeta(endElement)
-                    let startMeta = this.getMeta(beginElement)
+                // eslint-disable-next-line no-unused-vars
+                let a = getNodeMatchTextBackword(el, text)
+                if (a) {
+                    let { beginElement, endElement } = a
+                    let bbb = this.converTextNode2Meta(a, text, hs)
+                    let { startMeta, endMeta } = bbb;
+                    if (!endMeta)
+                        endMeta = this.getMeta(endElement)
+                    if (!startMeta)
+                        startMeta = this.getMeta(beginElement)
                     let ret = this.updateParentIndex([startMeta, endMeta], hs)
                     if (ret) return ret
-                    return { startMeta, endMeta }
-
+                    return { ...hs, startMeta, endMeta }
                 }
             }
         }
