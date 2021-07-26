@@ -776,26 +776,7 @@ export class hlPlacement {
                             }
                         }
                     }
-                    let { $root } = this
-                    let a = new Highlighter2({
-                        $root,
-                        wrapTag: 'i',
-                        exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
-                        style: {
-                            className: 'docsify-highlighter'
-                        }
-                    });
-                    let bbb = {}
-                    try {
-                        let range = document.createRange()
-                        let offset = beginElement.textContent.indexOf(text[0])
-                        range.setStart(beginElement, offset);
-                        offset = endElement.textContent.lastIndexOf(text[text.length - 1])
-                        range.setEnd(endElement, offset);
-                        bbb = a.converRange2Source(range)
-                    } catch (error) {
-                        console.error(error, hs.id)
-                    }
+                    let bbb = this.converTextNode2Meta(beginElement, text, endElement, hs);
                     let { startMeta, endMeta } = bbb;
                     if (!endMeta)
                         endMeta = this.getMeta(endElement)
@@ -807,6 +788,30 @@ export class hlPlacement {
                 }
             }
         }
+    }
+
+    converTextNode2Meta(beginElement, text, endElement, hs) {
+        let { $root } = this;
+        let a = new Highlighter2({
+            $root,
+            wrapTag: 'i',
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.____hl-ignored', '.charpterhtml'],
+            style: {
+                className: 'docsify-highlighter'
+            }
+        });
+        let bbb = {};
+        try {
+            let range = document.createRange();
+            let offset = beginElement.textContent.indexOf(text[0]);
+            range.setStart(beginElement, offset);
+            offset = endElement.textContent.lastIndexOf(text[text.length - 1]);
+            range.setEnd(endElement, offset);
+            bbb = a.converRange2Source(range);
+        } catch (error) {
+            console.error(error, hs.id);
+        }
+        return bbb;
     }
 
     getMetaNode(rr) {
