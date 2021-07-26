@@ -3,6 +3,16 @@ import { UTILS } from './css_path'
 import { getSelectedNodes, HighlightRange } from './hlapi'
 import Highlighter2 from './hlapi/index';
 const regexpNoSpace = new RegExp("\\s", "g")
+
+                
+export const trimElement = (el) => {
+    let { innerTextTrim } = el
+    if (innerTextTrim == undefined) {
+        innerTextTrim = trimstring(el.textContent)
+        el.innerTextTrim = innerTextTrim
+    }
+    return innerTextTrim
+}                
 const getKK = (k, textContent) => {
     let blankPoint = Array.from(textContent.matchAll(regexpNoSpace))
     if (blankPoint.length == 0) return k
@@ -20,7 +30,7 @@ const getKK = (k, textContent) => {
     return k + blankPoint.length
 }
 
-let trimstring = (s) => {
+export let trimstring = (s) => {
     // return s.replace(/\u3000|' '|\t/, '');
     let ret = s.replace(regexpNoSpace, '')
     return ret.replaceAll("\n", '')
@@ -786,7 +796,7 @@ export class hlPlacement {
     searchByNodetree2(hs) {
         let { nodetree } = hs
         if (!nodetree) {
-            nodetree = rebuildTree(hs).tree
+            return undefined
         }
         let text = trimstring(hs.text)
         nodetree = nodetree.filter((a) => a.innerText).map((a) => { return { ...a, trim: trimstring(a.innerText) } })
@@ -975,14 +985,7 @@ export class hlPlacement {
         node.filterText = filterText
         return filterText
     }
-    trimElement = (el) => {
-        let { innerTextTrim } = el
-        if (innerTextTrim == undefined) {
-            innerTextTrim = trimstring(el.textContent)
-            el.innerTextTrim = innerTextTrim
-        }
-        return innerTextTrim
-    }
+    
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     replacementHS3(hs) {
         const OneElement = (hs) => {
@@ -1010,7 +1013,7 @@ export class hlPlacement {
             const i = _loop.geti(cout)
             let el = nodes[i]
             if (el == undefined) continue
-            let include = this.trimElement(el).indexOf(prefixTrim) != -1
+            let include = trimElement(el).indexOf(prefixTrim) != -1
             // let include = this.findElementText(el, prefix) != -1
             if (include == false) {
                 if (el.tagName.toUpperCase() == 'P' && el.querySelector(".hl-ignored")) {
