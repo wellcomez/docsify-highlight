@@ -262,12 +262,10 @@ export let getNodeMatchTextBackword = (el, text,) => {
                         if (trimContent.length >= left.length) {
                             index = trimContent.indexOf(left)
                             if (index != -1) {
-                                let textOffset = getKK(index, curNode.textContent)
                                 beginOffset = index
                                 index = left.length
                                 trimContent = left
                                 match = true
-                                beginIndex.textContent = textOffset
                             }
                             if (match == false && checkedIgnore) {
                                 selectedNodes = []
@@ -282,8 +280,6 @@ export let getNodeMatchTextBackword = (el, text,) => {
                                         match = index + sequence.length == left.length
                                         if (match) {
                                             trimContent = sequence
-                                            let k = trimContent.indexOf(sequence)
-                                            endIndex.textOffset = getKK(k + sequence.length - 1, curNode.textContent)
                                         }
                                     }
                                 }
@@ -302,14 +298,12 @@ export let getNodeMatchTextBackword = (el, text,) => {
                     }
                     if (match) {
                         if (selectedNodes.length == 0) {
-                            let { textOffset } = endIndex
-                            if (textOffset == undefined) textOffset = 0
+                            let textOffset = getKK(trimContent.length - 1, curNode.textContent)
                             endIndex = { ...endIndex, index, curNode, textOffset }
                         }
                         left = left.substring(0, index)
                         if (!left) {
-                            let { textOffset } = beginIndex
-                            if (textOffset == undefined) textOffset = 0
+                            let textOffset = getKK(trimstring(curNode.textContent).indexOf(trimContent), curNode.textContent)
                             beginIndex = { ...beginIndex, index, curNode, textOffset }
                         }
                         findtext = trimContent + findtext
@@ -345,9 +339,11 @@ export let getNodeMatchTextBackword = (el, text,) => {
         }
     }
     if (left) return undefined
-    let beginElement = selectedNodes.length ? selectedNodes[selectedNodes.length - 1] : undefined
-    let endElement = selectedNodes.length ? selectedNodes[0] : undefined
-    return { findtext, selectedNodes, beginOffset, beginElement, endElement, beginIndex, endIndex }
+    if (selectedNodes.length) {
+        let beginElement = selectedNodes[selectedNodes.length - 1]
+        let endElement = selectedNodes[0]
+        return { findtext, selectedNodes, beginOffset, beginElement, endElement, beginIndex, endIndex }
+    }
 }
 export let getNodeMatchTextForward = (el, text,) => {
     let pushChildNodes = (curNode, stack) => {
@@ -356,6 +352,7 @@ export let getNodeMatchTextForward = (el, text,) => {
             stack.push(childNodes[i])
         }
     }
+    let endIndex = {}, beginIndex = {}
     let selectedNodes = []
     let left = trimstring(text)
     let trimBegin = 0
@@ -409,12 +406,13 @@ export let getNodeMatchTextForward = (el, text,) => {
                     }
                     if (match) {
                         if (selectedNodes.length == 0) {
+                            let textOffset = getKK(trimstring(curNode.textContent).indexOf(trimContent), curNode.textContent)
+                            beginIndex.textOffset = textOffset
                             trimBegin = index
                             matchIndex = index
                         } else {
                             if (index != trimBegin) {
-                                selectedNodes = []
-                                break
+                                return
                             }
                         }
                         findtext += trimContent
@@ -451,10 +449,13 @@ export let getNodeMatchTextForward = (el, text,) => {
             }
         }
     }
-    if (trimBegin < left.length) selectedNodes = []
-    let endElement = selectedNodes.length ? selectedNodes[selectedNodes.length - 1] : undefined
-    let beginElement = selectedNodes.length ? selectedNodes[0] : undefined
-    return { selectedNodes, matchIndex, beginElement, endElement, findtext }
+    if (trimBegin < left.length) return undefined
+    if (selectedNodes.length) {
+        let endElement = selectedNodes[selectedNodes.length - 1]
+        let beginElement = selectedNodes[0]
+        return { selectedNodes, matchIndex, beginElement, endElement, findtext, beginIndex, endIndex }
+    }
+    return
 }
 export const getMetaNode = (root, { parentTagName, parentIndex, textOffset }) => {
     let node = root.querySelectorAll(parentTagName)[parentIndex]
@@ -800,19 +801,21 @@ export class hlPlacement {
             let elText = trimstring(el.textContent).replaceAll("\n", "")
             if (elText.indexOf(firstText) != -1) {
                 // eslint-disable-next-line no-unused-vars
-                let { selectedNodes, matchIndex, beginElement, endElement, findtext } = getNodeMatchTextForward(el, text)
-                if (selectedNodes && selectedNodes.length) {
-                    let left = text.substring(0, matchIndex)
+                let result = getNodeMatchTextForward(el, text)
+                if (result) {
+                    let left = text.substring(0, result.matchIndex)
                     if (left) {
                         let prev = getPrevOrPrevParent(el)
                         if (prev) {
                             let back = getNodeMatchTextBackword(prev, left)
                             if (back && back.beginElement) {
-                                beginElement = back.beginElement
+                                let beginElement = back.beginElement
+                                result = { ...result, beginElement }
                             }
                         }
                     }
-                    let bbb = this.converTextNode2Meta({ beginElement, endElement }, text, hs);
+                    let bbb = this.converTextNode2Meta(result, text, hs);
+                    let { beginElement, endElement } = result
                     let { startMeta, endMeta } = bbb;
                     if (!endMeta)
                         endMeta = this.getMeta(endElement)
@@ -839,9 +842,9 @@ export class hlPlacement {
         let bbb = {};
         try {
             let range = document.createRange();
-            let offset = beginIndex ? beginIndex.textOffset : beginElement.textContent.indexOf(text[0]);
+            let offset = beginIndex.textOffset
             range.setStart(beginElement, offset);
-            offset = endIndex ? endIndex.textOffset : endElement.textContent.lastIndexOf(text[text.length - 1]);
+            offset = endIndex.textOffset
             range.setEnd(endElement, offset);
             bbb = a.converRange2Source(range);
         } catch (error) {
