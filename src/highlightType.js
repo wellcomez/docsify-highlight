@@ -106,6 +106,7 @@ export class highlightType {
             })
         }
         this.updateNodeHighLightColor = (node, type, colorhex) => {
+            if (node.getAttribute('data-highlight-id') != this.noteid) return;
             if (hlIngoreElement(node) || hlIngoreElement(node.parentElement)) return;
             if (type == tUl) {
                 if (colorhex != "")

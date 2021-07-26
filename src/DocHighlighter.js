@@ -688,6 +688,7 @@ export class DocHighlighter {
         }
         this.addTagBackground(data, noteid);
         if (change && noteid != undefined) {
+            let newone = sources != undefined
             if (sources) {
                 let sources2 = sources.map(a => {
                     let hs = { ...a }
@@ -709,7 +710,7 @@ export class DocHighlighter {
                 this.store.update({ id: noteid, note, tags, bookmark, nodetree, ...nodetree })
             }
             let highlightIdExtras = this.parentNodeId(noteid)
-            if (highlightIdExtras.length) {
+            if (highlightIdExtras.length && newone) {
                 highlightIdExtras && highlightIdExtras.forEach((parentID) => {
                     let hsparent = this.hsbyid(parentID)
                     if (hsparent) {
