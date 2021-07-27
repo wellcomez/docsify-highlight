@@ -4,7 +4,7 @@ import { User } from "./UserLogin";
 import { log } from "./log";
 import { getIntersection } from "./hl"
 import { getConfig } from './ANoteConfig';
-import { createHtml, mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
+import { mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
 import NoteMarker from './components/NoteMarker.vue'
 import NoteBookmark from './components/NoteBookMark.vue'
@@ -12,7 +12,8 @@ import { hl_note } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
-import { hlIngoreElement, hlPlacement, trimElement } from './hlPlacement';
+import { hlIngoreElement, hlPlacement } from './hlPlacement';
+import { getHtml } from './converDom2Html';
 export let default_tree_version = 0.33
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
@@ -580,93 +581,11 @@ export class DocHighlighter {
     };
     getHighlightDom = (noteid) => this.highlighter.getDoms(noteid)
 
-    convertNote2TreeNode = (el, styleList) => {
-        let { tagName } = el;
-        let style = el.getAttribute("style")
-        if (styleList.indexOf(style) == -1) {
-            styleList.push(style)
-        }
-        style = styleList.indexOf(style)
-        let text = el.innerText;
-        let child = { tagName, text, style }
-        return child
-    }
-    buildTree = (node, styleList) => {
-        let ii = node.children
-        let { tagName } = node;
-        let children = []
-        for (let i = 0; i < ii.length; i++) {
-            let el = ii[i];
-            let a = this.buildTree(el, styleList)
-            if (a.children.length) {
-                children.push(a)
-            }
-            if (el.classList.contains('docsify-highlighter')) {
-                let child = this.convertNote2TreeNode(el, styleList)
-                children.push(child)
-                // console.log(child);
-            }
-        }
-        return { tagName, children }
-    }
+
     // eslint-disable-next-line no-unused-vars
     getHtml = (noteid) => {
         let dom = this.getHighlightDom(noteid).sort(cmpNodePosition)
-        // let objset = new Set(dom);
-        // let el = dom[0]
-        let parentNode = document.createElement("p");
-        let ret = []
-        // while (el && objset.size) {
-        //     let ignore = hlIngoreElement(el) || hlIngoreElement(el.parentNode)
-        //     if (!ignore && el.classList && el.classList.contains('docsify-highlighter')) {
-        //         let id = this.highlighter.getIdByDom(el)
-        //         if (id == noteid) {
-        //             ret.push(el)
-        //             objset.delete(el)
-        //         } else {
-        //             let a = this.highlighter.getExtraIdByDom(el)
-        //             if (new Set(a).has(noteid)) {
-        //                 ret.push(el)
-        //             }
-        //         }
-        //     }
-        //     const getNext = (el) => {
-        //         let { parentNode } = el
-        //         if (!parentNode) return null
-        //         let { nextSibling } = el
-        //         if (nextSibling) {
-        //             el = nextSibling.firstChild
-        //             if (el)
-        //                 return el
-        //         }
-        //         return getNext(parentNode)
-        //     }
-        //     if (el.nextSibling) {
-        //         el = el.nextSibling
-        //     } else {
-        //         el = getNext(el)
-        //     }
-        // }
-        dom = dom.filter((el) => {
-            let ignore = hlIngoreElement(el) || hlIngoreElement(el.parentNode)
-            if (!ignore) {
-                if (trimElement(el)) return true
-            }
-            return false
-        })
-        dom.forEach((a) => {
-            let b = a.cloneNode(true);
-            // b.classList = [];
-            ['data-highlight-split-type', 'data-highlight-id-extra', 'data-highlight-id'].forEach((a) => b.removeAttribute(a))
-            parentNode.appendChild(b)
-        })
-        let styleList = []
-        ret = [parentNode].map((a) => {
-            return this.buildTree(a, styleList)
-        })
-        let tree = { nodes: ret, styleList }
-        let html = createHtml(tree)
-        return { html, tree }
+        return getHtml(dom)
     }
 
 
