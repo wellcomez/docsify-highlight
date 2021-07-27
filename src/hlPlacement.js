@@ -1,10 +1,8 @@
 import { UTILS } from './css_path'
-// eslint-disable-next-line no-unused-vars
-import { getSelectedNodes, HighlightRange } from './hlapi'
 import Highlighter2 from './hlapi/index';
 const regexpNoSpace = new RegExp("\\s", "g")
 
-                
+
 export const trimElement = (el) => {
     let { innerTextTrim } = el
     if (innerTextTrim == undefined) {
@@ -12,7 +10,7 @@ export const trimElement = (el) => {
         el.innerTextTrim = innerTextTrim
     }
     return innerTextTrim
-}                
+}
 const getKK = (k, textContent) => {
     let blankPoint = Array.from(textContent.matchAll(regexpNoSpace))
     if (blankPoint.length == 0) return k
@@ -48,127 +46,6 @@ const getPrevOrPrevParent = (parent) => {
     }
 }
 
-const findInTopElement = (node, text) => {
-    if (node.nodeType == 3) {
-        let t = trimstring(node.textContent)
-        let index = text.lastIndexOf(t)
-        if (index != -1 && index + t.length == text.length) {
-            text = text.substring(0, index)
-            return { node, text }
-        } else {
-            return { text, error: true }
-        }
-    }
-    let rc = { text }
-    if (isTextNode(node)) {
-        let last = node.lastChild
-        while (last) {
-            let result = findInTopElement(last, text)
-            text = result.text
-            if (result.error) {
-                let ignore = hlIngoreElement(node)
-                if (ignore == false) {
-                    return result
-                }
-            }
-            if (text.length == 0) return result
-            rc = { ...result, ...{ error: false } }
-            last = last.previousSibling
-        }
-    }
-    return rc
-
-}
-const findInFirst = (node, text) => {
-    if (node.nodeType == 3) {
-        let t = trimstring(node.textContent)
-        if (!t) {
-            return { next: true }
-        }
-        let index = text.indexOf(t)
-        if (index != -1) {
-            return { node, textOffset: index, match: t }
-        } else {
-            return { error: true }
-        }
-    }
-    let rc = { next: true }
-    if (isTextNode(node)) {
-        let last = node.firstChild
-        while (last) {
-            let ret = findInFirst(last, text)
-            if (ret.node) {
-                return ret
-            }
-            if (ret.next) {
-                last = last.nextSibling
-            } else {
-                return ret
-            }
-        }
-    }
-    return rc
-}
-
-export const compareNodeText = (text2, el, prefixTrim) => {
-    let parent = notRoot(el.parentNode) ? el.parentNode : el
-    let preElement = parent
-    let preContent = filteInnerText(preElement)
-    let endElement = el
-    preContent = trimstring(preContent)
-    let bb = text2.lastIndexOf(preContent)
-    let findTail
-    if (bb == -1) {
-        let { sequence } = longestCommonSubstring(text2, preContent)
-        if (sequence) {
-            findTail = sequence.lastIndexOf(prefixTrim) + prefixTrim.length == sequence.length
-            if (findTail) {
-                bb = text2.lastIndexOf((sequence))
-            }
-        }
-    }
-    if (bb == 0) {
-        let { node } = findInFirst(preElement, text2)
-        if (node) {
-            return { beginElement: node, endElement }
-        }
-    }
-    while (bb > 0) {
-        text2 = text2.substring(0, bb)
-        if (text2.length == 0) {
-            break;
-        }
-        const find = (a) => {
-            let index = -1
-            let nextElement = getPrevOrPrevParent(a)
-            if (!nextElement) return { index }
-            let content = trimstring(filteInnerText(nextElement))
-            if (content) {
-                if (content.length > text2.length) {
-                    if (content.lastIndexOf(text2) != 1) {
-                        return { preElement: nextElement, index: 0 }
-                    }
-                    return { preElement: nextElement, index: -1 }
-                } else {
-                    let index = text2.lastIndexOf(content)
-                    return { preElement: nextElement, index }
-                }
-            } else {
-                return find(nextElement)
-            }
-        }
-        let result = find(preElement)
-        bb = result.index
-        preElement = result.preElement
-        if (bb == 0) {
-            let ret = findInTopElement(preElement, text2)
-            if (ret.node) {
-                return { beginElement: ret.node, endElement }
-            }
-        }
-    }
-    return undefined
-}
 const shouldIgnore = (node) => node.classList && node.classList.contains('notemarker') ? true : false
 const isTextNode = (node) => {
     let { nodeType } = node;
@@ -632,14 +509,6 @@ export class hlPlacement {
         }
         return r
     }
-    // getMetaElement(meta) {
-    //     let nodes = this.$root.querySelectorAll(meta.parentTagName)
-    //     try {
-    //         return nodes[meta.parentIndex]
-    //     } catch (error) {
-    //         return
-    //     }
-    // }
     getParentIndex = (endMeta, node) => {
         let { parentTagName, parentIndex } = endMeta
         let nn = this.$root.querySelectorAll(parentTagName)
@@ -699,40 +568,6 @@ export class hlPlacement {
             return { csspath }
         }
         return {}
-    }
-    findElementText(el, text) {
-        let elText = commonInnerText(el)
-        let index = elText.indexOf(text)
-        if (index != -1)
-            return index
-        let { innerTextTrim } = el
-        if (innerTextTrim == undefined) {
-            innerTextTrim = trimstring(elText)
-            el.innerTextTrim = innerTextTrim
-        }
-        let trim = trimstring(text)
-        index = innerTextTrim.indexOf(trim)
-        if (index != -1) {
-            let ccc = new Set(['\u3000', ' ', '\t'])
-            let firstChart = trim[0];
-            let index = elText.indexOf(firstChart)
-            while (index != -1 && index < elText.length) {
-                let k = 0, i = index
-                for (i = index, k = 0; i < elText.length && k < trim.length; i++) {
-                    let c = elText[i]
-                    if (ccc.has(c)) continue
-                    let d = trim[k]
-                    if (d == c) { k++; continue }
-                }
-                if (k == trim.length) {
-                    return index;
-                } else {
-                    elText = elText.substr(i);
-                    index = elText.indexOf(firstChart)
-                }
-            }
-        }
-        return -1
     }
     updateParentIndex(nodetree, hs) {
         let first = nodetree[0]
@@ -880,56 +715,48 @@ export class hlPlacement {
         // return []
         // }
         // filterSelectedNotes2(selectedNodes, hs) {
-        let { nodetree } = hs;
-        if (nodetree == undefined) {
-            nodetree = rebuildTree(hs).tree
-        }
-        let ret = []
+        // let { nodetree } = hs;
+        // if (nodetree == undefined) {
+        //     nodetree = rebuildTree(hs).tree
+        // }
+        // let ret = []
         let { text } = hs
         text = trimstring(text)
-        let nodeText = ''
-        selectedNodes.forEach((node) => {
-            let innerText = commonInnerText(node.$node)
-            let a = trimstring(innerText).replaceAll("\n", '')
-            if (a.length) {
-                nodeText = nodeText + a
-                // let lcs = longestCommonSubstring(nodeText, text)
-                // let { sequence } = lcs
-                // sequence
-            }
-            // console.log(sequence, lcs)
-        })
-        selectedNodes.forEach((node) => {
-            let innerText = commonInnerText(node)
-            let a = trimstring(innerText).replaceAll("\n", '')
-            if (text == undefined || text.length == 0) return;
-            if (a.length) {
-                let index = text.indexOf(a)
-                if (index == 0) {
-                    text = text.substr(a.length)
-                    ret.push(node)
-                    return
-                } else {
-                    if (ret.length) {
-                        text = undefined
+        // let nodeText = ''
+        const concatNode = (text, begin = 0) => {
+            let left = text
+            let first = true
+            for (let i = begin; i < selectedNodes.length; i++) {
+                let node = selectedNodes[i]
+                let a = trimElement(node.$node)
+                if (!a) continue
+                // nodeText = nodeText + a
+                let index = left.indexOf(a)
+                if (index != -1) {
+                    if (first) {
+                        begin = index + a.length
+                        first = false
+                        left = left.substring(index + a.length)
                     } else {
-                        let lcs = longestCommonSubstring(text, a)
-                        let { sequence } = lcs
-                        if (sequence && sequence.length) {
-                            let textOffset = text.indexOf(sequence) + sequence.length
-                            text = text.substr(textOffset)
-                            ret.push(node)
-                            return
+                        if (index == 0) {
+                            left = left.substring(index + a.length)
+                            if (left.length == 0) {
+                                let ret = selectedNodes.slice(0, i)
+                                return { ret }
+                            }
                         }
                     }
                 }
             }
-            if (ret.length) {
-                ret.push(node)
-            }
-        })
-        if (text != undefined)
-            return ret
+            return { begin }
+        }
+        let searchBegin = 0
+        while (searchBegin < text.length) {
+            let { ret, begin } = concatNode(text, searchBegin)
+            if (ret) return ret
+            if (begin == searchBegin) return []
+            searchBegin = begin
+        }
         return []
     }
 
@@ -985,7 +812,7 @@ export class hlPlacement {
         node.filterText = filterText
         return filterText
     }
-    
+
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
     replacementHS3(hs) {
         const OneElement = (hs) => {

@@ -386,7 +386,7 @@ export class DocHighlighter {
                         if (hs) {
                             selectedNodes = this.hsPlacement.filterSelectedNotes(selectedNodes, hs)
                             if (selectedNodes.length == 0) {
-                                console.error("selectedNodes", selectedNodes.length, last.splitType, hs);
+                                console.error("selectedNodes " + hs.id + " " + hs.text, selectedNodes.length, last.splitType);
                                 return []
                             } else {
                                 return selectedNodes
