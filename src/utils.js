@@ -93,16 +93,23 @@ export function queryBox({ title, content, onCancel, onOk }) {
 export var mobile = require('is-mobile');
 export function gotoNote({ path, id, key }) {
   if (path == undefined) {
-    path = JSON.parse(key).path;
+    if (key) {
+      key = JSON.parse(key)
+      if (key)
+        path = key.path;
+    }
   }
-  let hash = path.substring(path.indexOf("#"));
-  hash = `${hash}?noteid=${id}`;
+
   let current = parseurl();
-  if (current.path == path) {
+  if (current && current.path == path) {
     // document.location.hash = hash;
     scollTopID(id);
   } else {
-    document.location.hash = hash;
+    let hash = path ? path.substring(path.indexOf("#")) : undefined;
+    if (hash) {
+      hash = `${hash}?noteid=${id}`;
+      document.location.hash = hash;
+    }
   }
 }
 

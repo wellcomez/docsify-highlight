@@ -410,7 +410,7 @@ export class DocHighlighter {
                 if (selectedNodes.length == 0) {
                     let hs = self.store.geths(id)
                     if (hs) {
-                        console.error("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                        // console.error("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
                     }
                 }
                 return selectedNodes;
