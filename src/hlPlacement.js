@@ -727,7 +727,7 @@ export class hlPlacement {
         // let ret = []
         let { text } = hs
         text = trimstring(text)
-        // let nodeText = ''
+        let nodeText = ''
         const concatNode = (text, begin = 0) => {
             let left = text
             let first = true
@@ -741,23 +741,26 @@ export class hlPlacement {
                     if (first) {
                         begin = index + a.length
                         first = false
+                        nodeText += a;
                         left = left.substring(index + a.length)
                     } else {
                         if (index == 0) {
+                            nodeText += a;
                             left = left.substring(index + a.length)
                             if (left.length == 0) {
                                 let ret = selectedNodes.slice(0, i)
-                                return { ret }
+                                return { ret, nodeText }
                             }
                         }
                     }
                 }
             }
-            return { begin }
+            return { begin, nodeText }
         }
         let searchBegin = 0
         while (searchBegin < text.length) {
-            let { ret, begin } = concatNode(text, searchBegin)
+            // eslint-disable-next-line no-unused-vars
+            let { ret, begin, nodeText } = concatNode(text, searchBegin)
             if (ret) return ret
             if (begin == searchBegin) return []
             searchBegin = begin

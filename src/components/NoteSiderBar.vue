@@ -107,14 +107,15 @@ export default {
       this.$el.scrollTo(0, 0);
     },
     onClickURL(a) {
-      gotoNote(a);
+      if (a) gotoNote(a);
     },
     changeCurrentCharacter(charpter) {
       this.disabled = false;
       this.sortedChapter.find((a) => {
         if (charpter.label == a.label) {
           this.current = a;
-          gotoNote(a.children[0])
+          let b = a.children[0];
+          if (b) gotoNote(b);
           return true;
         }
       });

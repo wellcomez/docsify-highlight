@@ -326,7 +326,7 @@ export default {
       if (this.checked == false) this.showdetail = false;
     },
     onClickURL(a) {
-      gotoNote(a);
+      if (a) gotoNote(a);
     },
 
     onClickOpenNote() {
