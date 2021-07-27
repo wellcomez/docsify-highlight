@@ -616,42 +616,42 @@ export class DocHighlighter {
     // eslint-disable-next-line no-unused-vars
     getHtml = (noteid, checkparent) => {
         let dom = this.highlighter.getDoms(noteid).sort(cmpNodePosition)
-        let objset = new Set(dom);
-        let el = dom[0]
+        // let objset = new Set(dom);
+        // let el = dom[0]
         let parentNode = document.createElement("p");
         let ret = []
-        while (el && objset.size) {
-            let ignore = hlIngoreElement(el) || hlIngoreElement(el.parentNode)
-            if (!ignore && el.classList && el.classList.contains('docsify-highlighter')) {
-                let id = this.highlighter.getIdByDom(el)
-                if (id == noteid) {
-                    ret.push(el)
-                    objset.delete(el)
-                } else {
-                    let a = this.highlighter.getExtraIdByDom(el)
-                    if (new Set(a).has(noteid)) {
-                        ret.push(el)
-                    }
-                }
-            }
-            const getNext = (el) => {
-                let { parentNode } = el
-                if (!parentNode) return null
-                let { nextSibling } = el
-                if (nextSibling) {
-                    el = nextSibling.firstChild
-                    if (el)
-                        return el
-                }
-                return getNext(parentNode)
-            }
-            if (el.nextSibling) {
-                el = el.nextSibling
-            } else {
-                el = getNext(el)
-            }
-        }
-        ret.forEach((a) => {
+        // while (el && objset.size) {
+        //     let ignore = hlIngoreElement(el) || hlIngoreElement(el.parentNode)
+        //     if (!ignore && el.classList && el.classList.contains('docsify-highlighter')) {
+        //         let id = this.highlighter.getIdByDom(el)
+        //         if (id == noteid) {
+        //             ret.push(el)
+        //             objset.delete(el)
+        //         } else {
+        //             let a = this.highlighter.getExtraIdByDom(el)
+        //             if (new Set(a).has(noteid)) {
+        //                 ret.push(el)
+        //             }
+        //         }
+        //     }
+        //     const getNext = (el) => {
+        //         let { parentNode } = el
+        //         if (!parentNode) return null
+        //         let { nextSibling } = el
+        //         if (nextSibling) {
+        //             el = nextSibling.firstChild
+        //             if (el)
+        //                 return el
+        //         }
+        //         return getNext(parentNode)
+        //     }
+        //     if (el.nextSibling) {
+        //         el = el.nextSibling
+        //     } else {
+        //         el = getNext(el)
+        //     }
+        // }
+        dom.forEach((a) => {
             let b = a.cloneNode(true);
             // b.classList = [];
             ['data-highlight-split-type', 'data-highlight-id-extra', 'data-highlight-id'].forEach((a) => b.removeAttribute(a))
@@ -710,11 +710,10 @@ export class DocHighlighter {
                 this.store.update({ id: noteid, note, tags, bookmark, nodetree, ...nodetree })
             }
             let highlightIdExtras = this.parentNodeId(noteid)
-            if (highlightIdExtras.length && newone) {
+            if (newone) {
                 highlightIdExtras && highlightIdExtras.forEach((parentID) => {
                     let hsparent = this.hsbyid(parentID)
                     if (hsparent) {
-                        this.updateHtml(parentID);
                         let styleparent = hsparent.style
                         if (styleparent && style) {
                             style = { ...styleparent, ...style }
@@ -734,6 +733,12 @@ export class DocHighlighter {
 
             })
             this.updateHtml(noteid)
+            highlightIdExtras && highlightIdExtras.forEach((parentID) => {
+                let hsparent = this.hsbyid(parentID)
+                if (hsparent) {
+                    this.updateHtml(parentID);
+                }
+            })
 
         } else {
             this.removeHighLight(noteid);

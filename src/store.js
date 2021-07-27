@@ -445,6 +445,25 @@ class Chapter {
   }
   mergeChild() {
     let { children } = this
+    let findid = (id) => {
+      for (let i = 0; i < children.length; i++) {
+        let hs = children[i]
+        if (hs.id == id) return true
+      }
+      return false
+    }
+    this.store.geths()
+    children = children.filter((a) => {
+      let { parent } = a
+      if (parent) {
+        let bb = parent.filter((id) => {
+          return findid(id)
+        })
+        return bb.length == 0;
+      }
+      return true;
+    })
+    return children
     // let bbb = children.filter((a) => {
     //   let { tree, version, imgsrc, text, html } = a
     //   if (version) {
@@ -454,7 +473,7 @@ class Chapter {
 
     // })
     // children = bbb
-    return children
+    // return children
   }
 }
 // import CharptHtml from './components/CharptHtml.vue'
