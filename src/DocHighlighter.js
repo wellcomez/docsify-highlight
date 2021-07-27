@@ -451,42 +451,58 @@ export class DocHighlighter {
 
     deleteId(id, store) {
         let { highlighter } = this;
-        this.procssAllElements(id, (a) => {
-            let n = a.querySelectorAll('.imgzoombtn')
-            for (let i = 0; i < n.length; i++) {
-                let b = n[i];
-                b.parentNode.removeChild(b);
+        let childList = this.childIdList(id);
+        let parentList = this.parentIdList()
+
+
+
+        const removid = (id) => {
+            this.procssAllElements(id, (a) => {
+                let n = a.querySelectorAll('.imgzoombtn');
+                for (let i = 0; i < n.length; i++) {
+                    let b = n[i];
+                    b.parentNode.removeChild(b);
+                }
+            });
+            this.removeMarkNode(id);
+            this.removeHighLight(id)
+            highlighter.removeClass(hl_note, id)
+            highlighter.removeClass("highlight-wrap-hover", id);
+            highlighter.removeClass("highlight-tags", id);
+            highlighter.remove(id);
+            if (store == undefined) {
+                store = this.store
             }
-        })
-        let dom = this.highlighter.getDoms(id)
-        let extra = []
-        try {
-            extra = dom.length ? this.highlighter.getExtraIdByDom(dom[0]) : []
-        } catch (error) {
-            console.error(error)
+            store.remove(id);
         }
+        removid(id);
+        childList.forEach((id) => removid(id))
 
-        this.removeMarkNode(id);
-
-        this.removeHighLight(id)
-        highlighter.removeClass(hl_note, id)
-        highlighter.removeClass("highlight-wrap-hover", id);
-        highlighter.removeClass("highlight-tags", id);
-        highlighter.remove(id);
-        if (store == undefined) {
-            store = this.store
-        }
-        store.remove(id);
-
-        extra.forEach((id) => {
+        parentList.forEach((id) => {
             let hs = this.hsbyid(id)
             let a = new highlightType(this.highlighter, hs)
             a.showHighlight()
             this.updateHtml(id)
         })
-        // this.repairToc()
         this.updatePanel();
     }
+    parentIdList(noteid) {
+        try {
+            let extra = this.highlighter.getExtraIdByDom(this.getElement(noteid))
+            return extra
+        } catch (error) { return [] }
+    }
+    childIdList(id) {
+        let childList = new Set();
+        this.procssAllElements(id, (a) => {
+            let id1 = this.highlighter.getIdByDom(a);
+            if (id1 != id) {
+                childList.add(id1);
+            }
+        });
+        return Array.from(childList)
+    }
+
     enable(enable) {
         if (enable) {
             this.store = new Book().toc.CharpterStorage()
@@ -580,10 +596,7 @@ export class DocHighlighter {
         }
     };
     getHighlightDom = (noteid) => this.highlighter.getDoms(noteid)
-    parentNodeId(noteid) {
-        let extra = this.highlighter.getExtraIdByDom(this.getElement(noteid))
-        return extra
-    }
+
     convertNote2TreeNode = (el, styleList) => {
         let { tagName } = el;
         let style = el.getAttribute("style")
@@ -709,7 +722,7 @@ export class DocHighlighter {
                 let nodetree = this.hsNodetree(noteid)
                 this.store.update({ id: noteid, note, tags, bookmark, nodetree, ...nodetree })
             }
-            let highlightIdExtras = this.parentNodeId(noteid)
+            let highlightIdExtras = this.parentIdList(noteid)
             if (newone) {
                 highlightIdExtras && highlightIdExtras.forEach((parentID) => {
                     let hsparent = this.hsbyid(parentID)

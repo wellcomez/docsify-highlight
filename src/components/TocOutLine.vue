@@ -9,7 +9,7 @@
         :style="style"
         :class="outlineTitleClass"
       >
-        <span v-if="html" v-html="html" class="title-span"></span>
+        <p v-if="html" v-html="html" class="title-span"></p>
         <span v-else :style="style">{{ title2 }}</span>
         <img
           v-if="imgsrc"
@@ -137,9 +137,9 @@ export default {
         {
           name: "fix",
           click: () => {
-            let { id} = this.notedata;
+            let { id } = this.notedata;
             let { hl } = window;
-            hl.fixid(id) 
+            hl.fixid(id);
           },
         },
       ],
