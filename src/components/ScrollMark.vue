@@ -1,6 +1,6 @@
 <template>
   <div class="scollposion" :style="style">
-    <Icon size="32" type="ios-play-outline " color="#42b983" />
+    <Icon type="ios-pin"  color="red" size="32"/>
   </div>
 </template>>
 <script>
@@ -53,5 +53,6 @@ export default {
 <style scoped>
 .scollposion {
   position: absolute;
+  margin-right: 20px;
 }
 </style>
