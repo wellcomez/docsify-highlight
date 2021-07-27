@@ -12,7 +12,7 @@ import { hl_note } from './colorSelector';
 import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
-import { hlIngoreElement, hlPlacement } from './hlPlacement';
+import { hlIngoreElement, hlPlacement, trimElement } from './hlPlacement';
 export let default_tree_version = 0.33
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
@@ -340,6 +340,7 @@ export class DocHighlighter {
             }
         });
         this.highlighter = a;
+        this.hsPlacement = new hlPlacement(this)
         a.on(Highlighter.event.HOVER, this.onHover.bind(this));
         a.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
         // a.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
@@ -418,7 +419,6 @@ export class DocHighlighter {
                 console.error(error)
             }
         });
-        this.hsPlacement = new hlPlacement(this)
         // new hlPosition()
         // this.highlighter.hooks.Serialize.Restore.tap(
         //     source => log('Serialize.Restore hook -', source)
@@ -522,20 +522,17 @@ export class DocHighlighter {
         if (type == "from-store") {
             let creatFromStore = ({ id }) => {
                 let hhs = this.hsbyid(id)
-                let { style, note, bookmark, tree, nodetree, version } = hhs
+                let { style, note, bookmark, nodetree, version } = hhs
                 this.updateStyleOfHs(id)
                 if (nodetree == undefined) {
-                    nodetree = this.hlPlacement.hsNodetree(hhs)
+                    nodetree = this.hsPlacement.hsNodetree(hhs)
                     this.store.update({ ...{ id }, ...nodetree })
                 }
-                this.store.update({ ...{ id } })
 
 
                 if (version != default_tree_version) {
-                    if (tree == undefined) {
-                        tree = this.getHtml(id).tree
-                        this.store.update({ id, tree, version: default_tree_version })
-                    }
+                    let { tree } = this.getHtml(id)
+                    this.store.update({ id, tree, version: default_tree_version })
                 }
 
                 if (note && note.length) {
@@ -551,7 +548,11 @@ export class DocHighlighter {
             }
             creatFromStore = creatFromStore.bind(this);
             sources.forEach((hs) => {
-                creatFromStore(hs)
+                try {
+                    creatFromStore(hs)
+                } catch (error) {
+                    console.error(error);
+                }
             })
             this.updatePanel()
         } else {
@@ -609,7 +610,7 @@ export class DocHighlighter {
         return { tagName, children }
     }
     // eslint-disable-next-line no-unused-vars
-    getHtml = (noteid, checkparent) => {
+    getHtml = (noteid) => {
         let dom = this.getHighlightDom(noteid).sort(cmpNodePosition)
         // let objset = new Set(dom);
         // let el = dom[0]
@@ -646,6 +647,13 @@ export class DocHighlighter {
         //         el = getNext(el)
         //     }
         // }
+        dom = dom.filter((el) => {
+            let ignore = hlIngoreElement(el) || hlIngoreElement(el.parentNode)
+            if (!ignore) {
+                if (trimElement(el)) return true
+            }
+            return false
+        })
         dom.forEach((a) => {
             let b = a.cloneNode(true);
             // b.classList = [];

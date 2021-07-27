@@ -624,7 +624,7 @@ export class hlPlacement {
         }
         nodetree = a
         if (nodetree == undefined || nodetree.length == 0) {
-            nodetree = {}
+            nodetree = []
         } else {
             if (startMeta && endMeta) {
                 console.log(startMeta, nodetree[0])
@@ -638,6 +638,7 @@ export class hlPlacement {
         if (!nodetree) {
             return undefined
         }
+        if (!nodetree.length) { return undefined }
         let text = trimstring(hs.text)
         nodetree = nodetree.filter((a) => a.innerText).map((a) => { return { ...a, trim: trimstring(a.innerText) } })
         let { parentTagName, parentIndex } = hs.startMeta
@@ -831,7 +832,7 @@ export class hlPlacement {
 
 
         let { nodetree } = hs
-        if (nodetree) {
+        if (nodetree && nodetree instanceof Array && nodetree.length) {
             nodetree = nodetree.filter((a) => a.innerText).map((a) => { return { ...a, trim: trimstring(a.innerText) } })
             let firstText = trimstring(nodetree[0].innerText)
             return firstText.length > prefixTrim.length
