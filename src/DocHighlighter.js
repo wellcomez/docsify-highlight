@@ -896,16 +896,15 @@ export class DocHighlighter {
         let hs = this.hsbyid(id)
         if (hs) {
             let { top, element } = this.getTopElement(hs);
-            if (element) {
-                element.scrollIntoView()
-            } else if (top != undefined) {
-                window.scrollTo(0, top);
+            if (top != undefined) {
+                window.scrollTo(0, top - 100);
+            } else {
+                if (element) {
+                    element.scrollIntoView()
+                } else {
+                    return
+                }
             }
-            if (top == undefined) {
-                if (element)
-                    top = this.getPosition(element).top
-            }
-            if (top == undefined) { return }
             let b = document.getElementsByClassName('content')[0]
             let pp = this.getPosition(b)
             mountCmp(ScrollMark, { id, hl: this, left: pp.left + 10, top }, document.body);
