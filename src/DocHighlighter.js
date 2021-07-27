@@ -523,19 +523,17 @@ export class DocHighlighter {
         if (type == "from-store") {
             let creatFromStore = ({ id }) => {
                 let hhs = this.hsbyid(id)
-                let { style, note, bookmark, nodetree, version } = hhs
+                let { style, note, bookmark, nodetree, version, parent } = hhs
                 this.updateStyleOfHs(id)
+
+
+                if (parent == undefined) {
+                    parent = this.parentIdList(id)
+                }
                 if (nodetree == undefined) {
                     nodetree = this.hsPlacement.hsNodetree(hhs)
-                    this.store.update({ ...{ id }, ...nodetree })
                 }
-
-
-                if (version != default_tree_version) {
-                    let { tree } = this.getHtml(id)
-                    this.store.update({ id, tree, version: default_tree_version })
-                }
-
+                this.store.update({ ...{ id }, ...nodetree, parent })
                 if (note && note.length) {
                     this.createMarkNode(id, note);
                 }
@@ -545,6 +543,10 @@ export class DocHighlighter {
                 this.addTagBackground(style, id);
                 if (this.parseurlResult.noteid == id) {
                     this.scollTopID(id);
+                }
+                if (version != default_tree_version) {
+                    let { tree } = this.getHtml(id)
+                    this.store.update({ id, tree, version: default_tree_version })
                 }
             }
             creatFromStore = creatFromStore.bind(this);
@@ -631,9 +633,9 @@ export class DocHighlighter {
                 let nodetree = this.hsNodetree(noteid)
                 this.store.update({ id: noteid, note, tags, bookmark, nodetree, ...nodetree })
             }
-            let highlightIdExtras = this.parentIdList(noteid)
+            let parent = this.parentIdList(noteid)
             if (newone) {
-                highlightIdExtras && highlightIdExtras.forEach((parentID) => {
+                parent && parent.forEach((parentID) => {
                     let hsparent = this.hsbyid(parentID)
                     if (hsparent) {
                         let styleparent = hsparent.style
@@ -643,7 +645,7 @@ export class DocHighlighter {
                     }
                 })
             }
-            this.store.update({ id: noteid, style, parent: highlightIdExtras })
+            this.store.update({ id: noteid, style, parent: parent })
             this.updateStyleOfHs(noteid)
             let extra = this.childIdList(noteid)
             extra.forEach((id) => {
@@ -653,7 +655,7 @@ export class DocHighlighter {
 
             })
             this.updateHtml(noteid)
-            highlightIdExtras && highlightIdExtras.forEach((parentID) => {
+            parent && parent.forEach((parentID) => {
                 let hsparent = this.hsbyid(parentID)
                 if (hsparent) {
                     this.updateHtml(parentID);
