@@ -98,7 +98,7 @@
 import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
-import { default_tree_version} from "../DocHighlighter";
+import { default_tree_version } from "../DocHighlighter";
 const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";
@@ -173,6 +173,11 @@ export default {
     onSelectRow(index) {
       let { focusline } = this;
       this.focusline = focusline != index ? index : undefined;
+      setTimeout(() => {
+        if (this.focusline == index) {
+          this.focusline = undefined;
+        }
+      }, 3000);
     },
     lineClass(index) {
       return index == this.focusline ? "linefocus" : "";
