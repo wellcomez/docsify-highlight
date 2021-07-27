@@ -353,7 +353,12 @@ export const getMetaNode = (root, { parentTagName, parentIndex, textOffset }) =>
 export function hlIngoreElement(node) {
     return node && node.classList && node.classList.contains('hl-ignored') ? true : false;
 }
-
+const OneElement = (hs) => {
+    let { startMeta, endMeta } = hs;
+    if (startMeta.parentTagName != endMeta.parentTagName) return false;
+    if (startMeta.parentIndex != endMeta.parentIndex) return false;
+    return true;
+}
 function longestCommonSubstring(str1, str2) {
     if (!str1 || !str2) {
         return {
@@ -628,7 +633,7 @@ export class hlPlacement {
         }
         return { nodetree, ...csspath };
     }
-    searchByNodetree2(hs) {
+    searchFromStartMeta(hs) {
         let { nodetree } = hs
         if (!nodetree) {
             return undefined
@@ -773,15 +778,17 @@ export class hlPlacement {
         if (this.hl.store.title == hs.title) {
             let { imgsrc } = hs;
             if (imgsrc) return hs;
-            let ret
-            ret = this.replacementHS3(hs)
-            if (ret) {
-                return { ...hs, ...ret }
+            let notetreefirst = this.chooseNodeTree(hs)
+            let backSearch = this.searchFromEndMeta.bind(this)
+            let forwardFn = this.searchFromStartMeta.bind(this)
+            let callList = notetreefirst ? [forwardFn, backSearch] : [backSearch, forwardFn]
+            for (let i = 0; i < callList.length; i++) {
+                let ret = callList[i](hs)
+                if (ret) {
+                    return { ...hs, ...ret }
+                }
+                // console.error(callList[i] == backSearch ? 'replacementHS3 fail' : "searchByNodetree2 fail", hs.id)
             }
-            console.error('replacementHS3 fail', hs.id)
-            // ret = this.searchByNodetree2(hs)
-            // if (ret) return ret
-            // console.error('searchByNodetree2 fail', hs.id)
         }
         return hs
     }
@@ -814,14 +821,22 @@ export class hlPlacement {
     }
 
     cancheck = (parentElement) => { return parentElement && parentElement.tagName != "article".toUpperCase() }
-    replacementHS3(hs) {
-        const OneElement = (hs) => {
-            let { startMeta, endMeta } = hs;
-            if (startMeta.parentTagName != endMeta.parentTagName) return false;
-            if (startMeta.parentIndex != endMeta.parentIndex) return false;
-            return true;
-        }
+    chooseNodeTree(hs) {
+        let { endMeta } = hs;
+        let prefix = OneElement(hs) ? hs.text : hs.text.substring(hs.text.length - endMeta.textOffset)
+        let prefixTrim = trimstring(prefix)
 
+
+        let { nodetree } = hs
+        if (nodetree) {
+            nodetree = nodetree.filter((a) => a.innerText).map((a) => { return { ...a, trim: trimstring(a.innerText) } })
+            let firstText = trimstring(nodetree[0].innerText)
+            return firstText.length > prefixTrim.length
+        }
+        return false
+
+    }
+    searchFromEndMeta(hs) {
         let { endMeta } = hs;
         let prefix = OneElement(hs) ? hs.text : hs.text.substring(hs.text.length - endMeta.textOffset)
         let prefixTrim = trimstring(prefix)
