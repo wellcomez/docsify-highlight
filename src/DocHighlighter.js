@@ -561,7 +561,7 @@ export class DocHighlighter {
                 hs.title = title;
             })
             let hs = sources[0]
-            let normal = this.highlighter.getDoms(hs.id).filter((a) => {
+            let normal = this.getHighlightDom(hs.id).filter((a) => {
                 let ignore = hlIngoreElement(a) || hlIngoreElement(a.parentElement)
                 return ignore ? false : true
             })
@@ -610,7 +610,7 @@ export class DocHighlighter {
     }
     // eslint-disable-next-line no-unused-vars
     getHtml = (noteid, checkparent) => {
-        let dom = this.highlighter.getDoms(noteid).sort(cmpNodePosition)
+        let dom = this.getHighlightDom(noteid).sort(cmpNodePosition)
         // let objset = new Set(dom);
         // let el = dom[0]
         let parentNode = document.createElement("p");
@@ -718,9 +718,7 @@ export class DocHighlighter {
             }
             this.store.update({ id: noteid, style, parent: highlightIdExtras })
             this.updateStyleOfHs(noteid)
-            let extra = this.highlighter.getDoms(noteid).map((a) => {
-                return this.highlighter.getIdByDom(a)
-            }).filter((a) => a != noteid)
+            let extra = this.childIdList(noteid)
             extra.forEach((id) => {
                 let hhs = this.hsbyid(id)
                 let a = new highlightType(this.highlighter, hhs)
