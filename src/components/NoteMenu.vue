@@ -161,9 +161,5 @@ export default NoteMenu;
   padding-bottom: 2px;
 }
 @media screen and (max-width: 640px) {
-  .my-remove-tip {
-    width: 100%;
-    /* width:360px */
-  }
 }
 </style>
