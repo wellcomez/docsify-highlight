@@ -456,10 +456,14 @@ class Chapter {
     children = children.filter((a) => {
       let { parent } = a
       if (parent) {
-        let bb = parent.filter((id) => {
-          return findid(id)
-        })
-        return bb.length == 0;
+        try {
+          let bb = parent.filter((id) => {
+            return findid(id)
+          })
+          return bb.length == 0;
+        } catch (error) {
+          return true
+        }
       }
       return true;
     })
