@@ -48,7 +48,15 @@
         />
       </div>
     </Drawer>
-    <Drawer v-model="disabled">
+    <Drawer
+      class="drawer-exporthtml"
+      v-if="testExport"
+      width="600"
+      v-model="disabled"
+    >
+      <ExportHtml :charpter="sortedChapter"></ExportHtml>
+    </Drawer>
+    <Drawer v-else v-model="disabled">
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -63,12 +71,14 @@ import { Drawer } from "iview";
 import isMobile from "is-mobile";
 import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
+import ExportHtml from "./ExportHtml";
 import { gotoNote } from "../utils";
 export default {
   name: "NoteSiderBar",
   components: {
     CharptHtml,
     TocHtml,
+    ExportHtml,
     Drawer,
   },
   computed: {
@@ -91,6 +101,7 @@ export default {
   },
   data() {
     return {
+      testExport: false,
       current: this.hl ? this.hl.store.Chapter() : {},
       open: undefined,
       disabled: false,
@@ -192,6 +203,15 @@ export default {
 </script>
 
 <style>
+.drawer-exporthtml .ivu-layout-sider-trigger {
+  background-color: #fff;
+  color: #42b983;
+}
+.drawer-exporthtml
+  .ivu-layout-sider.ivu-layout-sider-zero-width.ivu-layout-sider-collapsed
+  > span {
+  background-color: #42b983;
+}
 .zoom-out .html-drawer-right .ivu-drawer {
   left: 0 !important;
   width: 100% !important;
