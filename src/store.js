@@ -1,5 +1,5 @@
 import { colorClassList } from "./colorSelector";
-import { createHtml, getImgSrcUrl, parseurl, pluginScript, rootPath } from "./utils";
+import { getImgSrcUrl, parseurl, pluginScript, rootPath } from "./utils";
 import { User, UserLogin } from "./UserLogin";
 const md5 = require('md5');
 export class BookToc {
@@ -498,6 +498,7 @@ export function getRawHtml(cmp, props) {
   return a.$el.outerHTML;
 }
 import { Base64 } from 'js-base64';
+import { createHtml } from "./converDom2Html";
 
 export class Book {
   static updated = false;

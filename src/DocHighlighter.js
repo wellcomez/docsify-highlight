@@ -13,7 +13,7 @@ import { highlightType } from './highlightType'
 import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
-import { getHtml } from './converDom2Html';
+import { convertHight2Html } from './converDom2Html';
 export let default_tree_version = 0.33
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
@@ -585,7 +585,7 @@ export class DocHighlighter {
     // eslint-disable-next-line no-unused-vars
     getHtml = (noteid) => {
         let dom = this.getHighlightDom(noteid).sort(cmpNodePosition)
-        return getHtml(dom)
+        return convertHight2Html(dom)
     }
 
 

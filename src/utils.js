@@ -236,52 +236,6 @@ function findSameParts(str1, str2, options = {}) {
   return allFoundStr;
 }
 
-export function createHtml(json) {
-  if (json == undefined || json == null) return
-  let { nodes, styleList } = json
-  // eslint-disable-next-line no-unused-vars
-  // function convertNodes(nodes) {
-  //   return nodes.map((el) => {
-  //     let html = ''
-  //     let { tagName, text, style, children } = el
-  //     if (children) {
-  //       let a = convertNodes(children)
-  //       if (tagName) {
-  //         let b = document.createElement(tagName)
-  //         b.innerHTML = a;
-  //         a = b.outerHTML;
-  //       }
-  //       html = html + a;
-  //     }
-  //     else {
-  //       let el = document.createElement(tagName)
-  //       el.setAttribute('style', styleList[style])
-  //       el.innerText = text
-  //       html = html + el.outerHTML
-  //     }
-  //     return html
-  //   }).join('')
-  // }
-  let p = document.createElement('p')
-  function convertNodes2(nodes) {
-    nodes.forEach((el) => {
-      let { tagName, text, style, children } = el
-      if (tagName == "article".toUpperCase()) {
-        return
-      }
-      if (tagName == "I") {
-        let el = document.createElement(tagName)
-        el.setAttribute('style', styleList[style])
-        el.innerText = text
-        p.appendChild(el)
-      }
-      convertNodes2(children ? children : [])
-    })
-    return p.innerHTML
-  }
-  return convertNodes2(nodes)
-  // return convertNodes(nodes)
-}
 export function pluginScript() {
   let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
   if (DocHighlighter) {

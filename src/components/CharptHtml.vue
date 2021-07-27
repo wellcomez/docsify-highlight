@@ -95,10 +95,11 @@
 </template>
 <script>
 // eslint-disable-next-line no-unused-vars
-import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
+import { convertStyle, getImgSrcUrl, getNoteUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
 import { default_tree_version } from "../DocHighlighter";
+import { createHtml } from '../converDom2Html';
 const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";

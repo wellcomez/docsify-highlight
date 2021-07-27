@@ -86,11 +86,12 @@
   </Row>
 </template>
 <script>
+import { createHtml } from '../converDom2Html';
 var isMobile = require("is-mobile");
 
 const rgba = require("color-rgba");
 var Colr = require("colr");
-import { convertStyle, createHtml, getImgSrcUrl, getNoteUrl } from "../utils";
+import { convertStyle, getImgSrcUrl, getNoteUrl } from "../utils";
 import { funDownload } from "./Panel.vue";
 const copyPasteBoard = require("clipboard-copy");
 export default {
