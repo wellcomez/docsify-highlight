@@ -22,8 +22,8 @@
           <Cell title="杂项" selected></Cell>
           <Cell title="杂项">
             <ButtonGroup>
-              <Button type="primary" @click="onClickRepairStore">修复</Button>
-              <Button type="primary" @click="onClickRepairToc2">排序</Button>
+              <!-- <Button type="primary" @click="onClickRepairStore">修复</Button> -->
+              <!-- <Button type="primary" @click="onClickRepairToc2">排序</Button> -->
               <Button type="primary" @click="ResetAll"> 重置</Button>
               <Upload :before-upload="onImportData" action="">
                 <Button type="primary" icon="ios-cloud-upload-outline"
@@ -124,7 +124,7 @@ export default {
       this.enableScript = !enable;
       let { enableScript } = this;
       getConfig().save({ enableScript });
-      // document.location.reload();
+      document.location.reload();
     },
 
     ResetAll() {

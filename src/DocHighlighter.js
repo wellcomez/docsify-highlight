@@ -14,7 +14,9 @@ import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
 import { convertHight2Html } from './converDom2Html';
-export let default_tree_version = 0.33
+export let get_default_tree_version =()=>{
+    return 0.50+ getConfig().enableScript()
+} 
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
         return 1
@@ -544,6 +546,7 @@ export class DocHighlighter {
                 if (this.parseurlResult.noteid == id) {
                     this.scollTopID(id);
                 }
+                let default_tree_version = get_default_tree_version()
                 if (version != default_tree_version) {
                     let { tree } = this.getHtml(id)
                     this.store.update({ id, tree, version: default_tree_version })

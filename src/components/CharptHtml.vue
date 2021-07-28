@@ -92,7 +92,7 @@
 import { convertStyle, getImgSrcUrl, getNoteUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
-import { default_tree_version } from "../DocHighlighter";
+import { get_default_tree_version } from "../DocHighlighter";
 import { createHtml } from "../converDom2Html";
 const copyPasteBoard = require("clipboard-copy");
 
@@ -263,6 +263,7 @@ export default {
       let url = charpter.url(id, this.rootpath);
       let label = text ? text.substring(0, 6) : idx;
       let style = convertStyle(a.style);
+      let default_tree_version = get_default_tree_version()
       let html = version == default_tree_version ? createHtml(tree) : undefined;
       //  = version ? createHtml(tree) : undefined;
       let key = new Date() * 1 + "-" + idx;

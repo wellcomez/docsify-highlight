@@ -31,6 +31,10 @@ export class ANoteConfig {
         } catch (error) {
         }
     }
+    enableScript() {
+        let { enableScript } = this.load();
+        return enableScript == true
+    }
     load() {
         try {
             var data = window.localStorage.getItem(this.toANoteConfig);
