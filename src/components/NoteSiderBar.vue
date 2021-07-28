@@ -261,24 +261,6 @@ export default {
 </script>
 
 <style>
-.drawer-exporthtml .ivu-layout-sider-trigger {
-  background-color: #fff;
-  color: #42b983;
-}
-.drawer-exporthtml
-  .ivu-layout-sider.ivu-layout-sider-zero-width.ivu-layout-sider-collapsed
-  > span {
-  background-color: #42b983;
-}
-/* .zoom-out .html-drawer-right .ivu-drawer {
-  left: 0 !important;
-  width: 100% !important;
-} */
-/* .zoom-in .html-drawer-right .ivu-drawer {
-  width: 400px !important;
-  right: 2px !important;
-  margin-bottom: 10px !important;
-} */
 .zoom-in .ivu-drawer {
   height: 100% !important;
 }

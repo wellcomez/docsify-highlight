@@ -740,7 +740,7 @@ export class hlPlacement {
                 let index = left.indexOf(a)
                 if (index != -1) {
                     if (first) {
-                        begin = index + a.length
+                        begin = i
                         first = false
                         nodeText += a;
                         left = left.substring(index + a.length)
@@ -750,7 +750,7 @@ export class hlPlacement {
                             left = left.substring(index + a.length)
                             if (left.length == 0) {
                                 let ret = selectedNodes.slice(0, i)
-                                return { ret, nodeText }
+                                return { begin, ret, nodeText }
                             }
                         }
                     }

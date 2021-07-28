@@ -260,7 +260,7 @@ export default {
       let { imgsrc, text, id, tree, version } = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
       let url = charpter.url(id, this.rootpath);
-      let label = text.substring(0, 6);
+      let label = text?text.substring(0, 6):idx;
       let style = convertStyle(a.style);
       let html = version == default_tree_version ? createHtml(tree) : undefined;
       //  = version ? createHtml(tree) : undefined;
