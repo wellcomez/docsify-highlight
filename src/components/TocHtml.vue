@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      clickIndex: undefined,
+      clickIndex: this.currentIndex,
       list: [],
     };
   },

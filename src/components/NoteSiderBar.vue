@@ -3,6 +3,7 @@
     <Drawer
       :class="root_class"
       title="笔记"
+      :width="rootDrawerWidth"
       id="notesidebar"
       :closable="true"
       v-model="open"
@@ -14,41 +15,61 @@
         slot="header"
         type="flex"
         justify="space-between"
-        style="margin-right: 20px"
+        style="margin-right: 5%; margin-left: 10%"
       >
-        <Col>
-          <Button size="small" @click="disabled = !disabled">目录</Button>
-        </Col>
         <Col>
           <h2>笔记</h2>
         </Col>
         <Col>
-          <Icon
-            type="ios-expand"
-            size="18"
-            @click="zoomNoteBook = zoomNoteBook != true"
-          />
+          <ButtonGroup>
+            <Button @click="disabled = !disabled" v-if="!useSideBar"
+              >目录</Button
+            >
+            <Button icon="md-arrow-dropup" @click="zoomNoteBook = 1" />
+            <Button icon="md-arrow-dropright" @click="zoomNoteBook = 0" />
+            <Button icon="ios-expand" @click="zoomNoteBook = 2" />
+          </ButtonGroup>
         </Col>
       </Row>
-      <div class="html-drawer-content" v-if="openNoteBook">
-        <!-- <div class="backtop">
-        <Button type="success" size="small" @click="onBackTop">
-          <Icon type="md-arrow-up" />
-        </Button>
-      </div> -->
 
-        <CharptHtml
-          class="charpterhtml"
-          v-for="(charpter, index) in sortedChapter"
-          :charpter="charpter"
-          :onClickURL="onClickURL"
-          :active="charpter.path == current.path"
-          :key="index"
-          :hl="hl"
-        />
-      </div>
+      <Row>
+        <Col
+          v-if="useSideBar"
+          :span="4"
+          style="
+             {
+              position: fixed;
+              top: 1px;
+              bottom: 1px;
+              width: 300px;
+              margin-top: 80px;
+              overflow: scroll;
+              position: fixed;
+            }
+          "
+        >
+          <TocHtml
+            :charpter="sortedChapter"
+            :click="clickOnToc"
+            class="html-drawer-toc"
+          />
+        </Col>
+        <Col :style="charpterStyle">
+          <div class="html-drawer-content" v-if="openNoteBook">
+            <CharptHtml
+              class="charpterhtml"
+              v-for="(charpter, index) in sortedChapter"
+              :charpter="charpter"
+              :onClickURL="onClickURL"
+              :active="charpter.path == current.path"
+              :key="index"
+              :hl="hl"
+            />
+          </div>
+        </Col>
+      </Row>
     </Drawer>
-    <Drawer v-model="disabled">
+    <Drawer v-model="disabled" v-if="!useSideBar">
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -64,6 +85,10 @@ import isMobile from "is-mobile";
 import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
 import { gotoNote } from "../utils";
+const right = 0;
+const full = 2;
+const up = 1;
+const down = -1;
 export default {
   name: "NoteSiderBar",
   components: {
@@ -72,13 +97,53 @@ export default {
     Drawer,
   },
   computed: {
+    charpterStyle() {
+      if (!this.useSideBar) return "";
+      return "margin-left: 300px";
+    },
+    rootStyles() {
+      let { zoomNoteBook } = this;
+      let height = {};
+      if (zoomNoteBook == up || zoomNoteBook == down) {
+        height = "30%";
+        height = { height };
+      }
+      let bottom = {};
+      if (zoomNoteBook == down) {
+        bottom = { bottom: 0 };
+      }
+      return { ...height, ...bottom };
+    },
+    rootDrawerWidth() {
+      let { zoomNoteBook } = this;
+      if (zoomNoteBook == up || zoomNoteBook == down || zoomNoteBook == full) {
+        return 100;
+      }
+      return 400;
+    },
+    useSideBar() {
+      return this.zoomNoteBook != right;
+    },
     root_class() {
-      return (
-        (isMobile() ? "mobile" : "") +
-        " " +
-        "html-drawer " +
-        (!this.zoomNoteBook ? "zoom-in" : "zoom-out")
-      );
+      let a = "zoom-in";
+      switch (this.zoomNoteBook) {
+        case up: {
+          a = "zoom-up";
+          break;
+        }
+        case full: {
+          a = "zoom-full";
+          break;
+        }
+        case down: {
+          a = "zoom-down";
+          break;
+        }
+        case right:
+        default:
+          a = "zoom-in";
+      }
+      return (isMobile() ? "mobile" : "") + " " + "html-drawer " + a;
     },
     drawer_class_name() {
       return isMobile() != true
@@ -91,7 +156,7 @@ export default {
   },
   data() {
     return {
-      testExport: true,
+      currentIndex: 0,
       current: this.hl ? this.hl.store.Chapter() : {},
       open: undefined,
       disabled: false,
@@ -112,9 +177,10 @@ export default {
     },
     changeCurrentCharacter(charpter) {
       this.disabled = false;
-      this.sortedChapter.find((a) => {
+      this.sortedChapter.find((a, idx) => {
         if (charpter.label == a.label) {
           this.current = a;
+          this.currentIndex = idx;
           let b = a.children[0];
           if (b) gotoNote(b);
           return true;
@@ -137,6 +203,8 @@ export default {
     openNoteBook(a) {
       if (a) {
         this.open = true;
+      } else {
+        this.zoomNoteBook = right;
       }
       let c = "open-sidebar";
       if (a) {
@@ -156,7 +224,7 @@ export default {
           el.classList.remove("zoom-in");
         }
       };
-      setzoom(a, el);
+      setzoom(a != right, el);
       // let aaa = document.querySelector(".html-drawer");
       // setzoom(a, aaa);
     },
@@ -179,7 +247,7 @@ export default {
   },
   mounted() {
     if (isMobile()) {
-      this.zoomNoteBook = true;
+      this.zoomNoteBook = full;
       let { width } = document.querySelector("body").getBoundingClientRect();
       let drawer = this.tocDrawer();
       let style = drawer.style;
@@ -187,7 +255,7 @@ export default {
       style.left = 0 + "px";
       return;
     }
-    this.zoomNoteBook = false;
+    this.zoomNoteBook = right;
   },
 };
 </script>
@@ -202,23 +270,27 @@ export default {
   > span {
   background-color: #42b983;
 }
-.zoom-out .html-drawer-right .ivu-drawer {
+/* .zoom-out .html-drawer-right .ivu-drawer {
   left: 0 !important;
   width: 100% !important;
-}
-.zoom-in .html-drawer-right .ivu-drawer {
+} */
+/* .zoom-in .html-drawer-right .ivu-drawer {
   width: 400px !important;
   right: 2px !important;
   margin-bottom: 10px !important;
-}
+} */
 .zoom-in .ivu-drawer {
   height: 100% !important;
 }
-.zoom-out .ivu-drawer {
-  height: 320px;
+.zoom-up .ivu-drawer {
+  height: 30%;
+  min-height: 400px;
+}
+.zoom-down .ivu-drawer {
+  height: 30%;
+  min-height: 400px;
 }
 .open-sidebar.content.zoom-in {
-  /* margin-right: calc(40vh); */
   margin-right: 400px;
 }
 .mobile.open-sidebar.content.zoom-in {
@@ -251,7 +323,7 @@ export default {
 .zoom-in .charpterhtml .html-img {
   width: 90%;
 }
-.zoom-out .charpterhtml .html-img {
+/* .zoom-out .charpterhtml .html-img {
   width: 60%;
-}
+} */
 </style>
