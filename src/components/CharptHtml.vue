@@ -1,13 +1,7 @@
 <template>
   <div class="charpterhtml">
     <Divider></Divider>
-    <h2 v-if="exporthtml" class="charpterhtml-h2" v-bind:tt="title">
-      <a :href="hrefa"
-        >{{ title }}
-        <Icon type="ios-git-compare" v-on:click="onSort" />
-      </a>
-    </h2>
-    <h2 v-else class="charpterhtml-h2" v-bind:tt="title">
+    <h2 class="charpterhtml-h2" v-bind:tt="title">
       <a :href="hrefa">{{ title }} </a>
       <Icon type="ios-git-compare" v-on:click="onSort" />
     </h2>
@@ -99,7 +93,7 @@ import { convertStyle, getImgSrcUrl, getNoteUrl } from "../utils";
 import { Divider } from "iview";
 import { msg } from "./msgbox";
 import { default_tree_version } from "../DocHighlighter";
-import { createHtml } from '../converDom2Html';
+import { createHtml } from "../converDom2Html";
 const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";
@@ -124,8 +118,15 @@ export default {
   },
   watch: {
     charpter(charpter) {
-      this.list = this.initList(charpter);
+      let update = this.list.length ? this.active : true;
+      if (update) {
+        // if (charpter.children.length) console.log("updatecharpt", charpter);
+        this.list = this.initList(charpter);
+      }
     },
+    // list(a) {
+    //   console.log("list changed", a);
+    // },
     active(a) {
       if (a) {
         this.Sort();
@@ -138,7 +139,7 @@ export default {
     },
   },
   mounted() {
-    // console.log("mounted");
+    // console.log("mounted", this.charpter);
     if (this.active) {
       this.$el.scrollIntoView();
     }
@@ -260,7 +261,7 @@ export default {
       let { imgsrc, text, id, tree, version } = a;
       imgsrc = getImgSrcUrl(imgsrc, this.rootpath);
       let url = charpter.url(id, this.rootpath);
-      let label = text?text.substring(0, 6):idx;
+      let label = text ? text.substring(0, 6) : idx;
       let style = convertStyle(a.style);
       let html = version == default_tree_version ? createHtml(tree) : undefined;
       //  = version ? createHtml(tree) : undefined;
