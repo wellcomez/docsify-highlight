@@ -14,9 +14,9 @@ import ScrollMark from './components/ScrollMark'
 import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
 import { convertHight2Html } from './converDom2Html';
-export let get_default_tree_version =()=>{
-    return '0.60.3-'+ getConfig().enableScript()
-} 
+export let get_default_tree_version = () => {
+    return '0.60.3-' + getConfig().enableScript()
+}
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
         return 1
@@ -108,7 +108,10 @@ export class DocHighlighter {
             this.disableUserSelection(false)
         }
         let section = document.body
-        mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu, hs }, section)
+        let save = (a, b) => {
+            this.saveNoteData(a, b)
+        }
+        mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu, hs, save }, section)
     };
 
     procssAllElements(nodeid, cb) {

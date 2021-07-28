@@ -78,8 +78,8 @@ export const NoteMenu = {
         }
     },
     computed: {
-        tipclass(){
-            return this.showfortxt?"my-remove-tip":"my-remove-tip notfortext"
+        tipclass() {
+            return this.showfortxt ? "my-remove-tip" : "my-remove-tip notfortext"
         },
         backgroundClass() {
             if (this.hlType == tBackgroundColor) {
@@ -298,7 +298,7 @@ export const NoteMenu = {
             return { note, sources, style, tags, img, bookmark };
         },
         saveNoteData() {
-            this.hl.saveNoteData(this.noteid, this.notedata());
+            this.save(this.noteid, this.notedata());
             this.newnote = false;
         },
         // eslint-disable-next-line no-unused-vars
@@ -354,6 +354,7 @@ export const NoteMenu = {
             type: Array,
             default: undefined,
         },
+        save: { type: Function, default: undefined },
         hl: {
             type: Object,
             default: undefined,
