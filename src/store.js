@@ -365,6 +365,7 @@ class Chapter {
     let index = 0;
     let items = this.children.map((a, idx) => {
       let { label, style, note, imgsrc, tags, id, notshowSeq, tabn } = a;
+      if (label == undefined) label = ""
       label = label.split('\n').map((a) => {
         a = a.replaceAll('-', '\\-')
         return a
