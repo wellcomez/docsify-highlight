@@ -15,7 +15,7 @@ import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
 import { convertHight2Html } from './converDom2Html';
 export let get_default_tree_version =()=>{
-    return 0.50+ getConfig().enableScript()
+    return '0.60.3-'+ getConfig().enableScript()
 } 
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
@@ -674,7 +674,7 @@ export class DocHighlighter {
         this.updatePanel();
     };
     updateHtml(id) {
-        let version = 0.33
+        let version = get_default_tree_version()
         let { tree } = this.getHtml(id);
         if (tree)
             this.store.update({ id, tree, version });
