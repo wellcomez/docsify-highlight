@@ -89,6 +89,9 @@
         </TabPane>
       </Tabs>
     </Row>
+    <Drawer class="drawer-exporthtml" :width="80" v-model="showPreview">
+      <ExportHtml :charpter="sortedChapter"></ExportHtml>
+    </Drawer>
     <SettingSideBar
       :cloudOn="cloudOn"
       :checked="checked"
@@ -195,6 +198,8 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import { Book } from "../store";
+import { Drawer } from "iview";
+import ExportHtml from "./ExportHtml";
 import SettingSideBar from "./SettingSideBar";
 // import { Notification } from "element-ui";
 import { localidstore, downloadFromCloud, updateBookOnLean } from "../leanweb";
@@ -218,6 +223,8 @@ import { gotoNote } from "../utils";
 import { getConfig } from "../ANoteConfig";
 export default {
   components: {
+    Drawer,
+    ExportHtml,
     NoteSiderBar,
     PopSvgButton,
     TocNotePanel,
@@ -270,7 +277,8 @@ export default {
   },
   data() {
     return {
-      explortList: ["json", "md", "md(css)", "html"],
+      showPreview: false,
+      explortList: ["json", "md", "md(css)", "html", "preview"],
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
@@ -388,6 +396,9 @@ export default {
       } else if (name == "html") {
         let json = b.exportHtml();
         funDownload(json, window.$docsify.name + ".html");
+      } else if (name == "preview") {
+        this.showPreview = true;
+        return;
       }
     },
   },

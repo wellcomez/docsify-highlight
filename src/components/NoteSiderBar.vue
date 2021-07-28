@@ -48,15 +48,7 @@
         />
       </div>
     </Drawer>
-    <Drawer
-      class="drawer-exporthtml"
-      v-if="testExport"
-      width="600"
-      v-model="disabled"
-    >
-      <ExportHtml :charpter="sortedChapter"></ExportHtml>
-    </Drawer>
-    <Drawer v-else v-model="disabled">
+    <Drawer v-model="disabled">
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -71,14 +63,12 @@ import { Drawer } from "iview";
 import isMobile from "is-mobile";
 import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
-import ExportHtml from "./ExportHtml";
 import { gotoNote } from "../utils";
 export default {
   name: "NoteSiderBar",
   components: {
     CharptHtml,
     TocHtml,
-    ExportHtml,
     Drawer,
   },
   computed: {
@@ -101,7 +91,7 @@ export default {
   },
   data() {
     return {
-      testExport: false,
+      testExport: true,
       current: this.hl ? this.hl.store.Chapter() : {},
       open: undefined,
       disabled: false,

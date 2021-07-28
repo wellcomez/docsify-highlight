@@ -2,14 +2,13 @@
   <div class="toc-html">
     <ul>
       <li
-        class="html-toc-li"
-        v-for="({ href, label }, index) in list"
+        v-for="({ label }, index) in list"
+        :class="liClass(index)"
         @click="clickme(index)"
         :key="index"
         style="list-style-type: decimal; list-style: decimal"
       >
-        <a v-if="exporthtml" :href="href">{{ label }}</a>
-        <a v-else>{{ label }}</a>
+        <a :class="liClass(index)">{{ label }}</a>
       </li>
     </ul>
   </div>
@@ -34,16 +33,22 @@ export default {
   },
   data() {
     return {
+      clickIndex: undefined,
       list: [],
     };
   },
   created() {
-    if (this.exporthtml&&this.$el&&this.$el.classList) {
+    if (this.exporthtml && this.$el && this.$el.classList) {
       this.$el.classList.add("exporthtml");
     }
     this.convertRef();
   },
   methods: {
+    liClass(index) {
+      let classname = "html-toc-li";
+      if (index == this.clickIndex) classname = "html-toc-li-active";
+      return classname;
+    },
     convertRef() {
       this.list = this.charpter.map((a) => {
         let { label } = a;
@@ -82,14 +87,15 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     clickme(index) {
-      let l = this.list
-      let {label} = l
-      let charpter = this.charpter[index]
+      let l = this.list;
+      let { label } = l;
+      let charpter = this.charpter[index];
       if (this.click) {
         this.click(charpter);
       } else {
         this.clickOnToc(label);
       }
+      this.clickIndex = index;
     },
   },
 };
@@ -99,6 +105,10 @@ export default {
 .toc-html {
   margin-left: 10%;
   margin-right: 10%;
+}
+.html-toc-li-active {
+  color: black !important;
+  font-size: small !important;
 }
 .toc-html.export-html {
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
