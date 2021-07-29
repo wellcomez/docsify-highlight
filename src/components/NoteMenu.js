@@ -8,7 +8,16 @@ import {
 import mediumZoom from "medium-zoom";
 import { Modal } from "iview";
 const leftPos = () => {
-    return document.getElementsByClassName("content")[0].offsetWidth - 300;
+    const content = document.querySelector(".content");
+    let panelLeft = content.offsetWidth - 300;
+    let el = document.querySelector('.my-remove-tip')
+    if (el) {
+
+        let a = el.getClientRects()[0].width;
+        a = (content.getClientRects()[0].width - panelLeft) / 2;
+        panelLeft = Math.min(a, panelLeft)
+    }
+    return panelLeft
 };
 
 import SvgButton from './SvgButton'
@@ -181,7 +190,9 @@ export const NoteMenu = {
         },
         menuLeft() {
             if (window.screen.availWidth < 450) return "0px";
-            return Math.min(leftPos(), this.left - 20) + "px"
+            let panelLeft = Math.min(leftPos(), this.left - 20)
+
+            return panelLeft + "px"
         },
         updateButtonColor(type, enable, colorhex) {
             if (type == tUl) {
