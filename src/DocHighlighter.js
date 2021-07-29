@@ -17,6 +17,35 @@ import { convertHight2Html } from './converDom2Html';
 export let get_default_tree_version = () => {
     return '0.60.3-' + getConfig().enableScript()
 }
+class SubNode {
+    constructor(el) {
+        let { highlightId, highlightIdExtra, highlightSplitType } = el.dataset ? el.dataset : {}
+        this.highlightId = highlightId
+        this.highlightIdExtra = highlightIdExtra
+        this.highlightSplitType = highlightSplitType
+    }
+}
+class MainNode {
+    constructor(id, { highlighter }) {
+        this.highlighter = highlighter
+        this.id = id
+        this.nodes = highlighter.getDoms(id).sort(cmpNodePosition)
+        this.existIds = this.nodes.reduce((ret, node) => {
+            ret = ret.concat(highlighter.getExtraIdByDom(node))
+            return ret
+        }, [])
+        this.existIds = Array.from(new Set(this.existIds))
+    }
+    findMainNode() {
+        let nodes = this.highlighter.getDoms(this.id).sort(cmpNodePosition)
+        return nodes.find((node) => {
+            let n = new SubNode(node)
+            if (n.highlightId == this.id) { return true }
+            return false
+        })
+
+    }
+}
 let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
         return 1
@@ -79,21 +108,17 @@ export class DocHighlighter {
             main.classList.add('disable-user-selection')
         }
     }
-    createNoteMenu = (node, sources) => {
+    createNoteMenu = (node, sources, newnode) => {
         let id = node.dataset.highlightId;
         const position = this.getPosition(node);
         let { top, left } = position;
         removeTips();
-        let hs = {}
-        try {
-            hs = this.hsbyid(id)
-            // eslint-disable-next-line no-empty
-        } catch (error) {
-        }
+        let hs = hs = this.hsbyid(id)
         if (hs == undefined) {
-            if (sources.length) {
+            if (sources && sources.length) {
                 hs = sources[0]
-            } else {
+            }
+            if (hs == undefined) {
                 hs = { id }
             }
         }
@@ -109,7 +134,7 @@ export class DocHighlighter {
         }
         let section = document.body
         let save = (a, b) => {
-            this.saveNoteData(a, b)
+            this.saveNoteData(a, b, newnode)
         }
         mountCmp(NoteMenu, { top, left, hl, sources, onCloseMenu, hs, save }, section)
     };
@@ -437,7 +462,7 @@ export class DocHighlighter {
         // });
     }
 
-    deleteId(id, store) {
+    deleteId(id, store, sub = true) {
         let { highlighter } = this;
         let childList = this.childIdList(id);
         let parentList = this.parentIdList()
@@ -464,7 +489,8 @@ export class DocHighlighter {
             store.remove(id);
         }
         removid(id);
-        childList.forEach((id) => removid(id))
+        if (sub)
+            childList.forEach((id) => removid(id))
 
         parentList.forEach((id) => {
             let hs = this.hsbyid(id)
@@ -516,6 +542,7 @@ export class DocHighlighter {
         a.showHighlight()
 
     }
+    getHighlightDom = (noteid) => this.highlighter.getDoms(noteid)
     onCreate = (a) => {
         let { sources, type } = a;
         sources.forEach(hs => {
@@ -565,31 +592,32 @@ export class DocHighlighter {
             })
             this.updatePanel()
         } else {
-            log('create -', sources);
-            sources.forEach(hs => {
-                let title = document.title
-                hs.title = title;
-            })
-            let hs = sources[0]
-            let normal = this.getHighlightDom(hs.id).filter((a) => {
-                let ignore = hlIngoreElement(a) || hlIngoreElement(a.parentElement)
-                return ignore ? false : true
-            })
-            if (normal.length == 0) {
-                this.highlighter.remove(hs.id)
-                return
-            }
-            let menu = document.getElementsByClassName("note-menu")
-            if (menu && menu.length) {
-                this.highlighter.remove(hs.id);
-                return;
-            }
-            this.createNoteMenu(this.getElement(hs.id), sources)
+            this.onHandleSelecttion(sources)
         }
     };
-    getHighlightDom = (noteid) => this.highlighter.getDoms(noteid)
 
-
+    onHandleSelecttion(sources) {
+        log('create -', sources);
+        sources.forEach(hs => {
+            let title = document.title
+            hs.title = title;
+        })
+        let hs = sources[0]
+        let normal = this.getHighlightDom(hs.id).filter((a) => {
+            let ignore = hlIngoreElement(a) || hlIngoreElement(a.parentElement)
+            return ignore ? false : true
+        })
+        if (normal.length == 0) {
+            this.highlighter.remove(hs.id)
+            return
+        }
+        let menu = document.getElementsByClassName("note-menu")
+        if (menu && menu.length) {
+            this.highlighter.remove(hs.id);
+            return;
+        }
+        this.createNoteMenu(this.getElement(hs.id), sources, new MainNode(hs.id, this))
+    }
     // eslint-disable-next-line no-unused-vars
     getHtml = (noteid) => {
         let dom = this.getHighlightDom(noteid).sort(cmpNodePosition)
@@ -598,7 +626,7 @@ export class DocHighlighter {
 
 
 
-    saveNoteData = (noteid, data) => {
+    saveNoteData = (noteid, data, newnode) => {
         let { note, sources, style, tags, img, bookmark } = data ? data : {}
         let change = style != undefined && Object.keys(style).length || note || tags.length || img && img.length || bookmark
         // let version = '0.22';
@@ -617,8 +645,8 @@ export class DocHighlighter {
             this.removeBookmarkNode(noteid)
         }
         this.addTagBackground(data, noteid);
+        let newone = newnode != undefined
         if (change && noteid != undefined) {
-            let newone = sources != undefined
             if (sources) {
                 let sources2 = sources.map(a => {
                     let hs = { ...a }
@@ -668,9 +696,21 @@ export class DocHighlighter {
                 }
             })
 
-        } else {
+        } else if (newnode) {
             this.removeHighLight(noteid);
-            this.deleteId(noteid);
+            this.deleteId(noteid, this.store, false);
+            if (newnode) {
+                newnode.existIds.forEach((id) => {
+                    let node = new MainNode(id, this)
+                    if (node.findMainNode()) {
+                        let hs = this.hsbyid(id)
+                        if (hs) {
+                            let render = new highlightType(this.highlighter, hs)
+                            render.showHighlight()
+                        }
+                    }
+                })
+            }
         }
         this.updateAllPositions()
         Book.updated = true;
@@ -740,6 +780,25 @@ export class DocHighlighter {
     storeInfosImg = (storeInfos) => storeInfos.filter(({ hs }) => {
         return hs.imgsrc
     })
+    restoreID(id) {
+        let { highlighter } = this;
+        let node = new MainNode(id, this)
+        node.findMainNode()
+        let hs = this.hsbyid(id)
+        if (hs) {
+            try {
+                if (this.getElement(hs.id) != undefined) {
+                    let render = new highlightType(this.highlighter, hs)
+                    render.showHighlight()
+                    return;
+                }
+            } catch (error) {
+                console.error(error)
+            }
+            hs = this.checkHS(hs)
+            highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+        }
+    }
     load = (loaded) => {
         if (loaded) {
             let { highlighter } = this;
