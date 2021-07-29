@@ -97,7 +97,6 @@ export class highlightType {
             }
         }
         this.updateHignLightColor = (noteid, type, colorhex, disable) => {
-            // this.removeHighLight(noteid);
             this.procssAllElements(noteid, (a) => {
                 if (disable) {
                     colorhex = ""

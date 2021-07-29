@@ -205,9 +205,6 @@ export class DocHighlighter {
         this.highlighter.removeClass('highlight-wrap-hover', id);
     }
 
-    // eslint-disable-next-line no-unused-vars
-    removeHighLight(noteid) {
-    }
 
     onHover(a) {
         if (this.on()) {
@@ -478,7 +475,6 @@ export class DocHighlighter {
                 }
             });
             this.removeMarkNode(id);
-            this.removeHighLight(id)
             highlighter.removeClass(hl_note, id)
             highlighter.removeClass("highlight-wrap-hover", id);
             highlighter.removeClass("highlight-tags", id);
@@ -697,20 +693,17 @@ export class DocHighlighter {
             })
 
         } else if (newnode) {
-            this.removeHighLight(noteid);
             this.deleteId(noteid, this.store, false);
-            if (newnode) {
-                newnode.existIds.forEach((id) => {
-                    let node = new MainNode(id, this)
-                    if (node.findMainNode()) {
-                        let hs = this.hsbyid(id)
-                        if (hs) {
-                            let render = new highlightType(this.highlighter, hs)
-                            render.showHighlight()
-                        }
+            newnode && newnode.existIds.forEach((id) => {
+                let node = new MainNode(id, this)
+                if (node.findMainNode()) {
+                    let hs = this.hsbyid(id)
+                    if (hs) {
+                        let render = new highlightType(this.highlighter, hs)
+                        render.showHighlight()
                     }
-                })
-            }
+                }
+            })
         }
         this.updateAllPositions()
         Book.updated = true;
@@ -829,12 +822,6 @@ export class DocHighlighter {
             );
         } else {
             removeTips();
-            const storeInfos = this.allhs();
-            storeInfos.forEach(
-                ({ hs }) => {
-                    this.removeHighLight(hs.id)
-                }
-            );
         }
 
     };
