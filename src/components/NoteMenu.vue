@@ -81,11 +81,13 @@
           ></SvgButton>
         </Col>
         <Col>
-          <SvgButton
-            name="icon-tags-fill"
-            custom
-            :on.sync="showtagPane"
-          ></SvgButton>
+          <Badge dot :count="tagCount" :offset="[20, 10]">
+            <SvgButton
+              name="icon-tags-fill"
+              custom
+              :on.sync="showtagPane"
+            ></SvgButton>
+          </Badge>
         </Col>
         <Col>
           <SvgButton @click="onBookmark" :name="bookmarkicon" />
@@ -154,7 +156,7 @@ export default NoteMenu;
   padding: 4px;
   padding-bottom: 1px;
 }
-.my-remove-tip.notfortext{
+.my-remove-tip.notfortext {
   width: 230px;
 }
 .my-remove-tip .ivu-col {

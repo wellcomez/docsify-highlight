@@ -87,6 +87,9 @@ export const NoteMenu = {
         }
     },
     computed: {
+        tagCount() {
+            return this.tags.length
+        },
         tipclass() {
             return this.showfortxt ? "my-remove-tip" : "my-remove-tip notfortext"
         },
