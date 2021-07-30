@@ -57,8 +57,13 @@ export class MainNode {
         this.id = id;
         this.nodes = highlighter.getDoms(id).sort(cmpNodePosition);
         this.existIds = this.nodes.reduce((ret, node) => {
-            ret = ret.concat(highlighter.getExtraIdByDom(node));
-            return ret;
+            try {
+                const extra = highlighter.getExtraIdByDom(node)
+                ret = ret.concat(extra);
+                return ret;
+            } catch (error) {
+                return ret
+            }
         }, []);
         this.existIds = Array.from(new Set(this.existIds));
         this.text = this.getNodeText(this.nodes);
@@ -76,8 +81,10 @@ export class MainNode {
     parentIdList() {
         let main = this.findMainNode();
         if (main) {
-            let extra = this.highlighter.getExtraIdByDom(main);
-            return extra;
+            try {
+                let extra = this.highlighter.getExtraIdByDom(main);
+                return extra;
+            } catch (e) { return [] }
         }
         return [];
     }

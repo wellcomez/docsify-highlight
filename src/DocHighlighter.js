@@ -672,7 +672,7 @@ export class DocHighlighter {
                     render.highlightNode(node);
                 });
                 let parent = this.MainNode(id).parentIdList()
-                hs = {id,parent}
+                hs = { id, parent }
                 this.store.update(hs)
                 if (old.findMainNode() == undefined) {
                     console.warn('hasRemoved', overlap, pos);
@@ -909,9 +909,12 @@ export class DocHighlighter {
         }
         let curretNode = this.MainNode(id)
         let element = curretNode.subFirst()
-        let tail = curretNode.subLast()
-        let { top } = getPosition(element)
-        return { top, element, tail }
+        if (element) {
+            let tail = curretNode.subLast()
+            let { top } = getPosition(element)
+            return { top, element, tail }
+        }
+        return {}
     };
     turnHighLight(enable) {
         let { highlighter } = this;
