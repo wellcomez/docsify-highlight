@@ -9,7 +9,7 @@ const default_yellow = "#FFFF33";
 
 import { getConfig } from "./ANoteConfig";
 import { hlIngoreElement } from "./hlPlacement";
-import { MainNode, SubNode } from "./MainNode";
+import { SubNode } from "./MainNode";
 const defaultColor = {};
 defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)", default_red, default_yellow];
 defaultColor[tUl] = ["red", "green", "yellow"];
@@ -67,7 +67,7 @@ class colorSettings {
 export class highlightType {
     constructor(hl, hs) {
         this.updateHignLightColor = (noteid, type, colorhex, enable) => {
-            let current = new MainNode(noteid, hl)
+            let current = hl.MainNode(noteid)
             current.nodes.forEach((node) => {
                 if (enable != true) colorhex = ""
                 this.updateNodeHighLightColor(node, type, colorhex);

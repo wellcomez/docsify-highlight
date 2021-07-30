@@ -26,6 +26,7 @@ export let isBeforeB = (node, othernode) => {
     }
     return false
 }
+
 export let cmpNodePosition = (node, othernode) => {
     if (node == undefined) {
         return 1
@@ -165,4 +166,24 @@ export class MainNode {
         }
         return main_node_overlap;
     }
+}
+
+// offsetHeight: 40
+// offsetLeft: 15
+// offsetParent: article#main.markdown-section
+// offsetTop: 30
+// offsetWidth: 68
+export const getPosition = ($node) => {
+    let offset = {
+        top: 0,
+        left: 0,
+        height: $node.offsetHeight
+    };
+    while ($node) {
+        offset.top += $node.offsetTop - $node.scrollTop;
+        offset.left += $node.offsetLeft - $node.scrollLeft;
+        $node = $node.offsetParent;
+    }
+    offset.bottom = offset.top + offset.height;
+    return offset;
 }
