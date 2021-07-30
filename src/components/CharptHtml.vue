@@ -206,10 +206,10 @@ export default {
       if (charpter) msg("排序", charpter.label);
     },
     initList(charpter) {
-      if (charpter)
-        return charpter
-          .mergeChild()
-          .map((a, idx) => this.convert(a, charpter, idx));
+      if (charpter) {
+        this.children = charpter.mergeChild();
+        return this.children.map((a, idx) => this.convert(a, charpter, idx));
+      }
       return [{ name: "" }];
     },
     onImageOut(e) {
@@ -263,7 +263,7 @@ export default {
       let url = charpter.url(id, this.rootpath);
       let label = text ? text.substring(0, 6) : idx;
       let style = convertStyle(a.style);
-      let default_tree_version = get_default_tree_version()
+      let default_tree_version = get_default_tree_version();
       let html = version == default_tree_version ? createHtml(tree) : undefined;
       //  = version ? createHtml(tree) : undefined;
       let key = new Date() * 1 + "-" + idx;
@@ -279,8 +279,7 @@ export default {
     },
     onClick({ index, url }) {
       if (this.onClickURL) {
-        let children = this.charpter.mergeChild();
-        let a = children[index];
+        let a = this.children[index];
         this.onClickURL(a);
         return;
       } else {

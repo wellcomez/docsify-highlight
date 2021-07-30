@@ -4,7 +4,7 @@
       <li
         v-for="({ label }, index) in list"
         :class="liClass(index)"
-        @click="clickme(index)"
+        @click="clickme($event,index)"
         :key="index"
         style="list-style-type: decimal; list-style: decimal"
       >
@@ -86,7 +86,8 @@ export default {
       }
     },
     // eslint-disable-next-line no-unused-vars
-    clickme(index) {
+    clickme($event,index) {
+      $event.stopPropagation();
       let l = this.list;
       let { label } = l;
       let charpter = this.charpter[index];
