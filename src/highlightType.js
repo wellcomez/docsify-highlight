@@ -66,10 +66,6 @@ class colorSettings {
 // eslint-disable-next-line no-unused-vars
 export class highlightType {
     constructor(hl, hs) {
-        this.colorSettings = {};
-        this.allTypes = {};
-        this.getHighlightDom = (noteid) => hl.getDoms(noteid)
-        this.noteid = hs.id;
         this.procssAllElements = (nodeid, cb) => {
             const classname = 'docsify-highlighter'
             let node;
@@ -134,6 +130,25 @@ export class highlightType {
                 node.style.backgroundColor = colorhex;
             }
         }
+        this.getType = (type) => {
+            let a = this.allTypes[type];
+            if (a)
+                return a;
+            return {};
+        }
+        this.setTypeValue = ({ type, enable, colorhex }) => {
+            this.allTypes[type] = { enable, colorhex };
+            if (enable && colorhex) {
+                lastDefaultColor[type] = colorhex;
+            }
+        }
+        this.currentColor = (type) => {
+            return this.colorSettings[type].currentColor();
+        }
+        this.colorSettings = {};
+        this.allTypes = {};
+        this.getHighlightDom = (noteid) => hl.getDoms(noteid)
+        this.noteid = hs.id;
         let { style } = hs;
         if (style == undefined) style = {}
         if (style) {
@@ -147,7 +162,7 @@ export class highlightType {
                 b.addColor(colorhex);
                 let { enable } = this.getType(type);
                 if (enable != true) {
-                    this.setType({ type, enable, colorhex })
+                    this.setTypeValue({ type, enable, colorhex })
                 }
             }
         });
@@ -163,11 +178,9 @@ export class highlightType {
         let colorlist = hl.colorList;
         let enable = true;
         let colorhex = colorlist[index]
-        this.setType({ type, enable, colorhex })
+        this.render({ type, enable, colorhex })
     }
-    currentColor(type) {
-        return this.colorSettings[type].currentColor();
-    }
+
     showHighlight() {
         for (let type in this.allTypes) {
             let { enable, colorhex } = this.allTypes[type];
@@ -210,20 +223,12 @@ export class highlightType {
         }
         return style
     }
-    getType(type) {
-        let a = this.allTypes[type];
-        if (a)
-            return a;
-        return {};
-    }
-    setType({ type, enable, colorhex }) {
+
+    render({ type, enable, colorhex }) {
         let { noteid } = this;
         let color = type;
         let disable = enable != true;
-        this.allTypes[type] = { enable, colorhex };
-        if (enable && colorhex) {
-            lastDefaultColor[type] = colorhex;
-        }
+        this.setTypeValue({ type, enable, colorhex })
         this.updateHignLightColor(noteid, color, colorhex, disable);
     }
     json() {

@@ -39,8 +39,9 @@ const main_node_overlap = 2
 const main_node_before = 3
 const main_node_after = 4
 class MainNode {
-    constructor(id, { highlighter }) {
+    constructor(id, { highlighter, store }) {
         this.highlighter = highlighter
+        this.store = store
         this.id = id
         this.nodes = highlighter.getDoms(id).sort(cmpNodePosition)
         this.existIds = this.nodes.reduce((ret, node) => {
@@ -797,13 +798,12 @@ export class DocHighlighter {
                 let nodetree = this.hsNodetree(noteid)
                 this.store.update({ id: noteid, note, tags, bookmark, ...nodetree })
             }
-            let parent = this.parentIdList(noteid)
+            let currentNode = new MainNode(noteid, this)
             if (newone) {
-                style = this.resolveNodeConflict(noteid, parent, style, preNewNode);
+                style = this.resolveNodeConflict(currentNode, style, preNewNode);
             }
-            this.store.update({ id: noteid, style, parent: parent })
             this.updateStyleOfHs(noteid)
-            let extra = this.childIdList(noteid)
+            let extra = currentNode.childIdList()
             extra.forEach((id) => {
                 let hhs = this.hsbyid(id)
                 let a = new highlightType(this.highlighter, hhs)
@@ -817,6 +817,8 @@ export class DocHighlighter {
                     this.updateHtml(parentID);
                 }
             })
+            let parent = currentNode.parentIdList()
+            this.store.update({ id: noteid, style, parent: parent })
 
         } else if (preNewNode) {
             this.deleteId(noteid, this.store, false);
@@ -832,8 +834,8 @@ export class DocHighlighter {
         Book.updated = true;
         this.updatePanel();
     };
-    resolveNodeConflict(noteid, parent, style, preNewNode) {
-        let curretNode = new MainNode(noteid, this);
+    resolveNodeConflict(curretNode, style, preNewNode) {
+        let parent = curretNode.parentIdList()
         if (parent.length) {
             parent.forEach((parentID) => {
                 let hs = this.hsbyid(parentID);
@@ -863,6 +865,7 @@ export class DocHighlighter {
                 }
             });
         } else {
+            let noteid = curretNode.id
             preNewNode.existIds.forEach((id) => {
                 let old = new MainNode(id, this);
                 let hs = this.hsbyid(id);

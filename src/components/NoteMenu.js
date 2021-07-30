@@ -282,7 +282,7 @@ export const NoteMenu = {
                 }
             }
             let type = t
-            this.hlStyle.setType({ type, enable, colorhex })
+            this.hlStyle.render({ type, enable, colorhex })
             this.updateSelection(t)
         },
         onUnderline(e) {
@@ -327,7 +327,7 @@ export const NoteMenu = {
             let type = this.hlType;
             let colorhex = this.color1
             this.hlSettings.addColor(colorhex)
-            this.hlStyle.setType({ type, enable: true, colorhex })
+            this.hlStyle.render({ type, enable: true, colorhex })
             this.updateSelection(type)
             this.saveNoteData()
         },
