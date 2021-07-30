@@ -104,6 +104,21 @@ export class highlightType {
                 this.updateNodeHighLightColor(a, type, colorhex);
             })
         }
+        this.getStyleByType = (type, colorhex) => {
+            let style = {}
+            if (type == tUl) {
+                if (colorhex != "")
+                    style.borderBottom = "2px solid " + colorhex;
+                else
+                    style.borderBottom = "";
+            } else if (type == tfontColor) {
+                style.color = colorhex;
+            } else {
+                style.backgroundColor = colorhex;
+            }
+            return style;
+        }
+
         this.updateNodeHighLightColor = (node, type, colorhex) => {
             if (node.getAttribute('data-highlight-id') != this.noteid) return;
             if (hlIngoreElement(node) || hlIngoreElement(node.parentElement)) return;
@@ -173,6 +188,17 @@ export class highlightType {
                 this.updateNodeHighLightColor(node, type, colorhex);
             }
         }
+    }
+    cssStyle() {
+        let style = {};
+        for (let a in this.allTypes) {
+            let { enable, colorhex } = this.allTypes[a]
+            if (enable) {
+                let ccc = this.getStyleByType(a, colorhex)
+                style = { ...style, ...ccc }
+            }
+        }
+        return style
     }
     getStyle() {
         let style = {};
