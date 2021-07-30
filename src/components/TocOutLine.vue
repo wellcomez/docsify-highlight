@@ -33,7 +33,7 @@
       <!-- style="float: right; margin-right: 10px" -->
     </Col>
     <Col v-if="icon" span="4" style="display: inline-block; text-align: center">
-      <Tooltip
+      <!-- <Tooltip
         v-if="showiconRight"
         class="outline"
         :delay="500"
@@ -59,7 +59,7 @@
           </div>
           <p v-else class="outline-title">{{ title }}</p>
         </div>
-      </Tooltip>
+      </Tooltip> -->
 
       <!-- v-model="openMore" -->
       <!-- transfer -->
@@ -71,7 +71,7 @@
         class="morebtn"
         :transfer="true"
       >
-        <Icon type="ios-more-outline" @click="onClickMore" size="18"></Icon>
+        <Icon type="md-more" @click="onClickMore" size="18"></Icon>
         <ButtonGroup slot="content" vertical>
           <Button
             v-for="({ name, click }, index) in list"
