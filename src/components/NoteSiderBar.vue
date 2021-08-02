@@ -5,10 +5,10 @@
       title="笔记"
       :width="rootDrawerWidth"
       id="notesidebar"
-      :closable="flase"
       v-model="open"
       scrollable
       :mask="false"
+      :class-name="drawerwrapper"
     >
       <h2 slot="header">笔记</h2>
       <ButtonGroup slot="close">
@@ -22,29 +22,36 @@
         <Button icon="ios-expand" @click="onClickZoom($event, 2)" />
         <Button icon="ios-close" @click="open != open" />
       </ButtonGroup>
-
-      <Row style="height: inherit; padding-bottom: 20px">
-        <Col v-if="useSideBar" :span="4" class="use" :style="sidebarStyle">
-          <TocHtml
-            :charpter="sortedChapter"
-            :click="clickOnToc"
-            class="html-drawer-toc"
-          />
-        </Col>
-        <Col :style="charpterStyle">
-          <div class="html-drawer-content" v-if="openNoteBook">
-            <CharptHtml
-              :class="class_charpt_html"
-              v-for="(charpter, index) in sortedChapter"
-              :charpter="charpter"
-              :onClickURL="onClickURL"
-              :active="charpter.path == current.path"
-              :key="index"
-              :hl="hl"
-            />
-          </div>
-        </Col>
-      </Row>
+      <div style="width: 100%; height: inherit" v-if="useSideBar">
+        <Layout>
+          <Sider style="width: 200px">
+            <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
+          </Sider>
+          <Layout style="">
+            <Content :style="{ padding: '0 16px 16px' }">
+              <CharptHtml
+                :class="class_charpt_html"
+                v-for="(charpter, index) in sortedChapter"
+                :charpter="charpter"
+                :onClickURL="onClickURL"
+                :active="charpter.path == current.path"
+                :key="index"
+                :hl="hl"
+              />
+            </Content>
+          </Layout>
+        </Layout>
+      </div>
+      <CharptHtml
+        v-else
+        :class="class_charpt_html"
+        v-for="(charpter, index) in sortedChapter"
+        :charpter="charpter"
+        :onClickURL="onClickURL"
+        :active="charpter.path == current.path"
+        :key="index"
+        :hl="hl"
+      />
     </Drawer>
     <Drawer v-model="disabled" v-if="!useSideBar">
       <TocHtml
@@ -62,6 +69,7 @@ import isMobile from "is-mobile";
 import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
 import { gotoNote } from "../utils";
+import { Layout, Sider, Content } from "iview";
 const right = 0;
 const full = 2;
 const up = 1;
@@ -72,6 +80,9 @@ export default {
     CharptHtml,
     TocHtml,
     Drawer,
+    Layout,
+    Sider,
+    Content,
   },
   computed: {
     isMobile() {
@@ -79,7 +90,7 @@ export default {
     },
     sidebarStyle() {
       let ret = {
-        top: "60px",
+        top: "0px",
         bottom: "1px",
         width: "300px",
         position: "fixed",
@@ -90,33 +101,37 @@ export default {
       if (!this.useSideBar) return "";
       return "margin-left: 300px";
     },
-    rootStyles() {
-      let { zoomNoteBook } = this;
-      let height = {};
-      if (zoomNoteBook == up || zoomNoteBook == down) {
-        height = "30%";
-        height = { height };
+    drawerwrapper() {
+      if (this.isMobile) {
+        if (this.zoomNoteBook == up) return "drawerwrapper";
+        return "";
       }
-      let bottom = {};
-      if (zoomNoteBook == down) {
-        bottom = { bottom: 0 };
+      if (this.zoomNoteBook == full) {
+        return "drawerwrapper-full";
       }
-      return { ...height, ...bottom };
+      return this.zoomNoteBook == up ? "drawerwrapper" : "";
     },
     rootDrawerWidth() {
       let { zoomNoteBook } = this;
+      if (isMobile()) {
+        return window.screen.availWidth;
+      }
       if (zoomNoteBook == up || zoomNoteBook == down || zoomNoteBook == full) {
         return 100;
       }
       return 400;
     },
     useSideBar() {
-      return this.zoomNoteBook != right && this.isMobile == false;
+      if (this.isMobile) return false;
+      return this.zoomNoteBook != right;
     },
     class_charpt_html() {
       let charpter_small_image =
         this.zoomNoteBook != full || isMobile() ? "charpter-small-image" : "";
-      return [charpter_small_image, ""].join(" ");
+      return [
+        charpter_small_image,
+        this.isMobile ? "charpter-moible" : "",
+      ].join(" ");
     },
     root_class() {
       let a = "";
@@ -257,28 +272,6 @@ export default {
 };
 </script>
 <style lang="less">
-.zoom-up div.ivu-drawer-body {
-  border-bottom: 1px solid black;
-}
-.html-drawer-toc .ivu-tooltip-inner {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-.notesidebar-drawer .ivu-drawer-body {
-  background-color: white;
-}
-.zoom-up .ivu-drawer {
-  height: 50%;
-  min-height: 400px;
-  overflow-y: hidden;
-}
-.zoom-up .html-drawer-toc {
-  height: 50%;
-  overflow-y: scroll;
-}
-.zoom-full .html-drawer-toc {
-  height: 100%;
-}
 .open-sidebar.content.zoom-in {
   margin-right: 400px;
 }
@@ -302,6 +295,42 @@ export default {
   .html-drawer-toc .ivu-tooltip-inner ul {
     padding: 1px;
     margin: 1px;
+  }
+}
+.drawerwrapper {
+  height: 50% !important;
+  .ivu-drawer {
+    height: inherit;
+    .ivu-drawer-body {
+      height: 98%;
+      top: 30px;
+      .ivu-layout.ivu-layout-has-sider {
+        height: 100%;
+        .ivu-layout-sider .ivu-layout-sider-children {
+          background-color: white;
+          overflow-y: scroll;
+          overflow-x: hidden;
+        }
+      }
+    }
+  }
+}
+.drawerwrapper-full {
+  height: 100% !important;
+  .ivu-drawer {
+    height: inherit;
+    .ivu-drawer-body {
+      height: 98%;
+      top: 30px;
+      .ivu-layout.ivu-layout-has-sider {
+        height: 100%;
+        .ivu-layout-sider .ivu-layout-sider-children {
+          background-color: white;
+          overflow-y: scroll;
+          overflow-x: hidden;
+        }
+      }
+    }
   }
 }
 .charpter-small-image .html-img {
