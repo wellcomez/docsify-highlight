@@ -53,7 +53,7 @@
         :hl="hl"
       />
     </Drawer>
-    <Drawer v-model="disabled" v-if="!useSideBar">
+    <Drawer v-model="disabled" v-if="!useSideBar" :placement="tocPlaceMent" >
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -87,6 +87,9 @@ export default {
   computed: {
     isMobile() {
       return isMobile();
+    },
+    tocPlaceMent(){
+      return this.isMobile?"left":"right";
     },
     sidebarStyle() {
       let ret = {
