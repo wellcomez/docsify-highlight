@@ -53,7 +53,7 @@
         :hl="hl"
       />
     </Drawer>
-    <Drawer v-model="disabled" v-if="!useSideBar" :placement="tocPlaceMent" >
+    <Drawer v-model="sider_toc_on" v-if="!useSideBar" :placement="tocPlaceMent" >
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -166,14 +166,14 @@ export default {
       currentIndex: 0,
       current: this.hl ? this.hl.store.Chapter() : {},
       open: undefined,
-      disabled: false,
+      sider_toc_on: false,
       zoomNoteBook: undefined,
     };
   },
   methods: {
     onClickToc(e) {
       e.stopPropagation();
-      this.disabled = !this.disabled;
+      this.sider_toc_on = !this.sider_toc_on;
     },
     onClickZoom(e, value) {
       e.stopPropagation();
@@ -191,7 +191,7 @@ export default {
       if (a) gotoNote(a);
     },
     changeCurrentCharacter(charpter) {
-      this.disabled = false;
+      this.sider_toc_on = false;
       this.sortedChapter.find((a, idx) => {
         if (charpter.label == a.label) {
           this.current = a;
