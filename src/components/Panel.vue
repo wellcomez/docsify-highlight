@@ -169,7 +169,7 @@
   .op-panel {
     position: fixed;
     right: 20px;
-    left: 4px;
+    /* left: 20px; */
     top: 10px;
     width: 90%;
     max-width: 100vw;

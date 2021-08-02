@@ -5,7 +5,9 @@ module.exports = {
         sourceMap: false, // 开启 CSS source maps?
         loaderOptions: {
             less: {
-                javascriptEnabled: true //less 配置
+                lessOptions: {
+                    javascriptEnabled: true //less 配置
+                }
             }
         }, // css预设器配置项
         requireModuleExtension: false // 启用 CSS modules for all css / pre-processor files.

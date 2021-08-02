@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "0.60.4",
+  "version": "0.61.1",
   "jsdelivr": [
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
@@ -64,6 +64,8 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
+    "less": "^4.1.1",
+    "less-loader": "^7.3.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

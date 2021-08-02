@@ -7,18 +7,7 @@ import {
 } from "../colorSelector";
 import mediumZoom from "medium-zoom";
 import { Modal } from "iview";
-const leftPos = () => {
-    const content = document.querySelector(".content");
-    let panelLeft = content.offsetWidth - 300;
-    let el = document.querySelector('.my-remove-tip')
-    if (el) {
 
-        let a = el.getClientRects()[0].width;
-        a = (content.getClientRects()[0].width - panelLeft) / 2;
-        panelLeft = Math.min(a, panelLeft)
-    }
-    return panelLeft
-};
 
 import SvgButton from './SvgButton'
 import TagPanel from './TagPanel'
@@ -193,7 +182,14 @@ export const NoteMenu = {
         },
         menuLeft() {
             if (window.screen.availWidth < 450) return "0px";
-            let panelLeft = Math.min(leftPos(), this.left - 20)
+            const content = document.querySelector(".content");
+            let panelLeft = this.left
+            let el = document.querySelector('.my-remove-tip')
+            if (el) {
+                let a = el.getClientRects()[0].width;
+                a = content.getClientRects()[0].width - a
+                panelLeft =  Math.min(panelLeft,a)
+            }
 
             return panelLeft + "px"
         },

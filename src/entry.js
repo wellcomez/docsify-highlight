@@ -17,7 +17,8 @@ import Vue2TouchEvents from 'vue2-touch-events'
 import VueLazyload from 'vue-lazyload'
 Vue.use(Vue2TouchEvents)
 Vue.use(VueLazyload)
-
+import less from'less'
+Vue.use(less)
 import './iviewLoader'
 let component = { ExportHtml,TocHtml, NoteBookmark, NoteMarker, Panel, BookMarks, NoteMenu, Bubbling, SvgButton, PopSvgButton, TocOutLine }
 registComponet(component)

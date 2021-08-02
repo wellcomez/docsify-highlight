@@ -133,10 +133,10 @@ import { NoteMenu } from "./NoteMenu";
 export default NoteMenu;
 </script>
 <style>
-</style>
 .note-color-picker-selected{
   border: 1px solid var(--theme-color, #42b983)
 }
+</style>
 <style type="text/css">
 .backgroundClass {
   border-bottom: 2px solid white;
