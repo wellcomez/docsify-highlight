@@ -74,6 +74,7 @@
         }}</span>
       </div>
       <img
+        :style="tabN(tabn)"
         class="html-img"
         @click="onClick({ index, url })"
         v-if="imgsrc"
