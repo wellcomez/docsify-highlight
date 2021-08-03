@@ -25,7 +25,7 @@
       :key="key"
       :class="lineClass(index)"
       @click="onSelectRow(index)"
-      @mouseover="onChangeFocuse(index)"
+      @mouseleave="onChangeFocuse"
     >
       <ButtonGroup
         v-if="exporthtml == false && focusline == index"
@@ -129,8 +129,7 @@ export default {
     // },
     active(a) {
       if (a) {
-        this.Sort();
-        this.$el.scrollIntoView();
+        this.onActive();
       }
       this.focusline = undefined;
     },
@@ -139,21 +138,24 @@ export default {
     },
   },
   mounted() {
-    // console.log("mounted", this.charpter);
     if (this.active) {
-      this.$el.scrollIntoView();
+      // console.log("mounted", this.active, this.charpter);
+      this.onActive();
     }
   },
   methods: {
+    onActive() {
+      this.Sort();
+      this.$el.scrollIntoView();
+    },
     onCopy({ id, text }) {
       let copy = getNoteUrl(id, this.charpter) + "\n\n" + text;
       copyPasteBoard(copy);
       msg("拷贝", `${id}  [${text.length}]字`);
     },
-    onChangeFocuse(index) {
-      if (index != this.focusline && this.focusline != undefined) {
-        this.focusline = undefined;
-      }
+    onChangeFocuse(e) {
+      e.stopPropagation();
+      this.focusline = undefined;
     },
     headNumer(aIndex) {
       let cout = 0;
@@ -175,11 +177,11 @@ export default {
     onSelectRow(index) {
       let { focusline } = this;
       this.focusline = focusline != index ? index : undefined;
-      setTimeout(() => {
-        if (this.focusline == index) {
-          this.focusline = undefined;
-        }
-      }, 3000);
+      // setTimeout(() => {
+      //   if (this.focusline == index) {
+      //     this.focusline = undefined;
+      //   }
+      // }, 3000);
     },
     lineClass(index) {
       return index == this.focusline ? "linefocus" : "";
@@ -298,34 +300,35 @@ export default {
   },
 };
 </script>
-<style >
-.charpterhtml .linefocus {
-  border: 1px solid #42b983;
-  padding: 4px;
-  border-radius: 2px;
-  background-color: white;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
-  transform: translateY(-10px) scale(1.02);
-}
+<style lang="less">
+@import "../my-theme.less";
 .charpterhtml {
   margin-left: 10%;
   margin-right: 10%;
-}
-.charpterhtml a {
-  text-decoration: none;
-  color: #42b983;
-}
-.charpterhtml .ivu-icon {
-  color: #42b983;
-}
-.charpterhtml i {
-  font-style: normal;
+  .linefocus {
+    border: 1px solid @primary-color;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+    transform: translateY(-10px) scale(1.02);
+  }
+  a {
+    text-decoration: none;
+    color: @primary-color;
+  }
+  .ivu-icon {
+    color: @primary-color;
+  }
+  i {
+    font-style: normal;
+  }
 }
 .html-img,
 html-img-hover {
   display: block;
   width: 60%;
-  border: 1px solid #42b983;
+  border: 1px solid @primary-color;
   margin: 2px;
 }
 .sub-title {
@@ -342,16 +345,14 @@ span.sub-tag {
   font-weight: normal;
   padding-right: 2px;
   padding-left: 2px;
-  background-color: #42b983;
+  background-color: @primary-color;
   color: white;
   border-radius: 3px;
 }
 .outline-title {
-  border-left: 2px solid #42b983;
+  border-left: 2px solid @primary-color;
   margin-left: 4px;
   padding-left: 4px;
   margin-top: 2px;
 }
 </style>
-
-

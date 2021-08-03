@@ -4,7 +4,7 @@
       <li
         v-for="({ label }, index) in list"
         :class="liClass(index)"
-        @click="clickme($event,index)"
+        @click="clickme($event, index)"
         :key="index"
         style="list-style-type: decimal; list-style: decimal"
       >
@@ -86,7 +86,7 @@ export default {
       }
     },
     // eslint-disable-next-line no-unused-vars
-    clickme($event,index) {
+    clickme($event, index) {
       $event.stopPropagation();
       let l = this.list;
       let { label } = l;
@@ -102,7 +102,8 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
+@import "../my-theme.less";
 .toc-html {
   margin-left: 10%;
   margin-right: 10%;
@@ -111,29 +112,31 @@ export default {
   color: black !important;
   font-size: small !important;
 }
-.toc-html.export-html {
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
-  border-color: #eee;
-  border-radius: 5px;
-  position: fixed;
-  top: 10px;
-  right: 20px;
-  background: white;
-  overflow-y: auto;
-  height: 200px;
-  width: 300px;
-  font-size: small;
-}
-.toc-html a {
-  text-decoration: none;
-  color: #42b983;
-}
-.toc-html li {
-  color: #42b983;
-}
-.toc-html ul {
-  margin: 10px;
-  padding: 10px;
-  padding-left: 20px;
+.toc-html {
+  &.export-html {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+    border-color: #eee;
+    border-radius: 5px;
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    background: white;
+    overflow-y: auto;
+    height: 200px;
+    width: 300px;
+    font-size: small;
+  }
+  a {
+    text-decoration: none;
+    color: @primary-color;
+  }
+  li {
+    color: @primary-color;
+  }
+  ul {
+    margin: 10px;
+    padding: 10px;
+    padding-left: 20px;
+  }
 }
 </style>

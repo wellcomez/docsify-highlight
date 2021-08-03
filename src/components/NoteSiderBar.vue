@@ -5,7 +5,7 @@
       title="笔记"
       :width="rootDrawerWidth"
       id="notesidebar"
-      v-model="open"
+      :value="openNoteBook"
       scrollable
       :mask="false"
       :class-name="drawerwrapper"
@@ -20,40 +20,42 @@
           v-if="isMobile == false"
         />
         <Button icon="ios-expand" @click="onClickZoom($event, 2)" />
-        <Button icon="ios-close" @click="open != open" />
+        <Button icon="ios-close" @click="onClose" />
       </ButtonGroup>
-      <div style="width: 100%; height: inherit" v-if="useSideBar">
-        <Layout>
-          <Sider style="width: 200px">
-            <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
-          </Sider>
-          <Layout style="">
-            <Content :style="{ padding: '0 16px 16px' }">
-              <CharptHtml
-                :class="class_charpt_html"
-                v-for="(charpter, index) in sortedChapter"
-                :charpter="charpter"
-                :onClickURL="onClickURL"
-                :active="charpter.path == current.path"
-                :key="index"
-                :hl="hl"
-              />
-            </Content>
+      <div v-if="openNoteBook" class="note-container">
+        <div style="width: 100%; height: inherit" v-if="useSideBar">
+          <Layout>
+            <Sider style="width: 200px">
+              <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
+            </Sider>
+            <Layout style="">
+              <Content :style="{ padding: '0 16px 16px' }">
+                <CharptHtml
+                  :class="class_charpt_html"
+                  v-for="(charpter, index) in sortedChapter"
+                  :charpter="charpter"
+                  :onClickURL="onClickURL"
+                  :active="charpter.path == current.path"
+                  :key="index"
+                  :hl="hl"
+                />
+              </Content>
+            </Layout>
           </Layout>
-        </Layout>
+        </div>
+        <CharptHtml
+          v-else
+          :class="class_charpt_html"
+          v-for="(charpter, index) in sortedChapter"
+          :charpter="charpter"
+          :onClickURL="onClickURL"
+          :active="charpter.path == current.path"
+          :key="index"
+          :hl="hl"
+        />
       </div>
-      <CharptHtml
-        v-else
-        :class="class_charpt_html"
-        v-for="(charpter, index) in sortedChapter"
-        :charpter="charpter"
-        :onClickURL="onClickURL"
-        :active="charpter.path == current.path"
-        :key="index"
-        :hl="hl"
-      />
     </Drawer>
-    <Drawer v-model="sider_toc_on" v-if="!useSideBar" :placement="tocPlaceMent" >
+    <Drawer v-model="sider_toc_on" :placement="tocPlaceMent" class="drawer-toc">
       <TocHtml
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -88,8 +90,8 @@ export default {
     isMobile() {
       return isMobile();
     },
-    tocPlaceMent(){
-      return this.isMobile?"left":"right";
+    tocPlaceMent() {
+      return this.isMobile ? "left" : "right";
     },
     sidebarStyle() {
       let ret = {
@@ -165,15 +167,18 @@ export default {
     return {
       currentIndex: 0,
       current: this.hl ? this.hl.store.Chapter() : {},
-      open: undefined,
       sider_toc_on: false,
       zoomNoteBook: undefined,
     };
   },
   methods: {
+    onClose(e) {
+      e.stopPropagation();
+      this.$emit("update:openNoteBook", false);
+    },
     onClickToc(e) {
       e.stopPropagation();
-      this.sider_toc_on = !this.sider_toc_on;
+      this.sider_toc_on = this.sider_toc_on != true;
     },
     onClickZoom(e, value) {
       e.stopPropagation();
@@ -207,20 +212,15 @@ export default {
     },
   },
   watch: {
-    open(a) {
-      if (a == false) {
-        this.$emit("update:openNoteBook", false);
-      }
-    },
     hl(a) {
       this.changeCurrentCharacter(a.store.Chapter());
     },
     openNoteBook(a) {
-      if (a) {
-        this.open = true;
-      } else {
+      console.warn("openNoteBook", a);
+      if (!a) {
         this.zoomNoteBook = right;
       }
+      this.sider_toc_on = false;
       let c = "open-sidebar";
       if (a) {
         document.querySelector(".content").classList.add(c);
@@ -275,66 +275,65 @@ export default {
 };
 </script>
 <style lang="less">
-.open-sidebar.content.zoom-in {
-  margin-right: 400px;
-}
-.mobile.open-sidebar.content.zoom-in {
-  margin-right: 0;
-}
-.open-sidebar.content.zoom-out {
-  margin-right: 0;
-  margin-top: 320px;
+.open-sidebar.content {
+  &.zoom-in {
+    margin-right: 400px;
+    &.mobile {
+      margin-right: 0;
+    }
+  }
+
+  &.zoom-out {
+    margin-right: 0;
+    margin-top: 320px;
+  }
 }
 
 .mobile {
   .html-drawer-toc {
     margin: 1px;
+    .ivu-tooltip-inner {
+      margin-left: 5px;
+      margin-right: 30px;
+      height: 200px;
+      ul {
+        padding: 1px;
+        margin: 1px;
+      }
+    }
   }
-  .html-drawer-toc .ivu-tooltip-inner {
-    margin-left: 5px;
-    margin-right: 30px;
-    height: 200px;
+}
+.drawerwrapper-base {
+  .ivu-drawer {
+    height: inherit;
+    .ivu-drawer-body {
+      height: 98%;
+      top: 30px;
+      .note-container {
+        height: 100% !important;
+        .ivu-layout.ivu-layout-has-sider {
+          height: 100%;
+          .ivu-layout-sider .ivu-layout-sider-children {
+            background-color: white;
+            overflow-y: scroll;
+            overflow-x: hidden;
+          }
+        }
+      }
+    }
   }
-  .html-drawer-toc .ivu-tooltip-inner ul {
-    padding: 1px;
-    margin: 1px;
-  }
+}
+.drawer-toc .ivu-drawer-close {
+  right: 20px;
+  top: 4px;
 }
 .drawerwrapper {
   height: 50% !important;
-  .ivu-drawer {
-    height: inherit;
-    .ivu-drawer-body {
-      height: 98%;
-      top: 30px;
-      .ivu-layout.ivu-layout-has-sider {
-        height: 100%;
-        .ivu-layout-sider .ivu-layout-sider-children {
-          background-color: white;
-          overflow-y: scroll;
-          overflow-x: hidden;
-        }
-      }
-    }
-  }
+  .drawerwrapper-base();
 }
 .drawerwrapper-full {
   height: 100% !important;
-  .ivu-drawer {
-    height: inherit;
-    .ivu-drawer-body {
-      height: 98%;
-      top: 30px;
-      .ivu-layout.ivu-layout-has-sider {
-        height: 100%;
-        .ivu-layout-sider .ivu-layout-sider-children {
-          background-color: white;
-          overflow-y: scroll;
-          overflow-x: hidden;
-        }
-      }
-    }
-  }
+  .drawerwrapper-base();
 }
 .charpter-small-image .html-img {
   width: 90%;

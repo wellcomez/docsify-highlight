@@ -65,7 +65,7 @@
         <i-switch :value="checked" @on-change="onChange" />
       </Col> -->
       <Col>
-        <SvgButton @click="openNoteBook = !openNoteBook" name="md-text" />
+        <SvgButton @click="onClickOpenNote" name="md-text" />
       </Col>
       <Col>
         <SvgButton @click="bDrawerOpen = true" name="md-settings" />
