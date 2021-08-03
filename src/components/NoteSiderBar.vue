@@ -57,6 +57,7 @@
     </Drawer>
     <Drawer v-model="sider_toc_on" :placement="tocPlaceMent" class="drawer-toc">
       <TocHtml
+        :active="current"
         :charpter="sortedChapter"
         :click="clickOnToc"
         class="html-drawer-toc"
@@ -335,7 +336,7 @@ export default {
   height: 100% !important;
   .drawerwrapper-base();
 }
-.charpter-small-image .html-img {
-  width: 90%;
-}
+// .charpter-small-image .html-img {
+//   width: 90%;
+// }
 </style>

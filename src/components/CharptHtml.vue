@@ -77,8 +77,6 @@
         class="html-img"
         @click="onClick({ index, url })"
         v-if="imgsrc"
-        @mouseover="onImageIn"
-        @mouseout="onImageOut"
         v-lazy="imgsrc"
       />
       <div v-if="note" class="outline-title">
@@ -324,13 +322,13 @@ export default {
     font-style: normal;
   }
 }
-.html-img,
-html-img-hover {
-  display: block;
-  width: 60%;
-  border: 1px solid @primary-color;
-  margin: 2px;
-}
+// .html-img,
+// html-img-hover {
+//   display: block;
+//   width: 60%;
+//   border: 1px solid @primary-color;
+//   margin: 2px;
+// }
 .sub-title {
   /* display: flex; */
   margin-top: 4px;
