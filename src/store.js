@@ -363,8 +363,14 @@ class Chapter {
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
     let index = 0;
-    let items = this.children.map((a, idx) => {
-      let { label, style, note, imgsrc, tags, id, notshowSeq, tabn } = a;
+    let items = this.mergeChild().map((a, idx) => {
+      let { label, style, note, imgsrc, tags, id, notshowSeq, tabn, tree, version } = a;
+      let html = version == get_default_tree_version() ? createHtml(tree) : undefined;
+      if (html) {
+        let div = document.createElement("div")
+        div.innerHTML = html
+        label = div.innerText
+      }
       if (label == undefined) label = ""
       label = label.split('\n').map((a) => {
         a = a.replaceAll('-', '\\-')
@@ -500,6 +506,7 @@ export function getRawHtml(cmp, props) {
 }
 import { Base64 } from 'js-base64';
 import { createHtml } from "./converDom2Html";
+import { get_default_tree_version } from "./DocHighlighter";
 
 export class Book {
   static updated = false;
