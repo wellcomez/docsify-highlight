@@ -18,6 +18,7 @@ export default {
   name: "TocHtml",
   props: {
     exporthtml: { type: Boolean, default: false },
+    active: { type: Object, default: () => undefined },
     charpter: {
       type: Array,
       default: () => {
@@ -27,15 +28,21 @@ export default {
     click: { type: Function, default: undefined },
   },
   watch: {
+    active(a) {
+      this.onActive(a);
+    },
     charpter() {
       this.convertRef();
     },
   },
   data() {
     return {
-      clickIndex: this.currentIndex,
+      clickIndex: 0,
       list: [],
     };
+  },
+  mounted() {
+    this.onActive(this.active);
   },
   created() {
     if (this.exporthtml && this.$el && this.$el.classList) {
@@ -44,6 +51,12 @@ export default {
     this.convertRef();
   },
   methods: {
+    onActive(a) {
+      if (a) {
+        let chapter = this.find(this.list, a);
+        this.clickIndex= this.list.indexOf(chapter);
+      }
+    },
     liClass(index) {
       let classname = "html-toc-li";
       if (index == this.clickIndex) classname = "html-toc-li-active";
@@ -59,42 +72,19 @@ export default {
         return { href, label };
       });
     },
-    clickOnToc(a) {
-      const getPosition = ($node) => {
-        let offset = {
-          top: 0,
-          left: 0,
-          height: $node.offsetHeight,
-        };
-        while ($node) {
-          offset.top += $node.offsetTop;
-          offset.left += $node.offsetLeft;
-          $node = $node.offsetParent;
+    find(list, value) {
+      return list.find((a) => {
+        if (a.label == value.label) {
+          return a;
         }
-        offset.bottom = offset.top + offset.height;
-        return offset;
-      };
-      let h2 = document.querySelectorAll(".charpterhtml-h2");
-      for (let i = 0; i < h2.length; i++) {
-        let t = h2[i];
-        let tt = t.getAttribute("tt");
-        if (tt == a) {
-          let { top } = getPosition(t);
-          window.scrollTo(0, top - 50);
-          return;
-        }
-      }
+      });
     },
-    // eslint-disable-next-line no-unused-vars
     clickme($event, index) {
       $event.stopPropagation();
-      let l = this.list;
-      let { label } = l;
-      let charpter = this.charpter[index];
+      let value = this.list[index];
+      let charpter = this.find(this.charpter, value);
       if (this.click) {
         this.click(charpter);
-      } else {
-        this.clickOnToc(label);
       }
       this.clickIndex = index;
     },
@@ -109,7 +99,7 @@ export default {
   margin-right: 10%;
 }
 .html-toc-li-active {
-  color: black !important;
+  color: #808080 !important;
   font-size: small !important;
 }
 .toc-html {

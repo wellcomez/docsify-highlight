@@ -72,14 +72,18 @@
         <span v-for="(a, index) in tags" :key="index" class="sub-tag">{{
           a
         }}</span>
+        <div v-if="imgsrc">
+          <img class="content-img" v-if="imgsrc" v-lazy="imgsrc" :id="index" />
+          <i style="position: relative; left: -20px; top: -5px"
+            ><Icon
+              size="20"
+              class="zoom-icon"
+              @click="onClickImg($event, index)"
+              custom="iconfont icon-zoom-out"
+              type="icon-zoom-out"
+          /></i>
+        </div>
       </div>
-      <img
-        :style="tabN(tabn)"
-        class="html-img"
-        @click="onClick({ index, url })"
-        v-if="imgsrc"
-        v-lazy="imgsrc"
-      />
       <div v-if="note" class="outline-title">
         <p>{{ note }}</p>
       </div>
@@ -93,6 +97,7 @@ import { Divider } from "iview";
 import { msg } from "./msgbox";
 import { get_default_tree_version } from "../DocHighlighter";
 import { createHtml } from "../converDom2Html";
+import mediumZoom from "medium-zoom";
 const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";
@@ -100,6 +105,7 @@ export default {
   components: { Divider },
   data() {
     return {
+      zoom: undefined,
       focusline: undefined,
       list: this.initList(this.charpter),
       showMerge: false,
@@ -143,6 +149,32 @@ export default {
     }
   },
   methods: {
+    onClickImg(e, index) {
+      e.stopPropagation();
+      let target = Array.apply(null, this.$el.querySelectorAll("img"));
+      index = "" + index;
+      target = target.find((a) => {
+        if (a.id == index) return a;
+      });
+      if (this.zoom) {
+        let a = this.zoom.getZoomedImage();
+        if (a.id == index) {
+          this.zoom.close();
+          return;
+        }
+      }
+      target.style.zIndex = 1000;
+      let zoom = mediumZoom(target, {});
+      zoom.open().then(() => {
+        let bg = document.querySelector(".medium-zoom-overlay");
+        bg.style.zIndex = 1000;
+      });
+      this.zoom = zoom;
+      zoom.on("closed", () => {
+        zoom.detach();
+        this.zoom = undefined;
+      });
+    },
     onActive() {
       this.Sort();
       this.$el.scrollIntoView();
@@ -323,6 +355,17 @@ export default {
     font-style: normal;
   }
 }
+.content-img {
+  max-width: 80%;
+  left: -30px;
+  top: -10px;
+}
+.drawerwrapper-full .content-img {
+  max-width: 50%;
+}
+.drawerwrapper .content-img {
+  max-width: 50%;
+}
 // .html-img,
 // html-img-hover {
 //   display: block;
@@ -347,6 +390,10 @@ span.sub-tag {
   background-color: @primary-color;
   color: white;
   border-radius: 3px;
+}
+.zoom-icon {
+  margin-top: 0px;
+  color: @primary-color;
 }
 .outline-title {
   border-left: 2px solid @primary-color;
