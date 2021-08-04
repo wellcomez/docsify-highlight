@@ -297,8 +297,8 @@ export default {
     },
     onIcon(index, right) {
       let { notshowSeq, tabn } = this.list[index];
-      if ((tabn == undefined || isNaN(tabn)) && notshowSeq) {
-        tabn = 0;
+      if (tabn == undefined || isNaN(tabn)) {
+        tabn = notshowSeq != true ? 0 : 1;
       }
       if (right) {
         tabn++;
