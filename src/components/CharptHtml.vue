@@ -178,12 +178,8 @@ export default {
     },
     onActive() {
       this.Sort();
-      let container;
-      [
-        "#notesidebar .ivu-layout .ivu-layout",
-      ].forEach((a) => {
-        if (container) return;
-        if (document.querySelector(a)) container = a;
+      let container = ["#notesidebar .ivu-layout .ivu-layout"].find((a) => {
+        if (document.querySelector(a)) return true;
       });
       if (container) {
         var options = {

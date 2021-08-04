@@ -14,6 +14,8 @@
   </div>
 </template>
 <script>
+// eslint-disable-next-line no-unused-vars
+var VueScrollTo = require("vue-scrollto");
 export default {
   name: "TocHtml",
   props: {
@@ -34,10 +36,55 @@ export default {
     charpter() {
       this.convertRef();
     },
+    clickIndex(a) {
+      let el = this.$el.querySelector(`.toc-li-${a}`);
+      el.scrollIntoView();
+      // eslint-disable-next-line no-unused-vars
+      const jump = () => {
+        if (el) {
+          let container = [
+            ".drawer-toc .ivu-drawer-body",
+            "#notesidebar .ivu-drawer-body .ivu-layout .ivu-layout-sider .ivu-layout-sider-children",
+          ].find((a) => {
+            return document.querySelector(a) != null;
+          });
+
+          if (container) {
+            var options = {
+              container,
+              easing: "ease-in",
+              lazy: false,
+              offset: -200,
+              force: true,
+              cancelable: true,
+              // eslint-disable-next-line no-unused-vars
+              onStart: (element) => {
+                // console.warn(element, "start");
+              },
+              // eslint-disable-next-line no-unused-vars
+              onDone: (element) => {
+                // console.warn(element, "onDone");
+              },
+              onCancel: () => {
+                // scrolling has been interrupted
+              },
+              x: false,
+              y: true,
+            };
+            VueScrollTo.scrollTo(el, 1, options);
+          }
+        }
+      };
+      try {
+        // jump();
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
   data() {
     return {
-      clickIndex: 0,
+      clickIndex: undefined,
       list: [],
     };
   },
@@ -54,13 +101,13 @@ export default {
     onActive(a) {
       if (a) {
         let chapter = this.find(this.list, a);
-        this.clickIndex= this.list.indexOf(chapter);
+        this.clickIndex = this.list.indexOf(chapter);
       }
     },
     liClass(index) {
       let classname = "html-toc-li";
       if (index == this.clickIndex) classname = "html-toc-li-active";
-      return classname;
+      return `${classname} toc-li-${index}`;
     },
     convertRef() {
       this.list = this.charpter.map((a) => {

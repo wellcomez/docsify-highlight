@@ -55,8 +55,9 @@
         />
       </div>
     </Drawer>
-    <Drawer v-model="sider_toc_on" :placement="tocPlaceMent" class="drawer-toc">
+    <Drawer v-model="sider_toc_on" :placement="tocPlaceMent" :class="drawerTocClass">
       <TocHtml
+        v-if="sider_toc_on"
         :active="current"
         :charpter="sortedChapter"
         :click="clickOnToc"
@@ -88,6 +89,9 @@ export default {
     Content,
   },
   computed: {
+    drawerTocClass(){
+      return 'drawer-toc' +(this.sider_toc_on?"":"-hidden")
+    },
     isMobile() {
       return isMobile();
     },
