@@ -362,7 +362,7 @@ class Chapter {
     }
     let title = ["## " + this.label];
     if (this.children.length == 0) return "\n"
-    let index = 0;
+    // let index = 0;
     let items = this.mergeChild().map((a, idx) => {
       let { label, style, note, imgsrc, tags, id, notshowSeq, tabn, tree, version } = a;
       let html = version == get_default_tree_version() ? createHtml(tree) : undefined;
@@ -423,29 +423,23 @@ class Chapter {
         content = content + ref
       let title = ''
       if (notshowSeq != true) {
-        index++;
-        let pre = index + '. '
-        pre = '- '
         if (img) {
-          title = `${pre} ${ref}${tags}`
-          img = `${space}>${img}`
+          title = `- ${ref}${tags}`
+          img = `${img}`
         } else {
-          title = `${pre} ${content}${tags}`
+          title = `- ${content}${tags}`
         }
       } else {
         if (img) {
           img = `${space}>${img}`
         } else {
-          title = `${space}- ${content}${tags}`
+          if (tabn == 1)
+            title = `  ${content}${tags}`
+          else
+            title = `${space}- ${content}${tags}`
         }
       }
-      // let divider =""
-      // if (notshowSeq) {
-      //   let a = this.children[idx + 1]
-      //   if (a && a.notshowSeq != true) {
-      //     // divider = '---'
-      //   }
-      // }
+
       return [title, img, note].filter((a) => a && a.length > 0).join('\n')
     });
     return title.concat(items).join("\n\n");

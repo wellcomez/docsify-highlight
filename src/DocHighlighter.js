@@ -2,7 +2,7 @@ import Highlighter from 'web-highlighter';
 import { Book } from './store';
 import { User } from "./UserLogin";
 import { log } from "./log";
-import { getIntersection } from "./hl"
+// import { getIntersection } from "./hl"
 import { getConfig } from './ANoteConfig';
 import { mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
@@ -362,23 +362,22 @@ export class DocHighlighter {
                 }
             }
             try {
-                const candidates = selectedNodes.slice(1).reduce(
-                    (left, selected) => getIntersection(left, this.getIds(selected)),
-                    this.getIds(selectedNodes[0])
-                );
-                candidates.length
-                for (let i = 0; i < candidates.length; i++) {
-                    if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
-                        selectedNodes = [];
-                        break;
-                    }
-                }
-                if (selectedNodes.length == 0) {
-                    let hs = self.store.geths(id)
-                    if (hs) {
-                        // console.error("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
-                    }
-                }
+                // const candidates = selectedNodes.slice(1).reduce(
+                //     (left, selected) => getIntersection(left, this.getIds(selected)),
+                //     this.getIds(selectedNodes[0])
+                // );
+                // for (let i = 0; i < candidates.length; i++) {
+                //     if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
+                //         selectedNodes = [];
+                //         break;
+                //     }
+                // }
+                // if (selectedNodes.length == 0) {
+                //     let hs = self.store.geths(id)
+                //     if (hs) {
+                //         // console.error("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
+                //     }
+                // }
                 return selectedNodes;
             } catch (error) {
                 console.error(error)

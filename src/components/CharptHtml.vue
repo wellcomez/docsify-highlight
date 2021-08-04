@@ -39,7 +39,6 @@
         />
         <Button
           size="small"
-          v-if="notshowSeq || tabn > 0"
           icon="ios-arrow-dropleft-circle"
           @click="onIcon(index, false)"
         />
@@ -249,9 +248,8 @@ export default {
     },
     // "display: inline;";
     tabN(tabn) {
-      tabn = tabn > 0 ? tabn : 0;
       let style = "";
-      if (tabn) style = style + `margin-left:${tabn * 2}em`;
+      if (tabn) style = style + `margin-left:${(tabn - 1) * 2}em`;
       return style;
     },
     Sort() {
@@ -306,13 +304,9 @@ export default {
         tabn++;
       } else {
         tabn--;
+        tabn = Math.max(tabn, 0);
       }
-      if (tabn < 1) {
-        tabn = 0;
-        notshowSeq = false;
-      } else {
-        notshowSeq = true;
-      }
+      notshowSeq = tabn ? true : false;
       this.focusline = undefined;
       let l = this.list[index];
       let key = new Date() * 1 + "-" + index;
