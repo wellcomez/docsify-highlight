@@ -98,6 +98,7 @@ import { msg } from "./msgbox";
 import { get_default_tree_version } from "../DocHighlighter";
 import { createHtml } from "../converDom2Html";
 import mediumZoom from "medium-zoom";
+var VueScrollTo = require("vue-scrollto");
 const copyPasteBoard = require("clipboard-copy");
 
 // import { Tooltip } from "iview";
@@ -144,7 +145,7 @@ export default {
   },
   mounted() {
     if (this.active) {
-      // console.log("mounted", this.active, this.charpter);
+      console.log("mounted", this.active, this.charpter);
       this.onActive();
     }
   },
@@ -177,7 +178,40 @@ export default {
     },
     onActive() {
       this.Sort();
-      this.$el.scrollIntoView();
+      let container;
+      [
+        "#notesidebar .ivu-layout .ivu-layout",
+      ].forEach((a) => {
+        if (container) return;
+        if (document.querySelector(a)) container = a;
+      });
+      if (container) {
+        var options = {
+          container,
+          easing: "ease-in",
+          lazy: false,
+          // offset: -60,
+          force: true,
+          cancelable: true,
+          // eslint-disable-next-line no-unused-vars
+          onStart: (element) => {
+            // console.warn(element, "start");
+          },
+          // eslint-disable-next-line no-unused-vars
+          onDone: (element) => {
+            // console.warn(element, "onDone");
+          },
+          onCancel: () => {
+            // scrolling has been interrupted
+          },
+          x: false,
+          y: true,
+        };
+        let duration = 1;
+        VueScrollTo.scrollTo(this.$el, duration, options);
+      } else {
+        this.$el.scrollIntoView();
+      }
     },
     onCopy({ id, text }) {
       let copy = getNoteUrl(id, this.charpter) + "\n\n" + text;

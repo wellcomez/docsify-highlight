@@ -26,7 +26,7 @@
         <div style="width: 100%; height: inherit" v-if="useSideBar">
           <Layout>
             <Sider style="width: 200px">
-              <TocHtml :charpter="sortedChapter" :click="clickOnToc" />
+              <TocHtml :active="current" :charpter="sortedChapter" :click="clickOnToc" />
             </Sider>
             <Layout style="">
               <Content :style="{ padding: '0 16px 16px' }">
