@@ -40,12 +40,12 @@
         <Button
           size="small"
           icon="ios-arrow-dropleft-circle"
-          @click="onIcon(index, false)"
+          @click="onMoveItem(index, false)"
         />
         <Button
           size="small"
           icon="ios-arrow-dropright-circle"
-          @click="onIcon(index, true)"
+          @click="onMoveItem(index, true)"
         />
         <Button
           size="small"
@@ -53,8 +53,8 @@
           @click="onCopy({ id, text, note })"
         />
       </ButtonGroup>
-      <div
-        class="sub-title"
+      <li
+        :class="itemClasss(index)"
         @click="onClick({ index, url })"
         :style="tabN(tabn)"
       >
@@ -85,7 +85,7 @@
         <div v-if="note" class="outline-title">
           <p>{{ note }}</p>
         </div>
-      </div>
+      </li>
     </div>
   </div>
 </template>
@@ -149,6 +149,21 @@ export default {
     }
   },
   methods: {
+    itemClasss(index) {
+      let a = this.list[index];
+      let { tabn } = a;
+      let ret = ["sub-title"];
+      if (tabn != undefined) {
+        if (tabn % 2 || tabn == 0) {
+          ret.push("sub-title-text");
+        } else {
+          ret.push("sub-title-list");
+        }
+      } else {
+        ret.push("sub-title-text");
+      }
+      return ret.join(" ");
+    },
     onClickImg(e, index) {
       e.stopPropagation();
       let target = Array.apply(null, this.$el.querySelectorAll("img"));
@@ -249,7 +264,10 @@ export default {
     // "display: inline;";
     tabN(tabn) {
       let style = "";
-      if (tabn) style = style + `margin-left:${(tabn - 1) * 2}em`;
+      if (tabn != undefined) {
+        tabn = Math.trunc(tabn / 2);
+        style = style + `margin-left:${tabn * 2}em`;
+      }
       return style;
     },
     Sort() {
@@ -295,11 +313,21 @@ export default {
       let { store } = charpter;
       hl.deleteId(id, store);
     },
-    onIcon(index, right) {
+    onMoveItem(index, right) {
       let { notshowSeq, tabn } = this.list[index];
       if (tabn == undefined || isNaN(tabn)) {
         tabn = notshowSeq != true ? 0 : 1;
       }
+
+      // eslint-disable-next-line no-unused-vars
+      let prevTab;
+      let prev = this.list[index - 1];
+      if (prev) {
+        if (prev.tabn >= tabn) {
+          prevTab = prev.tabn;
+        }
+      }
+
       if (right) {
         tabn++;
       } else {
@@ -404,6 +432,13 @@ export default {
   font-size: small;
   font-weight: normal;
   /* display: inline-block; */
+}
+
+.sub-title-list {
+  list-style-type: disc;
+}
+.sub-title-text {
+  list-style-type: none;
 }
 span.sub-tag {
   margin: 4px;
