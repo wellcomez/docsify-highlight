@@ -278,7 +278,7 @@ export default {
   data() {
     return {
       showPreview: false,
-      explortList: ["json", "md", "md(css)", "html", "preview"],
+      explortList: ["json", "md", "md(章)", "html", "preview"],
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
@@ -387,9 +387,10 @@ export default {
       if (name == "md") {
         let md = b.md();
         funDownload(md, window.$docsify.name + ".md");
-      } else if (name == "md(css)") {
-        let md = b.md(true);
-        funDownload(md, window.$docsify.name + ".md");
+      } else if (name == "md(章)") {
+        const newLocal = this.hl.store.Chapter();
+        let md = newLocal.md();
+        funDownload(md, newLocal.label + ".md");
       } else if (name == "json") {
         let json = b.jsonstr();
         funDownload(json, window.$docsify.name + ".json");

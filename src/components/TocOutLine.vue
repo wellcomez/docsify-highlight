@@ -86,13 +86,12 @@
   </Row>
 </template>
 <script>
-import { createHtml } from '../converDom2Html';
+import { createHtml } from "../converDom2Html";
 var isMobile = require("is-mobile");
 
 const rgba = require("color-rgba");
 var Colr = require("colr");
 import { convertStyle, getImgSrcUrl, getNoteUrl } from "../utils";
-import { funDownload } from "./Panel.vue";
 const copyPasteBoard = require("clipboard-copy");
 export default {
   name: "TocOutLine",
@@ -107,15 +106,15 @@ export default {
       t2: undefined,
       showiconRight: isMobile() != true,
       list: [
-        {
-          name: "导出",
-          click: () => {
-            let { hl } = window;
-            const newLocal = hl.store.Chapter();
-            let md = newLocal.md();
-            funDownload(md, newLocal.label + ".md");
-          },
-        },
+        // {
+        //   name: "导出",
+        //   click: () => {
+        //     let { hl } = window;
+        //     const newLocal = hl.store.Chapter();
+        //     let md = newLocal.md();
+        //     funDownload(md, newLocal.label + ".md");
+        //   },
+        // },
         {
           name: "删除",
           click: () => {
@@ -125,24 +124,23 @@ export default {
             hl.deleteId(id, store);
           },
         },
-        { name: "查看", click: () => {} },
         {
-          name: "id",
+          name: "复制",
           click: () => {
             let { id, charpter } = this.notedata;
-
             id = getNoteUrl(id, charpter);
-            copyPasteBoard(id);
+            let text = this.content;
+            copyPasteBoard([text, id].join("\n"));
           },
         },
-        {
-          name: "fix",
-          click: () => {
-            let { id } = this.notedata;
-            let { hl } = window;
-            hl.fixid(id);
-          },
-        },
+        // {
+        //   name: "fix",
+        //   click: () => {
+        //     let { id } = this.notedata;
+        //     let { hl } = window;
+        //     hl.fixid(id);
+        //   },
+        // },
       ],
       disabledPopMore: true,
       textStyle: {},
@@ -227,6 +225,17 @@ export default {
         title2 = `"${note}"-${title}`;
       }
       return title2;
+    },
+    content() {
+      let a = this.imgsrc;
+      if (a) return a;
+      let html = this.html;
+      if (html) {
+        let div = document.createElement("p");
+        div.innerHTML = html;
+        return div.innerText;
+      }
+      return "";
     },
     imgsrc() {
       let { imgsrc } = this.notedata;
