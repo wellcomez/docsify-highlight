@@ -357,90 +357,107 @@ class Chapter {
     return this.label
   }
   md(css, chapterIndex) {
-    if (chapterIndex == undefined) {
-      chapterIndex = ''
+    const getTags = ({ tags }) => {
+      if (tags) {
+        tags = new Set(tags);
+        tags = Array.from(tags);
+      } else {
+        tags = [];
+      }
+      tags = tags.map((tag) => {
+        return "`" + `${tag}` + "`";
+      }).join('  ');
+      return tags;
     }
-    let title = ["## " + this.label];
-    if (this.children.length == 0) return "\n"
-    // let index = 0;
-    let items = this.mergeChild().map((a, idx) => {
-      let { label, style, note, imgsrc, tags, id, notshowSeq, tabn, tree, version } = a;
+    const getNote = ({ note }) => {
+      return note;
+    }
+    const getImage = ({ imgsrc }) => {
+      if (imgsrc) {
+        imgsrc = getImgSrcUrl(imgsrc)
+        let { path } = parseurl(imgsrc)
+        return `![${path}](${imgsrc})`
+      }
+    }
+    const getTitle = ({ version, tree, label }) => {
       let html = version == get_default_tree_version() ? createHtml(tree) : undefined;
       if (html) {
         let div = document.createElement("div")
         div.innerHTML = html
         label = div.innerText
       }
-      if (label == undefined) label = ""
-      label = label.split('\n').map((a) => {
-        a = a.replaceAll('-', '\\-')
-        return a
-      }).join('')
-      if (!tabn) {
-        tabn = notshowSeq ? 1 : 0
-      }
-      if (tags) {
-        tags = new Set(tags)
-        tags = Array.from(tags);
-      } else {
-        tags = []
-      }
-      tags = tags.map((tag) => {
-        return "`" + `${tag}` + "`"
-      }).join('  ')
       label = label ? label : ""
-      let hlyellow
-      if (css) {
-        hlyellow = ''
-        for (let color in style) {
-          let { enable, colorhex } = style[color];
-          if (enable) {
-            let classname = colorClassList.getClass(color, colorhex);
-            hlyellow = `${hlyellow} ${classname}`
+      return label
+    }
+    const getPrefix = ({ notshowSeq, tabn, imgsrc, tabs }) => {
+      const oneSpace = ' '
+      const twoSpace = oneSpace.repeat(2)
+      if (notshowSeq && tabn == undefined) {
+        return { prefix: twoSpace, tabs }
+      }
+      let prefix
+      if (tabn == undefined) { tabn = 0 }
+      if (imgsrc) {
+        if (tabn == 1) {
+          prefix = twoSpace
+        } else {
+          if (tabs != undefined) {
+            tabn = Math.min(tabs, tabn)
           }
+          prefix = oneSpace.repeat(tabn * 2)
         }
-      }
-      let space = notshowSeq ? '   ' : ''
-      if (tabn) space = space.repeat(tabn)
-      if (note) {
-        note = `${space}>${note}`
       } else {
-        note = ""
+        if (notshowSeq) {
+          if (tabn == 0 || tabn == 1) {
+            prefix = twoSpace
+            tabn = 1
+          } else {
+            prefix = oneSpace.repeat(tabn * 2) + '- '
+            tabs = tabn
+          }
+        } else {
+          tabs = 1
+          prefix = '- '
+        }
+
       }
-      let img
+      return { prefix, tabs }
+    }
+    const getRef = ({ id }, idx) => {
       let ref = this.url(id);
       ref = ref ? `<sup>[[${chapterIndex}-${idx}]](${ref})</sup>` : "";
-      if (imgsrc) {
-        imgsrc = getImgSrcUrl(imgsrc)
-        let { path } = parseurl(imgsrc)
-        img = `![${path}](${imgsrc})`
-      }
-      let content = label ? (hlyellow ? `<span class="${hlyellow}"> ${label}</span>` : label) : "";
-      if (note.length) {
-        content = `<b>${content}</b>`
-      }
-      if (content.length)
-        content = content + ref
+      return ref
+    }
+    if (chapterIndex == undefined) {
+      chapterIndex = ''
+    }
+    let title = ["## " + this.label];
+    if (this.children.length == 0) return "\n"
+    let children = this.mergeChild()
+    let oldTabs = undefined
+    let items = children.map((a, idx) => {
+      let { notshowSeq } = a
+      let content = getTitle(a)
+      let tags = getTags(a);
+      let img = getImage(a)
+      let note = getNote((a))
+      let ref = getRef(a, idx)
+      let pp = getPrefix({ ...a, tabs: oldTabs })
+      let { prefix } = pp
+      oldTabs = pp.tabs
       let title = ''
-      if (notshowSeq != true) {
-        if (img) {
-          title = `- ${ref}${tags}`
-          img = `${img}`
-        } else {
-          title = `- ${content}${tags}`
-        }
+      if (img && notshowSeq != true) {
+        title = `- ${ref}${tags}`
+        img = `  ${img}`
       } else {
         if (img) {
-          img = `${space}>${img}`
-        } else {
-          if (tabn == 1)
-            title = `  ${content}${tags}`
-          else
-            title = `${space}- ${content}${tags}`
+          img = `${prefix}${img}${tags}`
+        }
+        if (content) {
+          title = `${prefix}${content}${ref}${tags}`
         }
       }
-
-      return [title, img, note].filter((a) => a && a.length > 0).join('\n')
+      return [title, img, note].filter((a) => a && a.length > 0).join("\n\n")
     });
     return title.concat(items).join("\n\n");
   }
@@ -485,6 +502,8 @@ class Chapter {
 import ExportHtml from './components/ExportHtml.vue'
 import Vue from 'vue';
 import { getConfig } from "./ANoteConfig";
+
+
 export function getRawHtml(cmp, props) {
   if (cmp.default) {
     cmp = cmp.default;
