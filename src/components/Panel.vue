@@ -89,8 +89,13 @@
         </TabPane>
       </Tabs>
     </Row>
-    <Drawer class="drawer-exporthtml" :width="80" v-model="showPreview">
-      <ExportHtml :charpter="sortedChapter"></ExportHtml>
+    <Drawer
+      v-if="showPreview"
+      class="drawer-exporthtml"
+      :width="80"
+      v-model="showPreview"
+    >
+      <ExportHtml :charpter="exportCharpter"></ExportHtml>
     </Drawer>
     <SettingSideBar
       :cloudOn="cloudOn"
@@ -240,6 +245,10 @@ export default {
   computed: {
     bookmarkey() {
       return this.seq + "-" + this.bookmark;
+    },
+    exportCharpter() {
+      if (this.showPreview) return [];
+      return new Book().sortedChapter();
     },
     sortedChapter() {
       return this.book.sortedChapter();
