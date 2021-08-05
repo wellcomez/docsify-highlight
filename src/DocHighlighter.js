@@ -613,15 +613,16 @@ export class DocHighlighter {
             })
             this.store.update({ id: noteid, style, parent: parentWrap })
 
-        } else if (preNewNode) {
+        } else {
             this.deleteId(noteid, this.store, false);
-            preNewNode && preNewNode.existIds.forEach((id) => {
-                let node = this.MainNode(id)
-                if (node.findMainNode()) {
-                    let hs = this.hsbyid(id)
-                    this.renderHS(hs)
-                }
-            })
+            if (preNewNode)
+                preNewNode && preNewNode.existIds.forEach((id) => {
+                    let node = this.MainNode(id)
+                    if (node.findMainNode()) {
+                        let hs = this.hsbyid(id)
+                        this.renderHS(hs)
+                    }
+                })
         }
         this.updateAllPositions()
         Book.updated = true;

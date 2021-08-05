@@ -396,6 +396,16 @@ class Chapter {
     const head_list = '- '
     const head_note = '>'
     const getPrefix = ({ notshowSeq, tabn, imgsrc, tabs, note }, head = head_list) => {
+      const isList = (tabn) => {
+        if (tabn != undefined) {
+          if (tabn % 2 || tabn == 0) {
+            return false
+          } else {
+            return true
+          }
+        }
+        return false
+      }
       const oneSpace = ' '
       const twoSpace = oneSpace.repeat(2)
       if (notshowSeq && tabn == undefined) {
@@ -408,30 +418,14 @@ class Chapter {
         if (notshowSeq != true && isNote) {
           tabn = 1
         }
-        if (tabn == 1) {
-          prefix = twoSpace
-        } else {
-          if (tabs != undefined) {
-            tabn = Math.min(tabs, tabn)
-          }
-          prefix = oneSpace.repeat(tabn * 2)
-        }
+        prefix = twoSpace.repeat(Math.trunc(tabn / 2) * 2)
+        prefix = twoSpace + prefix
         if (head == head_note)
           prefix = prefix + head
       } else {
-        if (notshowSeq) {
-          if (tabn == 0 || tabn == 1) {
-            prefix = twoSpace
-            tabs = 1
-          } else {
-            prefix = oneSpace.repeat(tabn * 2) + head
-            tabs = tabn
-          }
-        } else {
-          tabs = 1
-          prefix = head
-        }
-
+        let showList = isList(tabn) || notshowSeq != true
+        let space = twoSpace.repeat(Math.trunc(tabn / 2) * 2)
+        prefix = space + (showList ? head : twoSpace)
       }
       return { prefix, tabs }
     }
