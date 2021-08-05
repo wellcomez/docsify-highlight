@@ -369,7 +369,11 @@ class Chapter {
       }).join('  ');
       return tags;
     }
-    const getNote = ({ note }) => {
+    const getNote = (a) => {
+      let { note } = a;
+      if (note && parent) {
+        return getPrefix(a, '>').prefix + note
+      }
       return note;
     }
     const getImage = ({ imgsrc }) => {
@@ -389,7 +393,9 @@ class Chapter {
       label = label ? label : ""
       return label
     }
-    const getPrefix = ({ notshowSeq, tabn, imgsrc, tabs }) => {
+    const head_list = '- '
+    const head_note = '>'
+    const getPrefix = ({ notshowSeq, tabn, imgsrc, tabs, note }, head = head_list) => {
       const oneSpace = ' '
       const twoSpace = oneSpace.repeat(2)
       if (notshowSeq && tabn == undefined) {
@@ -397,7 +403,11 @@ class Chapter {
       }
       let prefix
       if (tabn == undefined) { tabn = 0 }
-      if (imgsrc) {
+      const isNote = (note && head == head_note);
+      if (imgsrc || isNote) {
+        if (notshowSeq != true && isNote) {
+          tabn = 1
+        }
         if (tabn == 1) {
           prefix = twoSpace
         } else {
@@ -406,18 +416,20 @@ class Chapter {
           }
           prefix = oneSpace.repeat(tabn * 2)
         }
+        if (head == head_note)
+          prefix = prefix + head
       } else {
         if (notshowSeq) {
           if (tabn == 0 || tabn == 1) {
             prefix = twoSpace
-            tabn = 1
+            tabs = 1
           } else {
-            prefix = oneSpace.repeat(tabn * 2) + '- '
+            prefix = oneSpace.repeat(tabn * 2) + head
             tabs = tabn
           }
         } else {
           tabs = 1
-          prefix = '- '
+          prefix = head
         }
 
       }
@@ -440,7 +452,7 @@ class Chapter {
       let content = getTitle(a)
       let tags = getTags(a);
       let img = getImage(a)
-      let note = getNote((a))
+      let note = getNote({ ...a, tabs: oldTabs })
       let ref = getRef(a, idx)
       let pp = getPrefix({ ...a, tabs: oldTabs })
       let { prefix } = pp

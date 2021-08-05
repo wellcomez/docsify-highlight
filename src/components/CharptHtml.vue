@@ -82,9 +82,9 @@
               type="icon-zoom-out"
           /></i>
         </div>
-      </div>
-      <div v-if="note" class="outline-title">
-        <p>{{ note }}</p>
+        <div v-if="note" class="outline-title">
+          <p>{{ note }}</p>
+        </div>
       </div>
     </div>
   </div>
