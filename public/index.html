@@ -54,7 +54,7 @@
       }
       let ul = document.createElement('ul')
       ul.classList.add('subContent')
-      Array.apply(null, document.querySelectorAll(".pydocx-center a")).filter((a) => { 
+      Array.apply(null, document.querySelectorAll(".pydocx-center a")).filter((a) => {
         return a.querySelector('strong')
       }).map((a) => {
         let aa = a.cloneNode(true)
@@ -75,13 +75,14 @@
       if (li == undefined) li = document.createElement('.sidebar-nav>ul li.active')
       li.appendChild((ul))
     }
-    let sorttoc = (a, b) => {
-      let getnum = (s) => {
-        try {
-          return parseInt(s.match(/教你炒股票(\d+)/g)[0].substring(5))
-        } catch (e) {
-        }
+    let getnum = (s) => {
+      try {
+        return parseInt(s.match(/教你炒股票(\d+)/g)[0].substring(5))
+      } catch (e) {
       }
+    }
+
+    let sorttoc = (a, b) => {
       let n1 = getnum(a)
       let n2 = getnum(b)
       if (n1 != undefined && n2 != undefined) {
@@ -90,6 +91,10 @@
       }
       return a.localeCompare(b, "zh");
     }
+    let shortname = (label) => {
+      return getnum(label)
+    }
+    let charpter = { sorttoc, shortname }
     window.$docsify = {
       notFoundPage: '_sidebar.md',
       // themeColor: '##dd1a3a',
@@ -108,7 +113,7 @@
       maxLevel: 4,
       subMaxLevel: 2,
       DocHighlighter: {
-        script: { pre, sorttoc },
+        script: { pre, charpter },
         leancloud: {
           appId: "dvMVEXYBm0Rpy5JyWhhm6D43-gzGzoHsz",
           appKey: "UeGNjOzrueJjiSpjzipJpvfJ",

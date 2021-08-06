@@ -279,7 +279,16 @@ class LocalStore {
   }
 }
 class Chapter {
+  shortname() {
+    return this.label
+  }
   constructor(store) {
+    let { charpter } = pluginScript()
+    if (charpter) {
+      for (let name in charpter) {
+        this[name] = charpter[name].bind(this)
+      }
+    }
     this.tags = new Set();
     if (store) {
       this.label = store.title;
@@ -356,7 +365,8 @@ class Chapter {
   tilte() {
     return this.label
   }
-  md(css, chapterIndex) {
+  md() {
+    let chapterIndex = this.shortname(this.label)
     const getTags = ({ tags }) => {
       if (tags) {
         tags = new Set(tags);
@@ -447,7 +457,7 @@ class Chapter {
       let tags = getTags(a);
       let img = getImage(a)
       let note = getNote({ ...a, tabs: oldTabs })
-      let ref = getRef(a, idx)
+      let ref = getRef(a, idx + 1)
       let pp = getPrefix({ ...a, tabs: oldTabs })
       let { prefix } = pp
       oldTabs = pp.tabs
@@ -537,7 +547,8 @@ export class Book {
     this.bookid = md5(aa)
   }
   sortedChapter() {
-    let sorttoc = pluginScript().sorttoc
+    let { charpter } = pluginScript()
+    let { sorttoc } = charpter ? charpter : {}
     let aaa = this.Charpter().sort((a, b) => {
       // if (a.label == document.title) {
       //   return -1;
@@ -652,8 +663,8 @@ export class Book {
     }).join("\n")
 
     toc = toc1 + "\n" + toc;
-    let content = this.sortedChapter().map((a, idx) => {
-      return a.md(css, idx);
+    let content = this.sortedChapter().map((a) => {
+      return a.md();
     });
     let styles = css ? ("<style>" + colorClassList.str() + "</style>") : "";
     return [toc, tilte]
