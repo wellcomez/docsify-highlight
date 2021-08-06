@@ -90,7 +90,6 @@
       </Tabs>
     </Row>
     <Drawer
-      v-if="showPreview"
       class="drawer-exporthtml"
       :width="80"
       v-model="showPreview"
@@ -247,7 +246,7 @@ export default {
       return this.seq + "-" + this.bookmark;
     },
     exportCharpter() {
-      if (this.showPreview) return [];
+      if (this.showPreview != true) return [];
       return new Book().sortedChapter();
     },
     sortedChapter() {

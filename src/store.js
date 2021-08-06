@@ -460,6 +460,7 @@ class Chapter {
           img = `${prefix}${img}${tags}`
         }
         if (content) {
+          if (notshowSeq) ref = ''
           title = `${prefix}${content}${ref}${tags}`
         }
       }

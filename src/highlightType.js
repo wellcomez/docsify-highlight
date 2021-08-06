@@ -11,7 +11,7 @@ import { getConfig } from "./ANoteConfig";
 import { hlIngoreElement } from "./hlPlacement";
 import { SubNode } from "./MainNode";
 const defaultColor = {};
-defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)", default_red, default_yellow];
+defaultColor[tBackgroundColor] = [default_green, "rgba(51,255,255,0.92)", default_red, default_yellow,"rgba(96, 125, 139, 0.22)","rgba(255, 255, 255, 0.1)"];
 defaultColor[tUl] = ["red", "green", "yellow"];
 defaultColor[tfontColor] = ["red", "black", "green", "white"];
 
