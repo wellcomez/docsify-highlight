@@ -2,7 +2,7 @@ import Highlighter from 'web-highlighter';
 import { Book } from './store';
 import { User } from "./UserLogin";
 import { log } from "./log";
-// import { getIntersection } from "./hl"
+import Vue from 'vue';
 import { getConfig } from './ANoteConfig';
 import { mountCmp, insertComponentAfter, parseurl, queryBox } from './utils';
 import NoteMenu from './components/NoteMenu.vue'
@@ -893,9 +893,14 @@ export class DocHighlighter {
                     return
                 }
             }
-            let b = document.getElementsByClassName('content')[0]
-            let pp = getPosition(b)
-            mountCmp(ScrollMark, { id, hl: this, left: pp.left + 10, top }, document.body);
+            let pos = { left: -30, top }
+            let el = document.querySelector(".scollposion")
+            if (this.scrollMarker&&el) {
+                Vue.set(this.scrollMarker, "id", id)
+                Vue.set(this.scrollMarker, "pos", pos)
+            } else {
+                this.scrollMarker = mountCmp(ScrollMark, { id, pos }, this.$root);
+            }
         }
     }
     getTopElement = (hs) => {
