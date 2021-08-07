@@ -451,13 +451,14 @@ class Chapter {
     if (this.children.length == 0) return "\n"
     let children = this.mergeChild()
     let oldTabs = undefined
-    let items = children.map((a, idx) => {
+    let seq = 1
+    let items = children.map((a) => {
       let { notshowSeq } = a
       let content = getTitle(a)
       let tags = getTags(a);
       let img = getImage(a)
       let note = getNote({ ...a, tabs: oldTabs })
-      let ref = getRef(a, idx + 1)
+      let ref = getRef(a, seq)
       let pp = getPrefix({ ...a, tabs: oldTabs })
       let { prefix } = pp
       oldTabs = pp.tabs
@@ -470,7 +471,12 @@ class Chapter {
           img = `${prefix}${img}${tags}`
         }
         if (content) {
-          if (notshowSeq) ref = ''
+          if (notshowSeq) {
+            ref = ''
+          }
+          else {
+            seq = seq + 1
+          }
           title = `${prefix}${content}${ref}${tags}`
         }
       }

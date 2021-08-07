@@ -13,7 +13,7 @@
       :on="disabled"
     />
     <ButtonGroup slot="content" vertical>
-      <Button v-for="name in list" :key="name" @click="onOption(name)">{{
+      <Button v-for="name in list" :key="name" @click="onOption($event,name)">{{
         name
       }}</Button>
     </ButtonGroup>
@@ -52,7 +52,8 @@ export default {
     clickoutside() {
       this.disabled = true;
     },
-    onOption(name) {
+    onOption(e,name) {
+      e.stopPropagation();
       this.disabled = true;
       if (this.onSelect) {
         this.onSelect(name);
