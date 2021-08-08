@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "jsdelivr": [
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
@@ -36,6 +36,7 @@
     "dist/img"
   ],
   "dependencies": {
+    "@toast-ui/vue-editor": "^3.0.2",
     "clipboard-copy": "^4.0.1",
     "color-alpha": "^1.1.2",
     "color-rgba": "^2.2.3",

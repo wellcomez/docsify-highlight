@@ -30,6 +30,7 @@
           :onSelect="onSelect"
           content="Export"
           :list="explortList"
+          :menu="explortMenu"
         />
       </Col>
       <Col>
@@ -89,12 +90,11 @@
         </TabPane>
       </Tabs>
     </Row>
-    <Drawer
-      class="drawer-exporthtml"
-      :width="80"
-      v-model="showPreview"
-    >
+    <Drawer class="drawer-exporthtml" :width="80" v-model="showPreview">
       <ExportHtml :charpter="exportCharpter"></ExportHtml>
+    </Drawer>
+    <Drawer scrollable title="preview" v-model="showMarkDown" :width="90">
+      <PreviewMarkEditor :hl="hl"></PreviewMarkEditor>
     </Drawer>
     <SettingSideBar
       :cloudOn="cloudOn"
@@ -200,8 +200,22 @@
 </style>
 
 <script>
+function downloadHtml() {
+  let json = new Book().exportHtml();
+  funDownload(json, window.$docsify.name + ".html");
+}
+function downloadMD() {
+  let md = new Book().md();
+  funDownload(md, window.$docsify.name + ".md");
+}
+
+function downloadJson() {
+  let json = new Book().jsonstr();
+  funDownload(json, window.$docsify.name + ".json");
+}
 // eslint-disable-next-line no-unused-vars
 import { Book } from "../store";
+import PreviewMarkEditor from "./PrevMarkEditor";
 import { Drawer } from "iview";
 import ExportHtml from "./ExportHtml";
 import SettingSideBar from "./SettingSideBar";
@@ -228,6 +242,7 @@ import { getConfig } from "../ANoteConfig";
 export default {
   components: {
     Drawer,
+    PreviewMarkEditor,
     ExportHtml,
     NoteSiderBar,
     PopSvgButton,
@@ -285,8 +300,57 @@ export default {
   },
   data() {
     return {
+      showMarkDown: false,
       showPreview: false,
-      explortList: ["json", "md", "md(章)", "html", "preview"],
+      explortList: [],
+      // explortList: ["json", "md", "md(章)", "html", "preview","preview-markdown"],
+      explortMenu: [
+        {
+          name: "html",
+          items: [
+            {
+              name: "preview",
+              action: () => {
+                this.showPreview = true;
+              },
+            },
+            {
+              name: "download",
+              action: downloadHtml,
+            },
+          ],
+        },
+        {
+          name: "md",
+          items: [
+            {
+              name: "preview",
+              action: () => {
+                this.showMarkDown = true;
+              },
+            },
+            {
+              name: "download",
+              action: downloadMD,
+            },
+            {
+              name: "chapter",
+              action: () => {
+                this.downloadMDChpapter();
+              },
+            },
+          ],
+        },
+        {
+          name: "json",
+          items: [
+            {
+              name: "download",
+              action: downloadJson,
+            },
+          ],
+        },
+      ],
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
@@ -336,6 +400,11 @@ export default {
     },
   },
   methods: {
+    downloadMDChpapter() {
+      const newLocal = this.hl.store.Chapter();
+      let md = newLocal.md();
+      funDownload(md, newLocal.label + ".md");
+    },
     onChange() {
       this.checked = this.checked == false;
       this.hl.enable(this.checked);
@@ -408,6 +477,8 @@ export default {
       } else if (name == "preview") {
         this.showPreview = true;
         return;
+      } else if (name == "preview-markdown") {
+        this.showMarkDown = true;
       }
     },
   },
