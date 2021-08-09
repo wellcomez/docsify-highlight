@@ -1,5 +1,5 @@
 <template>
-  <Editor :initialValue="initialValue" height="800px" />
+  <Editor :initialValue="initialValue" :key="key" class="markdown-editor" />
 </template>
 <script>
 import { Editor } from "@toast-ui/vue-editor";
@@ -11,21 +11,17 @@ export default {
   watch: {
     hl(a) {
       let md = getmd(a);
-      this.editorText = md;
+      this.initialValue = md;
+      this.key = a.store.title;
     },
   },
   data() {
     return {
-      viewerText: getmd(this.hl),
+      key: undefined,
       initialValue: getmd(this.hl),
-      editorText: "This is initialValue.",
     };
   },
-  mounted() {
-    if (this.hl) {
-      this.editorText = getmd(this.hl);
-    }
-  },
+  mounted() {},
   props: {
     hl: {
       type: Object,
@@ -35,6 +31,9 @@ export default {
 };
 
 function getmd(a) {
+  if (!a) {
+    return "";
+  }
   const newLocal = a.store.Chapter();
   let md = newLocal.md();
   return md;
@@ -44,8 +43,9 @@ function getmd(a) {
 @import "../../node_modules/@toast-ui/editor/dist/toastui-editor.css";
 </style>
 <style scoped>
-.mark-viewer {
+.markdown-editor {
   margin-left: 10px;
   margin-right: 10px;
+  height: 100% !important;
 }
 </style>
