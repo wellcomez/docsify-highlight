@@ -237,7 +237,7 @@ function findSameParts(str1, str2, options = {}) {
 }
 
 export function pluginScript() {
-  let { DocHighlighter } = window.$docsify ? window.$docsify : undefined;
+  let { DocHighlighter } = window.$docsify ? window.$docsify : {};
   if (DocHighlighter) {
     let { script } = DocHighlighter
     if (script)
