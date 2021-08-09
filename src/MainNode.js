@@ -1,3 +1,5 @@
+import { trimstring } from "./hlPlacement"
+
 export class SubNode {
     constructor(el) {
         let { highlightId, highlightIdExtra, highlightSplitType } = el.dataset ? el.dataset : {}
@@ -68,15 +70,27 @@ export class MainNode {
         this.existIds = Array.from(new Set(this.existIds));
         this.text = this.getNodeText(this.nodes);
     }
+    isConverted() {
+        let { id } = this;
+        let a = this.nodes.find((node) => {
+            let sub = new SubNode(node)
+            let { highlightId } = sub;
+            if (id == highlightId) {
+                return trimstring(node.textContent)>0
+            }
+        })
+        return a != undefined
+    }
     childIdList() {
         let { id } = this;
-        return this.highlighter.getDoms(id).reduce((ret, node) => {
+        let ret = this.nodes.reduce((ret, node) => {
             let sub = new SubNode(node);
             if (sub.highlightId != id) {
-                ret.push(sub.highlightId);
+                ret.add(sub.highlightId);
             }
             return ret;
-        }, []);
+        }, new Set());
+        return Array.from(ret)
     }
     parentIdList() {
         let main = this.findMainNode();

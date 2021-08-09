@@ -423,8 +423,11 @@ export class DocHighlighter {
             store.remove(id);
         }
         removid(id);
-        if (sub)
-            childList.forEach((id) => removid(id))
+        if (sub) {
+            if (mainNode.isConverted()) {
+                childList.forEach((id) => removid(id))
+            }
+        }
 
         parentList.forEach((id) => {
             let hs = this.hsbyid(id)
@@ -472,7 +475,7 @@ export class DocHighlighter {
                 let currentNode = this.MainNode(id)
                 this.highlightIdSet.add(id)
                 let hhs = this.hsbyid(id)
-                let { note, bookmark, nodetree, version, parent } = hhs
+                let { note, bookmark, nodetree, parent } = hhs
                 this.renderHS(hhs)
 
 
@@ -492,11 +495,11 @@ export class DocHighlighter {
                 if (this.parseurlResult.noteid == id) {
                     this.scollTopID(id);
                 }
-                let default_tree_version = get_default_tree_version()
-                if (version != default_tree_version) {
-                    let { tree } = this.getHtml(id)
-                    this.store.update({ id, tree, version: default_tree_version })
-                }
+                // let default_tree_version = get_default_tree_version()
+                // if (version != default_tree_version) {
+                //     let { tree } = this.getHtml(id)
+                //     this.store.update({ id, tree, version: default_tree_version })
+                // }
             }
             creatFromStore = creatFromStore.bind(this);
             sources.forEach((hs) => {
@@ -895,7 +898,7 @@ export class DocHighlighter {
             }
             let pos = { left: -30, top }
             let el = document.querySelector(".scollposion")
-            if (this.scrollMarker&&el) {
+            if (this.scrollMarker && el) {
                 Vue.set(this.scrollMarker, "id", id)
                 Vue.set(this.scrollMarker, "pos", pos)
             } else {
