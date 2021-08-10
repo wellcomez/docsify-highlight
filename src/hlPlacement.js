@@ -185,7 +185,7 @@ export let getNodeMatchTextBackword = (el, text,) => {
                     }
                     if (match) {
                         if (selectedNodes.length == 0) {
-                            let textOffset = getKK(trimContent.length - 1, curNode.textContent)
+                            let textOffset = getKK(trimContent.length, curNode.textContent)
                             endIndex = { ...endIndex, index, curNode, textOffset }
                         }
                         left = left.substring(0, index)
