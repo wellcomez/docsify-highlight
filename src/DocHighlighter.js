@@ -15,6 +15,7 @@ import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
 import { convertHight2Html } from './converDom2Html';
 import { MainNode, cmpNodePosition, SubNode, main_node_contain, getPosition } from './MainNode';
+import { getIntersection } from './hl';
 export let get_default_tree_version = () => {
     return '0.60.3-' + getConfig().enableScript()
 }
@@ -276,21 +277,17 @@ export class DocHighlighter {
             }
             this.createNoteMenu(node)
         };
-        let { $root } = this;
-        let a = new Highlighter({
-            $root,
-            wrapTag: 'i',
-            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.charpterhtml'],
-            style: {
-                className: 'docsify-highlighter'
-            }
-        });
+        let a = this.newHighlighter();
         this.highlighter = a;
+        
+        this.highlighterLoad = this.newHighlighter();
+        this.highlighterLoad.on(Highlighter.event.CREATE, this.onCreate.bind(this));
+
         this.hsPlacement = new hlPlacement(this)
         a.on(Highlighter.event.HOVER, this.onHover.bind(this));
         a.on(Highlighter.event.HOVER_OUT, this.onHoverOut.bind(this));
         // a.on(Highlighter.event.REMOVE, this.onRemove.bind(this));
-        a.on(Highlighter.event.CREATE, this.onCreate.bind(this));
+        a.on(Highlighter.event.CREATE, this.onCreateSelect.bind(this));
         a.on(Highlighter.event.CLICK, onClick);
         this.highlightIdSet = new Set()
         a.hooks.Render.WrapNode.tap((id, selectedNodes) => {
@@ -315,32 +312,45 @@ export class DocHighlighter {
             return selectedNodes
         });
         let self = this
-        a.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
-            if (selectedNodes.length === 0) {
-                return [];
-            }
-            selectedNodes = selectedNodes.filter((selected) => {
-                try {
-                    let parent = selected.$node.parentNode;
-                    const ingoreElement = (parent) => {
-                        if (parent) {
-                            if (parent.classList) {
-                                let a = ['notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a))
-                                if (a) return true
-                            }
-                            if (parent.style.display == 'none')
-                                return true
+        const filterSelectedNotes = (selectedNodes) => selectedNodes.filter((selected) => {
+            try {
+                let parent = selected.$node.parentNode;
+                const ingoreElement = (parent) => {
+                    if (parent) {
+                        if (parent.classList) {
+                            let a = ['notemarker', 'note-inline-tooltiptext'].find((a) => parent.classList.contains(a))
+                            if (a) return true
                         }
-                        return false;
+                        if (parent.style.display == 'none')
+                            return true
                     }
-                    if (ingoreElement(parent) || ingoreElement(selected.$node)) {
-                        return false;
-                    }
-                    // eslint-disable-next-line no-empty
-                } catch (error) {
+                    return false;
                 }
-                return true
-            })
+                if (ingoreElement(parent) || ingoreElement(selected.$node)) {
+                    return false;
+                }
+                // eslint-disable-next-line no-empty
+            } catch (error) {
+            }
+            return true
+        })
+
+        this.highlighter.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
+            selectedNodes = filterSelectedNotes(selectedNodes)
+            if (selectedNodes.length) {
+                let last = selectedNodes[selectedNodes.length - 1]
+                if (selectedNodes.length > 1) {
+                    if (last.splitType != 'tail') {
+                        if (last.splitType == 'both' && selectedNodes.length == 1) {
+                            return selectedNodes
+                        }
+                    }
+                }
+            }
+            return selectedNodes;
+        });
+        this.highlighterLoad.hooks.Render.SelectedNodes.tap((id, selectedNodes) => {
+            selectedNodes = filterSelectedNotes(selectedNodes)
             if (selectedNodes.length) {
                 let last = selectedNodes[selectedNodes.length - 1]
                 if (selectedNodes.length > 1) {
@@ -362,27 +372,21 @@ export class DocHighlighter {
                 }
             }
             try {
-                // const candidates = selectedNodes.slice(1).reduce(
-                //     (left, selected) => getIntersection(left, this.getIds(selected)),
-                //     this.getIds(selectedNodes[0])
-                // );
-                // for (let i = 0; i < candidates.length; i++) {
-                //     if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
-                //         selectedNodes = [];
-                //         break;
-                //     }
-                // }
-                // if (selectedNodes.length == 0) {
-                //     let hs = self.store.geths(id)
-                //     if (hs) {
-                //         // console.error("selectedNodes-length==0", selectedNodes.length, hs.id, hs.text);
-                //     }
-                // }
-                return selectedNodes;
+                const candidates = selectedNodes.slice(1).reduce(
+                    (left, selected) => getIntersection(left, this.getIds(selected)),
+                    this.getIds(selectedNodes[0])
+                );
+                for (let i = 0; i < candidates.length; i++) {
+                    if (this.highlighter.getDoms(candidates[i]).length === selectedNodes.length) {
+                        selectedNodes = [];
+                        break;
+                    }
+                }
             } catch (error) {
                 console.error(error)
             }
-        });
+            return selectedNodes;
+        })
         // new hlPosition()
         // this.highlighter.hooks.Serialize.Restore.tap(
         //     source => log('Serialize.Restore hook -', source)
@@ -393,6 +397,18 @@ export class DocHighlighter {
         //     const extraInfo = Math.random().toFixed(4);
         //     return extraInfo;
         // });
+    }
+
+    newHighlighter() {
+        let { $root } = this;
+        return new Highlighter({
+            $root,
+            wrapTag: 'i',
+            exceptSelectors: ['.html-drawer', '.my-remove-tip', '.op-panel', '.charpterhtml'],
+            style: {
+                className: 'docsify-highlighter'
+            }
+        });
     }
 
     deleteId(id, store, sub = true) {
@@ -461,8 +477,8 @@ export class DocHighlighter {
         let hhs = this.hsbyid(id)
         this.renderHS(hhs)
     }
-    onCreate = (a) => {
-        let { sources, type } = a;
+    onCreateSelect = (a) => {
+        let { sources } = a;
         sources.forEach(hs => {
             try {
                 this.highlighter.addClass('docsify-highlighter', hs.id);
@@ -470,49 +486,56 @@ export class DocHighlighter {
             } catch (error) {
             }
         })
-        if (type == "from-store") {
-            let creatFromStore = ({ id }) => {
-                let currentNode = this.MainNode(id)
-                this.highlightIdSet.add(id)
-                let hhs = this.hsbyid(id)
-                let { note, bookmark, nodetree, parent } = hhs
-                this.renderHS(hhs)
 
-
-                if (parent == undefined) {
-                    parent = currentNode.parentIdList()
-                }
-                if (nodetree == undefined) {
-                    nodetree = this.hsPlacement.hsNodetree(hhs)
-                }
-                this.store.update({ ...{ id }, ...nodetree, parent })
-                if (note && note.length) {
-                    this.createMarkNode(id, note);
-                }
-                if (bookmark) {
-                    this.createBookmarkNode(id)
-                }
-                if (this.parseurlResult.noteid == id) {
-                    this.scollTopID(id);
-                }
-                // let default_tree_version = get_default_tree_version()
-                // if (version != default_tree_version) {
-                //     let { tree } = this.getHtml(id)
-                //     this.store.update({ id, tree, version: default_tree_version })
-                // }
+        this.onHandleSelecttion(sources)
+    }
+    onCreate = (a) => {
+        let { sources} = a;
+        sources.forEach(hs => {
+            try {
+                this.highlighter.addClass('docsify-highlighter', hs.id);
+                // eslint-disable-next-line no-empty
+            } catch (error) {
             }
-            creatFromStore = creatFromStore.bind(this);
-            sources.forEach((hs) => {
-                try {
-                    creatFromStore(hs)
-                } catch (error) {
-                    console.error(error);
-                }
-            })
-            this.updatePanel()
-        } else {
-            this.onHandleSelecttion(sources)
+        })
+        let creatFromStore = ({ id }) => {
+            let currentNode = this.MainNode(id)
+            this.highlightIdSet.add(id)
+            let hhs = this.hsbyid(id)
+            let { note, bookmark, nodetree, parent } = hhs
+            this.renderHS(hhs)
+
+
+            if (parent == undefined) {
+                parent = currentNode.parentIdList()
+            }
+            if (nodetree == undefined) {
+                nodetree = this.hsPlacement.hsNodetree(hhs)
+            }
+            this.store.update({ ...{ id }, ...nodetree, parent })
+            if (note && note.length) {
+                this.createMarkNode(id, note);
+            }
+            if (bookmark) {
+                this.createBookmarkNode(id)
+            }
+            if (this.parseurlResult.noteid == id) {
+                this.scollTopID(id);
+            }
+            // if (version != default_tree_version) {
+            //     let { tree } = this.getHtml(id)
+            //     this.store.update({ id, tree, version: default_tree_version })
+            // }
         }
+        creatFromStore = creatFromStore.bind(this);
+        sources.forEach((hs) => {
+            try {
+                creatFromStore(hs)
+            } catch (error) {
+                console.error(error);
+            }
+        })
+        this.updatePanel()
     };
 
     onHandleSelecttion(sources) {
@@ -705,7 +728,7 @@ export class DocHighlighter {
     fixid(id) {
         let hs = this.hsbyid(id)
         hs = this.hsPlacement.fix(hs);
-        this.highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+        this.highlighterLoad.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
     }
     hsNodetree(id, hs) {
         return this.hsPlacement.hsNodetree(id, hs)
@@ -749,7 +772,6 @@ export class DocHighlighter {
     })
     load = (loaded) => {
         if (loaded) {
-            let { highlighter } = this;
             const storeInfos = this.allhs();
             const storeInfosImg = this.storeInfosImg(storeInfos)
             storeInfos.forEach(
@@ -771,7 +793,7 @@ export class DocHighlighter {
                         }
                     } else {
                         hs = this.checkHS(hs)
-                        highlighter.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
+                        this.highlighterLoad.fromStore(hs.startMeta, hs.endMeta, hs.text, hs.id, hs.extra)
                     }
                 }
             );
