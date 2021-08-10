@@ -33,6 +33,7 @@ export let trimstring = (s) => {
     let ret = s.replace(regexpNoSpace, '')
     return ret.replaceAll("\n", '')
 }
+// eslint-disable-next-line no-unused-vars
 const getPrevOrPrevParent = (parent) => {
     if (parent) {
         let ret = parent.previousSibling
@@ -661,12 +662,11 @@ export class hlPlacement {
             if (el == undefined) continue
             let elText = trimstring(el.textContent).replaceAll("\n", "")
             if (elText.indexOf(firstText) != -1) {
-                // eslint-disable-next-line no-unused-vars
                 let result = getNodeMatchTextForward(el, text)
                 if (result) {
                     let left = text.substring(0, result.matchIndex)
                     if (left) {
-                        let prev = getPrevOrPrevParent(el)
+                        let prev = el;
                         if (prev) {
                             let back = getNodeMatchTextBackword(prev, left)
                             if (back && back.beginElement) {
