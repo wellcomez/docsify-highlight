@@ -340,6 +340,10 @@ export let getNodeMatchTextForward = (el, text,) => {
     if (selectedNodes.length) {
         let endElement = selectedNodes[selectedNodes.length - 1]
         let beginElement = selectedNodes[0]
+        let trimContent = trimstring(endElement.textContent)
+        let curNode = endElement
+        let textOffset = getKK(trimContent.length, curNode.textContent)
+        endIndex = { ...endIndex, textOffset }
         return { selectedNodes, matchIndex, beginElement, endElement, findtext, beginIndex, endIndex }
     }
     return
@@ -672,15 +676,7 @@ export class hlPlacement {
                         }
                     }
                     let bbb = this.converTextNode2Meta(result, text, hs);
-                    let { beginElement, endElement } = result
-                    let { startMeta, endMeta } = bbb;
-                    if (!endMeta)
-                        endMeta = this.getMeta(endElement)
-                    if (!startMeta)
-                        startMeta = this.getMeta(beginElement)
-                    let ret = this.updateParentIndex([startMeta, endMeta], hs)
-                    if (ret) return ret
-                    return { ...hs, startMeta, endMeta }
+                    return this.mergeHS({...result,...bbb},hs)
                 }
             }
         }
@@ -876,19 +872,24 @@ export class hlPlacement {
                 if (a) {
                     let { beginElement, endElement } = a
                     let bbb = this.converTextNode2Meta(a, text, hs)
-                    let { startMeta, endMeta } = bbb;
-                    if (!endMeta)
-                        endMeta = this.getMeta(endElement)
-                    if (!startMeta)
-                        startMeta = this.getMeta(beginElement)
-                    let ret = this.updateParentIndex([startMeta, endMeta], hs)
-                    if (ret) return ret
-                    return { ...hs, startMeta, endMeta }
+                    return this.mergeHS({ ...bbb, beginElement, endElement }, hs)
                 }
             }
         }
         if (rc) { return rc }
         return undefined
+    }
+    mergeHS = ({ startMeta, endMeta, beginElement, endElement }, hs) => {
+        if (startMeta && endMeta) {
+            return { ...hs, startMeta, endMeta }
+        }
+        if (!endMeta)
+            endMeta = this.getMeta(endElement)
+        if (!startMeta)
+            startMeta = this.getMeta(beginElement)
+        let ret = this.updateParentIndex([startMeta, endMeta], hs)
+        if (ret) return ret
+        return { ...hs, startMeta, endMeta }
     }
     getMeta = (el) => {
         if (el.nodeType == 3) {
