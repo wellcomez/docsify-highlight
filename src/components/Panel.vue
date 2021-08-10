@@ -94,7 +94,7 @@
       <ExportHtml :charpter="exportCharpter"></ExportHtml>
     </Drawer>
     <Drawer scrollable title="preview" v-model="showMarkDown" :width="90">
-      <PreviewMarkEditor :hl="hl"></PreviewMarkEditor>
+      <PreviewMarkEditor v-if="showMarkDown" :hl="hl"></PreviewMarkEditor>
     </Drawer>
     <SettingSideBar
       :cloudOn="cloudOn"
