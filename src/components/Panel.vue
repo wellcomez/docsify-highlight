@@ -354,7 +354,7 @@ export default {
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
-      showexport: isMobile() ? false : true,
+      showexport:  true,
       bDrawerOpen: false,
       uername: undefined,
       collapsed: false,

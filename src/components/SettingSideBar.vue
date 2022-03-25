@@ -45,7 +45,7 @@ import hlinit from "../hl";
 import { Drawer } from "iview";
 import Account from "./Account";
 import { getConfig } from "../ANoteConfig";
-import isMobile from "_is-mobile@3.0.0@is-mobile";
+import isMobile from "is-mobile";
 import { Upload } from "iview";
 import { Book } from "../store";
 import { msg } from "./msgbox";

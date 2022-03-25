@@ -112,6 +112,6 @@ async function getBookRemoteID(book) {
     const query = new AV.Query(name);
     query.limit(1)
     // query.equalTo("toc.userid", "userid")
-    query.descending('createdAt');
+    query.descending('updatedAt');
     return query.find();
 }

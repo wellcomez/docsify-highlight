@@ -48,32 +48,93 @@
           }
         }
       })
-      let old = document.querySelector('subContent')
-      if (old) {
-        old.parentElement.removeChild(old)
+      function removeElement(el) {
+        let old = document.querySelector(el)
+        if (old) {
+          old.parentElement.removeChild(old)
+        }
       }
-      let ul = document.createElement('ul')
-      ul.classList.add('subContent')
-      Array.apply(null, document.querySelectorAll(".pydocx-center a")).filter((a) => {
-        return a.querySelector('strong')
-      }).map((a) => {
-        let aa = a.cloneNode(true)
-        aa.href = "javascript:void(0)"
-        aa.addEventListener('click', () => {
-          a.scrollIntoView()
+      function zoombtn(ul) {
+        let button = document.createElement('a')
+        button.innerText = ul.style.display == 'none' ? '+' : '-'
+        button.addEventListener('click', (e) => {
+          e.stopPropagation()
+          ul.style.display = ul.style.display == 'none' ? 'block' : 'none';
+          button.innerText = ul.style.display == 'none' ? '+' : '-'
         })
-        let li = document.createElement('li')
-        li.appendChild(aa)
-        return li
-      }).forEach((a) => {
-        ul.appendChild(a)
-      })
+        return button
+      }
+      function contentList() {
+        removeElement('.subContent')
+        let ul = document.createElement('ul')
+        let button = zoombtn(ul)
+        ul.classList.add('.subContent')
+        Array.apply(null, document.querySelectorAll(".pydocx-center a")).filter((a) => {
+          let blog = a.href.indexOf('blog_486e105c') != -1
+          if (blog) {
+            return a.querySelector('strong')
+          }
+          return false
+        }).map((a) => {
+          let aa = a.cloneNode(true)
+          aa.href = "javascript:void(0)"
+          aa.addEventListener('click', () => {
+            a.scrollIntoView()
+          })
+          let li = document.createElement('li')
+          li.appendChild(aa)
+          return li
+        }).forEach((a) => {
+          ul.appendChild(a)
+        })
+        return [button, ul]
+      }
+      function getNoteList() {
+        removeElement('subNote')
+        let ul = document.createElement('ul');
+        let button = zoombtn(ul)
+        ul.style = "margin-left: 50px"
+        ul.classList.add('subNote');
+        Array.from(Array.apply(null, document.querySelectorAll('p span')).filter((a) => a.style.color == "rgb(255, 0, 0)").reduce((ret, a) => { ret.add(a.parentElement); return ret; }, new Set())).map((p) => {
+          let node = Array.apply(null, p.querySelectorAll('span')).find((a) => {
+            if (a.style.color == "rgb(255, 0, 0)") {
+              return a
+            }
+          });
+          let count = Array.apply(null, p.querySelectorAll('span')).filter((a) => {
+            return (a.style.color == "rgb(255, 0, 0)")
+          }).length;
+          return { node, count }
+        }).map(({ node, count }, idx) => {
+          let aa = node.cloneNode(true);
+          let ttt = aa.innerText.replace(new RegExp("\\s", "g"), '')
+          aa.innerText = ttt
+          aa.href = "javascript:void(0)";
+          aa.addEventListener('click', () => {
+            node.scrollIntoView();
+          });
+          let li = document.createElement('li');
+          li.style = "list-style: decimal;"
+          li.appendChild(aa);
+          return li;
+        }).forEach((a) => {
+          ul.appendChild(a);
+        });
+        return [button, ul];
+      }
       let cotentList = Array.apply(null, document.querySelectorAll('.sidebar-nav>ul li'))
       let li = cotentList.find((a) => {
         return a.innerText == document.title
       })
-      if (li == undefined) li = document.createElement('.sidebar-nav>ul li.active')
-      li.appendChild((ul))
+      if (li == undefined) li = document.querySelector('.sidebar-nav>ul li.active')
+      if (li) {
+        contentList().forEach((a) => {
+          li.appendChild((a))
+        })
+        getNoteList().forEach((a) => {
+          li.appendChild(a)
+        })
+      }
     }
     let getnum = (s) => {
       try {
