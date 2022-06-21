@@ -14,6 +14,7 @@ import TagPanel from './TagPanel'
 import BackgroudSelector from './BackgroudSelector'
 import DropColor from './DropColor'
 import { highlightType } from "../highlightType";
+import { getContentNode } from "../hl";
 export const NoteMenu = {
     name: "NoteMenu",
     components: {
@@ -182,7 +183,8 @@ export const NoteMenu = {
         },
         menuLeft() {
             if (window.screen.availWidth < 450) return "0px";
-            const content = document.querySelector(".content");
+            const content = getContentNode()
+            // document.querySelector(".content");
             let panelLeft = this.left
             let el = document.querySelector('.my-remove-tip')
             if (el) {
@@ -317,7 +319,7 @@ export const NoteMenu = {
         },
         onClickMask(e) {
             e.stopPropagation();
-            let mask = document.getElementsByClassName("note-menu")[0];
+            let mask = document.querySelectorAll(".note-menu")[0];
             if (mask != e.target) return;
             this.removeSelectionHighLight();
             this.removeMenu();
@@ -332,7 +334,7 @@ export const NoteMenu = {
         },
         removeMenu() {
             this.onCloseMenu()
-            var tips = document.getElementsByClassName("note-menu");
+            var tips = document.querySelectorAll(".note-menu");
             tips.forEach((tip) => {
                 tip.parentNode.removeChild(tip);
             });

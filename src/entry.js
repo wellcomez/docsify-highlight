@@ -32,10 +32,10 @@ export function install(hook, vm) {
 }
 try {
   window.$docsify.plugins = (window.$docsify.plugins || []).concat(install)
-  window.hlinit = hlinit
-  // eslint-disable-next-line no-empty
 } catch (error) {
+  console.error(error)
 }
+window.hlinit = hlinit
 export default {
   Panel, Note: NoteMenu 
 }

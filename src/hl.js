@@ -54,7 +54,7 @@ function hlinit() {
     }
     let hl = new DocHighlighter();
     window.hl = hl;
-    var main = document.getElementsByClassName('content')[0]
+    var main = getContentNode()
     // eslint-disable-next-line no-unused-vars
     let { vm } = window;
     let { changeNumber } = getChanged()
@@ -82,6 +82,12 @@ function hlinit() {
         Vue.set(vm, "seq", seq);
         getConfig().save({ changeNumber })
     }
+}
+export function getContentNode() {
+    let {content} =  window.$docsify
+    if(content==undefined)
+        content ='.content'
+    return document.querySelector(content)
 }
 export default hlinit
 

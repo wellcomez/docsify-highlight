@@ -66,7 +66,22 @@ export function getQueryObject(url) {
   });
   return obj;
 }
+export function hexourl(url) {
+  let a = new URL(url ? url : window.location.href);
+  let path = a.pathname
+  let obj = getQueryObject(url);
+  let { noteid } = obj;
+  return { path, noteid }
+}
+export function ishexo() {
+  let { hexo } = window.$docsify
+  return hexo
+}
 export function parseurl(url) {
+  let hexo = ishexo()
+  if (hexo) {
+    return hexourl(url)
+  }
   let obj = getQueryObject(url);
   url = new URL(url ? url : window.location.href);
   let hash = url.hash
@@ -104,6 +119,8 @@ export function gotoNote({ path, id, key }) {
   if (current && current.path == path) {
     // document.location.hash = hash;
     scollTopID(id);
+  } else if (ishexo()) {
+    document.location.href = path;
   } else {
     let hash = path ? path.substring(path.indexOf("#")) : undefined;
     if (hash) {
