@@ -1,3 +1,7 @@
+:root {
+  --theme-color: #42b983
+}
+
 .highlight-wrap-hover {
   background: lightcyan;
   /* background: transparent; */
