@@ -33,7 +33,7 @@
 <script>
 var isMobile = require('is-mobile');
 
-const svgcolor_on = "#42b983";
+const svgcolor_on = "var(--theme-color, #42b983)";
 const svgcolor_off = "";
 export default {
   name: "SvgButton",

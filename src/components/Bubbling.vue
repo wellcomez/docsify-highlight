@@ -27,7 +27,7 @@
         :key="name"
       >
         <template slot="title">
-          <Icon type="ios-paper" style="color: #42b983" />
+          <Icon type="ios-paper" style="color: var(--theme-color, #42b983);" />
           {{ name }}
         </template>
         <MenuItem

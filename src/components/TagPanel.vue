@@ -33,7 +33,7 @@
 }
 .tagpane {
   background: white;
-  border: 1px solid #3fb07c;
+  border: 1px solid var(--theme-color, #42b983);
   border-radius: 3px;
   height: 300px;
   overflow: scroll;

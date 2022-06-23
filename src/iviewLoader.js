@@ -1,4 +1,5 @@
 import './styles/iview.css';
+import "./assets/web.css";
 import Vue from 'vue';
 import { Dropdown,ButtonGroup, RadioGroup, Radio, Form, FormItem, CellGroup, Cell, Card, Tag, Tooltip, Notice, Tree, Poptip, Button, ColorPicker, Input, Badge, Row, Col, Icon, Tabs, TabPane } from 'iview';
 // import './my-theme.less';

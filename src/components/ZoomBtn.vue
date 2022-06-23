@@ -4,7 +4,7 @@
     :type="name"
     size="20"
     class="imgzoombtn"
-    style="margin-top: 0px;color: #42b983;"
+    style="margin-top: 0px;color: var(--theme-color, #42b983);"
     @click="onzoom"
   />
 </template>
