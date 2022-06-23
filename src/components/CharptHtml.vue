@@ -389,7 +389,7 @@ export default {
   margin-left: 10%;
   margin-right: 10%;
   .linefocus {
-    border: 1px solid @primary-color;
+    border: 1px solid var(--theme-color, #42b983);
     padding: 4px;
     border-radius: 2px;
     background-color: white;
@@ -398,10 +398,10 @@ export default {
   }
   a {
     text-decoration: none;
-    color: @primary-color;
+    color: var(--theme-color, #42b983);
   }
   .ivu-icon {
-    color: @primary-color;
+    color: var(--theme-color, #42b983);
   }
   i {
     font-style: normal;
@@ -422,7 +422,7 @@ export default {
 // html-img-hover {
 //   display: block;
 //   width: 60%;
-//   border: 1px solid @primary-color;
+//   border: 1px solid var(--theme-color, #42b983);
 //   margin: 2px;
 // }
 .sub-title {
@@ -446,16 +446,16 @@ span.sub-tag {
   font-weight: normal;
   padding-right: 2px;
   padding-left: 2px;
-  background-color: @primary-color;
+  background-color: var(--theme-color, #42b983);
   color: white;
   border-radius: 3px;
 }
 .zoom-icon {
   margin-top: 0px;
-  color: @primary-color;
+  color: var(--theme-color, #42b983);
 }
 .outline-title {
-  border-left: 2px solid @primary-color;
+  border-left: 2px solid var(--theme-color, #42b983);
   margin-left: 4px;
   padding-left: 4px;
   margin-top: 2px;

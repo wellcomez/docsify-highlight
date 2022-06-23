@@ -165,10 +165,10 @@ export default {
   }
   a {
     text-decoration: none;
-    color: @primary-color;
+    color: var(--theme-color, #42b983);
   }
   li {
-    color: @primary-color;
+    color: var(--theme-color, #42b983);
   }
   ul {
     margin: 10px;
