@@ -23,9 +23,10 @@
 
 ## Use CDN directly
 
-   `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-highlight@latest/docsify-highlight.min.css">`
+    
+   `<link rel="stylesheet" href="https://unpkg.com/docsify-highlight@latest/dist/docsify-highlight.css">`
 
-   `<script src="https://cdn.jsdelivr.net/npm/docsify-highlight@latest/docsify-highlight.umd.min.js"></script>`
+   ` <script src="https://unpkg.com/docsify-highlight@latest/dist/docsify-highlight.umd.min.js"></script>`
 
 ## Optional usage
 

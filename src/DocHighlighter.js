@@ -137,9 +137,14 @@ export class DocHighlighter {
 
 
     constructor() {
-        this.$root = document.querySelector('article')
-        // this.$root = document.querySelector('article')
-        this.innerText = document.querySelector('article').innerText
+        let{articleSelector} =  window.$docsify
+        if(articleSelector){
+            this.$root = articleSelector()
+            this.innerText = this.$root.innerText
+        }else{
+            this.$root = document.querySelector('article')
+            this.innerText = document.querySelector('article').innerText
+        }
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
