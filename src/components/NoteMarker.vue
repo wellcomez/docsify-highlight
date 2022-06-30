@@ -11,11 +11,11 @@
       placement="right"
     >
       <sup>
-        <Icon type="md-create" style="color: var(--theme-color, #42b983)" />
+        <Icon type="md-create" style="color: var(--theme-color, blue)" />
       </sup>
     </Tooltip> -->
     <sup>
-      <Icon type="md-create" style="color: var(--theme-color, #42b983)" @click="hidden=hidden!=true"/>
+      <Icon type="md-create" style="color: var(--title-color, #8d8d8d)" @click="hidden=hidden!=true"/>
     </sup>
     <TipsInline v-if="hidden == false" :tip="content" style="margin:2px"></TipsInline>
   </span>

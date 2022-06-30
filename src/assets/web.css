@@ -1,5 +1,6 @@
 :root {
-  --theme-color: #42b983
+  --theme-color: #42b983;
+  --title-color: #8d8d8d
 }
 
 .highlight-wrap-hover {
