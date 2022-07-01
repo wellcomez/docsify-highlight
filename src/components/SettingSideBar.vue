@@ -4,6 +4,7 @@
     :closable="false"
     v-model="open"
     :width="drawWidth"
+    :placement="placement"
   >
     <Account v-if="cloudOn" slot="header" style="width: 280px" />
     <div style="background: #f8f8f9; width: 280px">
@@ -71,6 +72,17 @@ export default {
       vesion: pkg.version,
       enableScript: getConfig().load().enableScript,
     };
+  },
+  computed: {
+    placement() {
+      try{
+        let {sidebar} =window.$docsify
+        if(sidebar)return sidebar
+      // eslint-disable-next-line no-empty
+      }catch (error) {
+      }
+      return "right"
+    }
   },
   watch: {
     open(a) {
