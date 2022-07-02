@@ -64,7 +64,7 @@ export class DocHighlighter {
         const position = getPosition(node);
         let { top, left } = position;
         removeTips();
-        let hs = hs = this.hsbyid(id)
+        let hs = this.hsbyid(id)
         if (hs == undefined) {
             if (sources && sources.length) {
                 hs = sources[0]
