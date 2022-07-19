@@ -224,8 +224,8 @@ export default {
       }
     },
     onCopy({ id, text }) {
-      let copy = getNoteUrl(id, this.charpter) + "\n\n" + text;
-      copyPasteBoard(copy);
+      // let copy = getNoteUrl(id, this.charpter) + "\n\n" + text;
+      copyPasteBoard(text);
       msg("拷贝", `${id}  [${text.length}]字`);
     },
     onChangeFocuse(e) {
