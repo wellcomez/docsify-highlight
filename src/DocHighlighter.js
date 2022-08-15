@@ -476,7 +476,7 @@ export class DocHighlighter {
             if (id) { url = decodeURI(id) }
         }
         let ret = url + "\n\n" + (text ? text : "")
-        copyPasteBoard(ret)
+        copyPasteBoard(text)
     }
     renderByID(id) {
         let hhs = this.hsbyid(id)
