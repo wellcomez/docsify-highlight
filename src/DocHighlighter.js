@@ -468,15 +468,16 @@ export class DocHighlighter {
     }
 
     onCopy(hs) {
-        let { text, id } = hs ? hs : {}
-        let url = "";
-        if (id) {
-            let charpter = this.store.Chapter();
-            id = charpter.url(id)
-            if (id) { url = decodeURI(id) }
-        }
-        let ret = url + "\n\n" + (text ? text : "")
-        copyPasteBoard(text)
+        // let { text, id } = hs ? hs : {}
+        // let url = "";
+        // if (id) {
+        //     let charpter = this.store.Chapter();
+        //     id = charpter.url(id)
+        //     if (id) { url = decodeURI(id) }
+        // }
+        // let ret = url + "\n\n" + (text ? text : "")
+        if(hs)
+        copyPasteBoard(hs.text)
     }
     renderByID(id) {
         let hhs = this.hsbyid(id)
