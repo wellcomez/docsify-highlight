@@ -562,6 +562,13 @@ export class Book {
       if (sorttoc) return sorttoc(a.label, b.label)
       return a.label.localeCompare(b.label, "zh");
     })
+    aaa = aaa.filter((a) => {
+      let { children } = a;
+      if (children && children.length) {
+        return true;
+      }
+      return false;
+    })
     return aaa
   }
   exportHtml() {
@@ -573,8 +580,8 @@ export class Book {
     let rootpath = rootPath()
     let tilte = this.name
     let dev = false;
-    let umdjs = dev ? "docsify-highlight.umd.js" :"https://unpkg.com/docsify-highlight@1.2.2/dist/docsify-highlight.umd.min.js"
-    let css = dev ? 'docsify-highlight.css' :"https://unpkg.com/docsify-highlight@1.2.2/dist/docsify-highlight.css"
+    let umdjs = dev ? "docsify-highlight.umd.js" : "https://unpkg.com/docsify-highlight@1.2.2/dist/docsify-highlight.umd.min.js"
+    let css = dev ? 'docsify-highlight.css' : "https://unpkg.com/docsify-highlight@1.2.2/dist/docsify-highlight.css"
     let ret = `<!DOCTYPE html>
 <html lang="en">
 <head>
