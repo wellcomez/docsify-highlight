@@ -15,7 +15,7 @@ import NoteImg from './components/NoteImg.vue'
 import { hlIngoreElement, hlPlacement } from './hlPlacement';
 import { convertHight2Html } from './converDom2Html';
 import { MainNode, cmpNodePosition, SubNode, main_node_contain, getPosition } from './MainNode';
-import { getIntersection } from './hl';
+import { getContentNode, getIntersection } from './hl';
 export let get_default_tree_version = () => {
     return '0.60.3-' + getConfig().enableScript()
 }
@@ -23,7 +23,7 @@ export let get_default_tree_version = () => {
 const copyPasteBoard = require('clipboard-copy')
 
 const removeTips = () => {
-    var tips = document.getElementsByClassName('note-menu');
+    var tips = document. querySelectorAll('.note-menu');
     tips.forEach(element => {
         element.parentNode.removeChild(element);
     });
@@ -52,7 +52,7 @@ export class DocHighlighter {
         return aa.length;
     }
     disableUserSelection(disable) {
-        var main = document.getElementsByClassName('content')[0]
+        var main = getContentNode()
         if (disable == false)
             main.classList.remove('disable-user-selection')
         else {
@@ -64,7 +64,7 @@ export class DocHighlighter {
         const position = getPosition(node);
         let { top, left } = position;
         removeTips();
-        let hs = hs = this.hsbyid(id)
+        let hs = this.hsbyid(id)
         if (hs == undefined) {
             if (sources && sources.length) {
                 hs = sources[0]
@@ -137,9 +137,14 @@ export class DocHighlighter {
 
 
     constructor() {
-        this.$root = document.querySelector('article')
-        // this.$root = document.querySelector('article')
-        this.innerText = document.querySelector('article').innerText
+        let{articleSelector} =  window.$docsify
+        if(articleSelector){
+            this.$root = articleSelector()
+            this.innerText = this.$root.innerText
+        }else{
+            this.$root = document.querySelector('article')
+            this.innerText = document.querySelector('article').innerText
+        }
         let checkUserStatus = ({ next }, changed) => {
             if (changed == false) {
                 this.enable(false)
@@ -463,15 +468,16 @@ export class DocHighlighter {
     }
 
     onCopy(hs) {
-        let { text, id } = hs ? hs : {}
-        let url = "";
-        if (id) {
-            let charpter = this.store.Chapter();
-            id = charpter.url(id)
-            if (id) { url = decodeURI(id) }
-        }
-        let ret = url + "\n\n" + (text ? text : "")
-        copyPasteBoard(ret)
+        // let { text, id } = hs ? hs : {}
+        // let url = "";
+        // if (id) {
+        //     let charpter = this.store.Chapter();
+        //     id = charpter.url(id)
+        //     if (id) { url = decodeURI(id) }
+        // }
+        // let ret = url + "\n\n" + (text ? text : "")
+        if(hs)
+        copyPasteBoard(hs.text)
     }
     renderByID(id) {
         let hhs = this.hsbyid(id)
@@ -973,7 +979,7 @@ function getEleSrc(ele) {
 
 export function preHighLightItems() {
     let children = [];
-    document.getElementsByClassName("hl").forEach((a) => {
+    document.querySelectorAll(".hl").forEach((a) => {
         children.push(a);
     });
     children = children.map((a) => {

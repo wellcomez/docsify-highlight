@@ -74,6 +74,7 @@ import CharptHtml from "./CharptHtml";
 import TocHtml from "./TocHtml";
 import { gotoNote } from "../utils";
 import { Layout, Sider, Content } from "iview";
+import { getContentNode } from '../hl';
 const right = 0;
 const full = 2;
 const up = 1;
@@ -228,13 +229,13 @@ export default {
       this.sider_toc_on = false;
       let c = "open-sidebar";
       if (a) {
-        document.querySelector(".content").classList.add(c);
+        getContentNode().classList.add(c);
       } else {
-        document.querySelector(".content").classList.remove(c);
+        getContentNode().classList.remove(c);
       }
     },
     zoomNoteBook(a) {
-      let el = document.querySelector(".content");
+      let el = getContentNode();
       let setzoom = (a, el) => {
         if (a == false) {
           el.classList.add("zoom-in");

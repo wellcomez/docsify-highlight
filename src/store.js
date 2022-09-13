@@ -573,10 +573,8 @@ export class Book {
     let rootpath = rootPath()
     let tilte = this.name
     let dev = false;
-    let umdjs = dev ? "docsify-highlight.umd.js" :
-      "https://cdn.jsdelivr.net/npm/docsify-highlight@latest/dist/docsify-highlight.umd.min.js"
-    let css = dev ? 'docsify-highlight.css' :
-      "https://cdn.jsdelivr.net/npm/docsify-highlight@latest/dist/docsify-highlight.min.css"
+    let umdjs = dev ? "docsify-highlight.umd.js" :"https://unpkg.com/docsify-highlight@1.2.2/dist/docsify-highlight.umd.min.js"
+    let css = dev ? 'docsify-highlight.css' :"https://unpkg.com/docsify-highlight@1.2.2/dist/docsify-highlight.css"
     let ret = `<!DOCTYPE html>
 <html lang="en">
 <head>

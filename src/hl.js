@@ -30,7 +30,7 @@ function runScrip() {
     let { enableScript } = getConfig().load();
     if (enableScript != true) return;
     let script = pluginScript()
-    if (script&&script.pre) {
+    if (script && script.pre) {
         run(script.pre);
     } else {
         run(script)
@@ -46,7 +46,26 @@ function runScrip() {
     }
 }
 let seq = 0
-function hlinit() {
+const Values = require('values.js')
+function setThemeColor(root, value) {
+    if (root) {
+        let color = new Values(value)
+        
+        let style = {
+            "--theme-color":  value,
+            "--hover-color":  color.tint(25).hexString(),
+            "--border-color": color.shade(5).hexString()
+        }
+        for(let k in style){
+            root.style.setProperty(k,style[k])
+        }
+    }
+}
+function hlinit(color) {
+    window.$docsify.setThemeColor = setThemeColor
+    if (color) {
+        setThemeColor(document.querySelector(":root"), color)
+    }
     runScrip()
     log("hlinit-" + document.location.href)
     if (window.hl) {
@@ -54,7 +73,7 @@ function hlinit() {
     }
     let hl = new DocHighlighter();
     window.hl = hl;
-    var main = document.getElementsByClassName('content')[0]
+    var main = getContentNode()
     // eslint-disable-next-line no-unused-vars
     let { vm } = window;
     let { changeNumber } = getChanged()
@@ -82,6 +101,12 @@ function hlinit() {
         Vue.set(vm, "seq", seq);
         getConfig().save({ changeNumber })
     }
+}
+export function getContentNode() {
+    let { content } = window.$docsify
+    if (content == undefined)
+        content = '.content'
+    return document.querySelector(content)
 }
 export default hlinit
 

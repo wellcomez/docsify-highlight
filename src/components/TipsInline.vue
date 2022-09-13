@@ -24,7 +24,7 @@ export default {
 }
 
 .note-inline-tooltip .note-inline-tooltiptext {
-  background-color: #42b983;
+  background-color: var(--theme-color, #42b983);
   color: #fff;
   border-radius: 6px;
   padding: 5px 0;
@@ -44,6 +44,6 @@ export default {
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent #42b983 transparent transparent;
+  border-color: transparent var(--theme-color, #42b983) transparent transparent;
 }
 </style>

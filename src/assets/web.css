@@ -1,3 +1,12 @@
+:root {
+  --theme-color: #42b983;
+  --title-color: #8d8d8d;
+  --hover-color: #68c79c;
+  /* tint(#42b983,20%) */
+  --border-color: #3fb07c;
+   /* shade(#42b983, 5%) */
+}
+
 .highlight-wrap-hover {
   background: lightcyan;
   /* background: transparent; */

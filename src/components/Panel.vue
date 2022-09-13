@@ -15,7 +15,7 @@
           @click="onCollapsed"
         ></SvgButton>
       </Col>
-      <Col>
+      <Col v-if="!collapsed">
         <SvgButton
           @click="showdetail = showdetail != true"
           name="ios-book"
@@ -24,7 +24,7 @@
           :on="showdetail == false"
         />
       </Col>
-      <Col v-if="showexport">
+      <Col v-if="showexport&&!collapsed">
         <Bubbling
           v-if="collapsed == false && checked"
           :onSelect="onSelect"
@@ -33,7 +33,7 @@
           :menu="explortMenu"
         />
       </Col>
-      <Col>
+      <Col v-if="!collapsed">
         <PopSvgButton
           v-if="canupload"
           :click="downloadFromCloud"
@@ -42,7 +42,7 @@
           tips="Download"
         />
       </Col>
-      <Col>
+      <Col v-if="!collapsed">
         <Badge
           v-if="canupload"
           :dot="changeNumber == 0 && updated"
@@ -58,14 +58,14 @@
         </Badge>
       </Col>
 
-      <Col>
+      <Col v-if="!collapsed">
         <SvgButton @click="onBookmark" :name="bookmarkicon" />
       </Col>
 
       <!-- <Col>
         <i-switch :value="checked" @on-change="onChange" />
       </Col> -->
-      <Col>
+      <Col v-if="!collapsed">
         <SvgButton @click="onClickOpenNote" name="md-text" />
       </Col>
       <Col>
@@ -235,7 +235,7 @@ import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import ClickOutside from "vue-click-outside";
-var isMobile = require("is-mobile");
+// var isMobile = require("is-mobile");
 import NoteSiderBar from "./NoteSiderBar";
 import { gotoNote } from "../utils";
 import { getConfig } from "../ANoteConfig";
@@ -357,7 +357,7 @@ export default {
       showexport:  true,
       bDrawerOpen: false,
       uername: undefined,
-      collapsed: false,
+      collapsed: true,
       bookmark: false,
     };
   },
