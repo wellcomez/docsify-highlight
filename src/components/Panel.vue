@@ -235,7 +235,7 @@ import SvgButton from "./SvgButton";
 import PopSvgButton from "./PopSvgButton";
 import BookMarks from "./BookMarks";
 import ClickOutside from "vue-click-outside";
-var isMobile = require("is-mobile");
+// var isMobile = require("is-mobile");
 import NoteSiderBar from "./NoteSiderBar";
 import { gotoNote } from "../utils";
 import { getConfig } from "../ANoteConfig";
@@ -354,7 +354,7 @@ export default {
       showdetail: false,
       openNoteBook: false,
       book: new Book(),
-      showexport: isMobile() ? false : true,
+      showexport:  true,
       bDrawerOpen: false,
       uername: undefined,
       collapsed: true,

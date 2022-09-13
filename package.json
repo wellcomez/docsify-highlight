@@ -1,6 +1,6 @@
 {
   "name": "docsify-highlight",
-  "version": "2.2.12",
+  "version": "2.2.14",
   "jsdelivr": [
     "dist/docsify-highlight.css",
     "dist/docsify-highlight.umd.min.js",
